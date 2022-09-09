@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/sugo?useUnicode=true&characterEncoding=utf8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 112233
+  security:
+    basic:
+      enabled: false
+  jwt:
+    secret-Key: digermomosongdigermmonhejowhehejowheeeejowkdigerkdigerkdigerkdigerkdigerkdigerkdigerkdiger
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        ddl-auto: validate
+        use-new-id-generator-mappings: false
+server:
+  error:
+    include-exception: false # Response 에 Exception 을 표기할 것인가?
+    include-message: always # Response 에 Exception Message 를 표시할 것인가?
+    include-stacktrace: on_param # Response 에 Stack Trace 를 표시할 것인가?
+    whitelabel:
+      enabled: true
