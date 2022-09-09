@@ -7,7 +7,10 @@ Java / Spring
 Spring Data JPA, QueryDSL
 
 ## DB
-S3(MySQL)
+RDS(MySQL)
+
+## Storage
+S3
 
 ## Deploy
 EC2(Ubuntu 20.04, NGINX)
