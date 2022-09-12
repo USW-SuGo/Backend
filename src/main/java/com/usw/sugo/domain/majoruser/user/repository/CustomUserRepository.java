@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.majoruser.user.repository;
 
-import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinFormRequest;
+import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -8,5 +8,9 @@ public interface CustomUserRepository {
 
     void authorizeToken(Long id);
 
-    void detailJoin(DetailJoinFormRequest detailJoinFormRequest);
+    void detailJoin(DetailJoinRequest detailJoinRequest, Long userId);
+
+    void editPassword(Long id, String password);
+
+    void editNickname(Long id, String nickName);
 }

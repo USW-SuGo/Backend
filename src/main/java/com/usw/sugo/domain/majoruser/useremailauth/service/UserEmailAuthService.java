@@ -42,5 +42,4 @@ public class UserEmailAuthService {
 
         userEmailAuthRepository.confirmToken(payload);
     }
-
 }

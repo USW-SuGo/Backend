@@ -2,6 +2,7 @@ package com.usw.sugo.domain.majoruser;
 
 import com.usw.sugo.global.util.basetime.BaseTimeEntity;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class User extends BaseTimeEntity {
 
     @Id
@@ -27,4 +29,6 @@ public class User extends BaseTimeEntity {
 
     @Column
     private String status;
+
+
 }

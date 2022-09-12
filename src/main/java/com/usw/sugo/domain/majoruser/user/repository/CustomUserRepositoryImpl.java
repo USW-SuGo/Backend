@@ -1,8 +1,9 @@
 package com.usw.sugo.domain.majoruser.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinFormRequest;
+import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.global.status.Status;
+import com.usw.sugo.global.util.nickname.NicknameGenerate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,10 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     private final JPAQueryFactory queryFactory;
     private final BCryptPasswordEncoder encoder;
 
+    private final NicknameGenerate nicknameGenerate;
+
+    private final UserRepository userRepository;
+
     @Override
     public void authorizeToken(Long id) {
         queryFactory
@@ -29,12 +34,31 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     }
 
     @Override
-    public void detailJoin(DetailJoinFormRequest detailJoinFormRequest) {
+    public void detailJoin(DetailJoinRequest detailJoinRequest, Long userId) {
+
         queryFactory
                 .update(user)
-                .set(user.password, encoder.encode(detailJoinFormRequest.getPassword()))
-                .set(user.nickname, "닉네임 자동발급 로직 필요함")
-                .where(user.email.eq(detailJoinFormRequest.getEmail()))
+                .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
+                .set(user.nickname, nicknameGenerate.generateNickname(userId, detailJoinRequest.getDepartment()))
+                .where(user.email.eq(detailJoinRequest.getEmail()))
+                .execute();
+    }
+
+    @Override
+    public void editPassword(Long id, String password) {
+        queryFactory
+                .update(user)
+                .set(user.password, encoder.encode(password))
+                .where(user.id.eq(id))
+                .execute();
+    }
+
+    @Override
+    public void editNickname(Long id, String nickName) {
+        queryFactory
+                .update(user)
+                .set(user.nickname, nickName)
+                .where(user.id.eq(id))
                 .execute();
     }
 }
