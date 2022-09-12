@@ -13,4 +13,6 @@ public interface CustomUserRepository {
     void editPassword(Long id, String password);
 
     void editNickname(Long id, String nickName);
+
+    void setModifiedDate(Long id);
 }

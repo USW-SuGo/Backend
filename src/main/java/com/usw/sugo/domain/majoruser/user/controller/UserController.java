@@ -42,6 +42,7 @@ public class UserController {
 
         IsEmailExistResponse isEmailExistResponse = new IsEmailExistResponse(false);
 
+        // 이메일이 DB에 존재하면
         if (userRepository.findByEmail(isEmailExistRequest.getEmail()).isPresent()) {
             isEmailExistResponse.setExist(true);
         }
@@ -57,22 +58,19 @@ public class UserController {
         Optional<User> requestUser = userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail());
 
         // 인증 메일을 보낼 메일 주소가, 이미 존재할 때 Error
-        if (requestUser.isPresent()) {
-            throw new CustomException(DUPLICATED_EMAIL);
-        }
+        if (requestUser.isPresent()) throw new CustomException(DUPLICATED_EMAIL);
 
-        // 인증 메일을 보낼 메일 주소가, DB에 없을 때
-        else if (requestUser.isEmpty()) {
-            // 신규 유저인 경우, Email DB 에 저장 후 엔티티 반환
-            User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
+        // 신규 유저인 경우, Email DB 에 저장 후 엔티티 반환
+        User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
 
-            // 이메일 토큰 생성 및 DB 저장
-            String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
-            //String authPayload = "https://api.sugo:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
+        // 이메일 토큰 생성 및 DB 저장
+        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
+        //String authPayload = "https://api.sugo:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
 
-            // 이메일 발송
-            sendEmailServiceFromSES.send(sendAuthorizationEmailRequest.getEmail(), authPayload);
-        }
+        // 이메일 발송
+        sendEmailServiceFromSES.send(sendAuthorizationEmailRequest.getEmail(), authPayload);
+
+        // 반환
         Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -84,7 +82,7 @@ public class UserController {
 
         Optional<UserEmailAuth> requestUser = userEmailAuthRepository.findByPayload(payload);
 
-        // 이메일 인증을
+        // 이메일 인증을 요청한 사용자가 DB 에 없으면 에러
         if (requestUser.isEmpty()) throw new CustomException(INVALID_AUTH_TOKEN);
 
         // 이메일 인증 로직
@@ -97,37 +95,32 @@ public class UserController {
     }
 
     @PostMapping("/detail-join")
-    public ResponseEntity<?> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) throws Exception {
-        Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
+    public ResponseEntity<?> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
+
         Optional<User> requestUser = userRepository.findByEmail(detailJoinRequest.getEmail());
 
-        // 비밀번호 암호화 및 닉네임 발급 -> 최종 회원가입 처리
         if (requestUser.isPresent()) {
+            // 유저 인덱스
             Long userId = requestUser.get().getId();
+            // 비밀번호 암호화 및 닉네임 발급 -> 최종 회원가입 처리
             userRepository.detailJoin(detailJoinRequest, userId);
+            // 유저 변경 시각 타임스탬프
+            userRepository.setModifiedDate(userId);
         }
-
+        // 반환
+        Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 비밀번호 수정
     @PutMapping("/password")
     public ResponseEntity<?> editPassword(@RequestBody EditPasswordRequest editPasswordRequest) {
-        Map<String, Boolean> result = new HashMap<>();
-
         // 비밀번호 수정
         userRepository.editPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword());
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    // 닉네임 수정
-    @PutMapping("/nickname")
-    public ResponseEntity<?> editNickname(@RequestBody EditNicknameRequest editNicknameRequest) {
-        Map<String, Boolean> result = new HashMap<>();
-
-        userRepository.editNickname(editNicknameRequest.getId(), editNicknameRequest.getNickname());
-
+        // 유저 변경 시각 타임스탬프
+        userRepository.setModifiedDate(editPasswordRequest.getId());
+        //반환
+        Map<String, Boolean> result = new HashMap<>(){{put("Success", true);}};
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
+
 import static com.usw.sugo.domain.majoruser.QUser.user;
 
 @Transactional
@@ -19,10 +21,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     private final JPAQueryFactory queryFactory;
     private final BCryptPasswordEncoder encoder;
-
     private final NicknameGenerate nicknameGenerate;
-
-    private final UserRepository userRepository;
 
     @Override
     public void authorizeToken(Long id) {
@@ -58,6 +57,15 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         queryFactory
                 .update(user)
                 .set(user.nickname, nickName)
+                .where(user.id.eq(id))
+                .execute();
+    }
+
+    @Override
+    public void setModifiedDate(Long id) {
+        queryFactory
+                .update(user)
+                .set(user.modifiedDate, LocalDateTime.now())
                 .where(user.id.eq(id))
                 .execute();
     }
