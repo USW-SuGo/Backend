@@ -27,6 +27,7 @@ dependencies {
 
 	// Mail Service
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.296'
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

@@ -7,6 +7,10 @@ spring:
   security:
     basic:
       enabled: false
+  aws:
+    ses:
+      access-key: AKIA3MJAEII2EGFHI274
+      secret-key: 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
   jwt:
     secret-Key: digermomosongdigermmonhejowhehejowheeeejowkdigerkdigerkdigerkdigerkdigerkdigerkdigerkdiger
   jpa:

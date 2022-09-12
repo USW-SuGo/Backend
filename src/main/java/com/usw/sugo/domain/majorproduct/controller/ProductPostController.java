@@ -8,6 +8,7 @@ import com.usw.sugo.domain.majorproduct.repository.ProductPostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class ProductPostController {
 
     private final ProductPostRepository productPostRepository;
 
-    @RequestMapping("/all-post")
+    @GetMapping("/all")
     public ResponseEntity<List<MainPageResponseForm>> loadMainPage() {
         return ResponseEntity.status(HttpStatus.OK).body(productPostRepository.loadMainPagePostList());
     }
