@@ -14,4 +14,10 @@ public class UserRequestDto {
         String email;
     }
 
+    // 인증받은 이메일과 비밀번호를 입력받기
+    @Data
+    public static class DetailJoinFormRequest {
+        String email;
+        String password;
+    }
 }

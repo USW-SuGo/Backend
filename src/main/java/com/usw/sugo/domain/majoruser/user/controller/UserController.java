@@ -2,6 +2,7 @@ package com.usw.sugo.domain.majoruser.user.controller;
 
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
+import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinFormRequest;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.IsEmailExistRequest;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.SendAuthorizationEmailRequest;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
@@ -13,6 +14,7 @@ import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,6 +25,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final UserService userService;
     private final UserRepository userRepository;
@@ -80,7 +84,23 @@ public class UserController {
         }
 
         userEmailAuthService.authorizeToken(payload);
+        userRepository.authorizeToken(requestUser.get().getUserId());
 
         return "인증에 성공";
+    }
+
+    @PostMapping("/detail-join")
+    public ResponseEntity<?> detailJoin(@RequestBody DetailJoinFormRequest detailJoinFormRequest) {
+        Map<String, Boolean> result = new HashMap<>();
+
+        Optional<User> requestUser = userRepository.findByEmail(detailJoinFormRequest.getEmail());
+
+        if (requestUser.isPresent()) {
+            userRepository.detailJoin(detailJoinFormRequest);
+
+        }
+        result.put("Success", true);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

@@ -27,12 +27,9 @@ public class UserEmailAuth {
     @Column
     private String payload;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime expiredAt;
-
     @Column
     private String status;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
 }

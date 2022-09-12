@@ -1,8 +1,5 @@
 package com.usw.sugo.domain.majorproduct.controller;
 
-
-import com.querydsl.core.Tuple;
-import com.usw.sugo.domain.majorproduct.dto.PostResponseDto;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponseForm;
 import com.usw.sugo.domain.majorproduct.repository.ProductPostRepository;
 import lombok.RequiredArgsConstructor;

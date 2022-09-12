@@ -4,6 +4,7 @@ import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.useremailauth.repository.UserEmailAuthRepository;
+import com.usw.sugo.global.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class UserEmailAuthService {
                 .payload(payload)
                 .createdAt(LocalDateTime.now())
                 .userId(user.getId())
-                .status("NOT")
+                .status(String.valueOf(Status.NOT_AUTH))
                 .build();
 
         userEmailAuthRepository.save(userEmailAuth);
