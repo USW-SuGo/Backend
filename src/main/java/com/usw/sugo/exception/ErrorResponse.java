@@ -1,29 +1,38 @@
 package com.usw.sugo.exception;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
+@RequiredArgsConstructor
 public class ErrorResponse {
-    private final LocalDateTime timestamp = LocalDateTime.now();
-    private final int status;
+
     private final String error;
-    private final String code;
     private final String message;
 
-    public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode errorCode) {
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(ErrorResponse.builder()
-                        .status(errorCode.getHttpStatus().value())
-                        .error(errorCode.getHttpStatus().name())
-                        .code(errorCode.name())
-                        .message(errorCode.getDetail())
-                        .build()
-                );
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final List<ValidationError> errors;
+
+    @Getter
+    @Builder
+    @RequiredArgsConstructor
+    public static class ValidationError {
+
+        private final String field;
+        private final String message;
+
+        public static ValidationError of(final FieldError fieldError) {
+            return ValidationError.builder()
+                    .field(fieldError.getField())
+                    .message(fieldError.getDefaultMessage())
+                    .build();
+        }
     }
 }

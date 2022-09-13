@@ -2,11 +2,14 @@ package com.usw.sugo.global.util.nickname;
 
 import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.usw.sugo.exception.UserErrorCode.INVALID_DEPARTMENT;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +76,7 @@ public class NicknameGenerator {
 
     public String generateNickname(Long id, String department) {
         if (!departmentList.contains(department)) {
-            throw new CustomException(ErrorCode.INVALID_DEPARTMENT);
+            throw new CustomException(INVALID_DEPARTMENT);
         }
 
         return department + "-" + nicknameNumberGenerator.findToAvailableNicknameNumber(department);

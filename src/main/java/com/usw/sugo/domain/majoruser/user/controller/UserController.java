@@ -9,7 +9,6 @@ import com.usw.sugo.domain.majoruser.user.service.UserService;
 import com.usw.sugo.domain.majoruser.useremailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.majoruser.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
 import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.usw.sugo.exception.ErrorCode.*;
+import static com.usw.sugo.exception.UserErrorCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,13 +50,15 @@ public class UserController {
 
     // 재학생 인증 이메일 전송하기
     @PostMapping("/send-authorization-email")
-    public ResponseEntity<?> sendAuthorizationEmail(
+    public ResponseEntity<Map<String, Boolean>> sendAuthorizationEmail(
             @RequestBody SendAuthorizationEmailRequest sendAuthorizationEmailRequest) {
 
         Optional<User> requestUser = userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail());
 
         // 인증 메일을 보낼 메일 주소가, 이미 존재할 때 Error
-        if (requestUser.isPresent()) throw new CustomException(DUPLICATED_EMAIL);
+        if (requestUser.isPresent()) {
+            throw new CustomException(DUPLICATED_EMAIL);
+        }
 
         // 신규 유저인 경우, Email DB 에 저장 후 엔티티 반환
         User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
@@ -118,7 +119,7 @@ public class UserController {
     public ResponseEntity<?> editPassword(@RequestBody EditPasswordRequest editPasswordRequest) {
 
         if (userService.isSamePassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
-            throw new CustomException(INVALID_DEPARTMENT);
+            throw new CustomException(IS_SAME_PASSWORD);
         }
 
         // 비밀번호 수정
