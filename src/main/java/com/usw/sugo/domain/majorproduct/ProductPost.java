@@ -29,6 +29,9 @@ public class ProductPost {
     private String content;
 
     @Column
+    private Integer price;
+
+    @Column
     private String contactPlace;
 
     // 작성자 인덱스

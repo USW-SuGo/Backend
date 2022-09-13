@@ -1,9 +1,10 @@
 package com.usw.sugo.domain.majoruser.user.repository;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.global.status.Status;
-import com.usw.sugo.global.util.nickname.NicknameGenerate;
+import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -21,7 +22,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     private final JPAQueryFactory queryFactory;
     private final BCryptPasswordEncoder encoder;
-    private final NicknameGenerate nicknameGenerate;
+    private final NicknameGenerator nicknameGenerator;
 
     @Override
     public void authorizeToken(Long id) {
@@ -38,7 +39,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         queryFactory
                 .update(user)
                 .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
-                .set(user.nickname, nicknameGenerate.generateNickname(userId, detailJoinRequest.getDepartment()))
+                .set(user.nickname, nicknameGenerator.generateNickname(userId, detailJoinRequest.getDepartment()))
                 .where(user.email.eq(detailJoinRequest.getEmail()))
                 .execute();
     }
@@ -54,19 +55,28 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public void editNickname(Long id, String nickName) {
-        queryFactory
-                .update(user)
-                .set(user.nickname, nickName)
-                .where(user.id.eq(id))
-                .execute();
+
     }
 
     @Override
     public void setModifiedDate(Long id) {
         queryFactory
                 .update(user)
-                .set(user.modifiedDate, LocalDateTime.now())
+                .set(user.updatedAt, LocalDateTime.now())
                 .where(user.id.eq(id))
                 .execute();
     }
+
+    @Override
+    public void findNicknameNumber(String department) {
+        JPAQuery<String> select = queryFactory
+                .select(user.nickname)
+                .from(user)
+                .where(user.nickname.like(department))
+                .orderBy(user.nickname.desc())
+                .limit(1);
+
+        System.out.println(select);
+    }
+
 }

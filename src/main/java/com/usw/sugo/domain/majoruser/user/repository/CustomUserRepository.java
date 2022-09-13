@@ -15,4 +15,6 @@ public interface CustomUserRepository {
     void editNickname(Long id, String nickName);
 
     void setModifiedDate(Long id);
+
+    void findNicknameNumber(String department);
 }

@@ -14,7 +14,7 @@ public class PostResponseDto {
     public static class MainPageResponseForm {
         public String imageLink;
         public String postTitle;
+        public Integer price;
         public String contactPlace;
     }
-
 }

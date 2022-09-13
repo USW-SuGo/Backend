@@ -14,6 +14,8 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 public enum ErrorCode {
 
     /* 400 BAD_REQUEST */
+    INVALID_DEPARTMENT(BAD_REQUEST, "존재하는 학과 명이 아닙니다."),
+    IS_SAME_PASSWORD(BAD_REQUEST, "이전 비밀번호와 동일하게 변경할 수 없습니다."),
     DUPLICATED_EMAIL(BAD_REQUEST, "이미 존재하는 이메일입니다. 메일 수신함을 확인해주세요"),
     INVALID_AUTH_TOKEN(BAD_REQUEST, "인증 토큰이 유효하지 않습니다. 관리자에게 문의하세요"),
 

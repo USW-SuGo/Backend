@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.usw.sugo.exception.ErrorCode.DUPLICATED_EMAIL;
-import static com.usw.sugo.exception.ErrorCode.INVALID_AUTH_TOKEN;
+import static com.usw.sugo.exception.ErrorCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -102,7 +101,9 @@ public class UserController {
         if (requestUser.isPresent()) {
             // 유저 인덱스
             Long userId = requestUser.get().getId();
-            // 비밀번호 암호화 및 닉네임 발급 -> 최종 회원가입 처리
+            // 비밀번호 암호화
+            // 닉네임 발급
+            // -> 최종 회원가입 처리
             userRepository.detailJoin(detailJoinRequest, userId);
             // 유저 변경 시각 타임스탬프
             userRepository.setModifiedDate(userId);
@@ -115,6 +116,11 @@ public class UserController {
     // 비밀번호 수정
     @PutMapping("/password")
     public ResponseEntity<?> editPassword(@RequestBody EditPasswordRequest editPasswordRequest) {
+
+        if (userService.isSamePassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
+            throw new CustomException(INVALID_DEPARTMENT);
+        }
+
         // 비밀번호 수정
         userRepository.editPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword());
         // 유저 변경 시각 타임스탬프
