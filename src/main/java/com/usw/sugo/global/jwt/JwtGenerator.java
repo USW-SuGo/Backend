@@ -18,7 +18,7 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class JwtUtilizer {
+public class JwtGenerator {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -67,7 +67,7 @@ public class JwtUtilizer {
         claims.setSubject("USW-SUGO-BY-KDH");
 
         // Access Token 생성
-        String stringRefreshToken =  "Bearer " + Jwts.builder()
+        String stringRefreshToken =  Jwts.builder()
                 .setHeaderParam("type","JWT")
                 .setClaims(claims)
                 .setExpiration(refreshTokenExpireIn)
@@ -81,7 +81,7 @@ public class JwtUtilizer {
 
         refreshTokenRepository.save(domainRefreshToken);
 
-        return stringRefreshToken;
+        return "Bearer " + stringRefreshToken;
     }
     //AccessToken 생성
     @Transactional
@@ -109,66 +109,5 @@ public class JwtUtilizer {
         refreshTokenRepository.refreshPayload(user.getId(), stringRefreshToken);
 
         return stringRefreshToken;
-    }
-
-    // Jwt 유효성 검사
-    public void validateToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build();
-        }
-        // 400 Error - MalFormed
-        catch (MalformedJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_MALFORMED_EXCEPTION);
-        }
-        // 401 Error - Expired
-        catch (ExpiredJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_EXPIRED_EXCEPTION);
-        }
-        // 400 Error - UnSupported
-        catch (UnsupportedJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_UNSUPPORTED_EXCEPTION);
-        }
-        // 400 Error - Illegal
-        catch (IllegalArgumentException ex) {
-            throw new CustomException(UserErrorCode.JWT_IllegalARGUMENT_EXCEPTION);
-        }
-    }
-
-    // AccessToken 에서 Claims 꺼내기
-    public Claims jwtResolve(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token).getBody();
-    }
-
-    // AccessToken 에서 userId 꺼내기
-    public Long jwtResolveToUserId(String token) {
-        Object claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token).getBody().get("id");
-
-        return Long.valueOf(String.valueOf(claims));
-    }
-
-    // AccessToken 에서 Nickname 꺼내기
-    public String jwtResolveToUserNickname(String token) {
-        Object claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token).getBody().get("nickname");
-        return String.valueOf(claims);
-    }
-
-    // AccessToken 에서 Status 꺼내기
-    public String jwtResolveToUserStatus(String token) {
-        Object claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token).getBody().get("status");
-        return String.valueOf(claims);
     }
 }

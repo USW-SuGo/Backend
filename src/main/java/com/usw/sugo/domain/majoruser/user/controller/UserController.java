@@ -10,9 +10,12 @@ import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepositor
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.global.jwt.JwtUtilizer;
+import com.usw.sugo.global.jwt.JwtGenerator;
+import com.usw.sugo.global.jwt.JwtResolver;
+import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +31,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/user")
 public class UserController {
 
-    private final JwtUtilizer jwtUtilizer;
-
+    private final JwtGenerator jwtGenerator;
+    private final JwtResolver jwtResolver;
+    private final JwtValidator jwtValidator;
     private final RefreshTokenRepository refreshTokenRepository;
-
     private final UserService userService;
     private final UserRepository userRepository;
     private final SendEmailServiceFromSES sendEmailServiceFromSES;
@@ -137,19 +140,48 @@ public class UserController {
         if (userService.matchingPassword(loginRequest.getPassword(), notWrappedRequestUser)) {
             // 토큰 갱신
             if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isPresent()) {
-                result.put("AccessToken", jwtUtilizer.createAccessToken(notWrappedRequestUser));
-                result.put("RefreshToken", jwtUtilizer.refreshRefreshToken(notWrappedRequestUser));
+                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
+                result.put("RefreshToken", jwtGenerator.refreshRefreshToken(notWrappedRequestUser));
             } 
             // 토큰 신규 생성
             else if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isEmpty()) {
-                result.put("AccessToken", jwtUtilizer.createAccessToken(notWrappedRequestUser));
-                result.put("RefreshToken", jwtUtilizer.createRefreshToken(notWrappedRequestUser));
+                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
+                result.put("RefreshToken", jwtGenerator.createRefreshToken(notWrappedRequestUser));
             }
         }
         // 비밀번호가 일치하지 않으면 에러 터뜨리기
         else if (!userService.matchingPassword(loginRequest.getPassword(), requestUser.get())) {
             throw new CustomException(PASSWORD_NOT_CORRECT);
         }
+        return ResponseEntity.status(OK).body(result);
+    }
+
+    // 토큰 만료 시 ERROR 코드 수정 및
+    // 엑세스 토큰 만료 요청
+
+    @PostMapping("/token-refresh")
+    public ResponseEntity<Map<String, String>> refresh(@RequestHeader String authorization) {
+
+        // "Bearer " 키워드 substring
+        String BearerSubStringPayload = authorization.substring(7);
+
+        jwtValidator.validateToken(BearerSubStringPayload);
+
+        // 에러가 안터지면 토큰은 유효함.
+        Map<String, String> result = new HashMap<>(2);
+
+        // RefreshToken 테이블에 페이로드가 존재하는가?
+        if (refreshTokenRepository.findByPayload(BearerSubStringPayload).isPresent()) {
+            // 테이블에 존재하면, 그 페이로드에 해당하는 userId 가져오기
+            long userId = refreshTokenRepository.findByPayload(BearerSubStringPayload).get().getUserId();
+
+            // 해당 userId 로 User 객체 가져오기
+            User refreshRequestUser = userRepository.findById(userId).get();
+
+            result.put("AccessToken", jwtGenerator.createAccessToken(refreshRequestUser));
+            result.put("RefreshToken", jwtGenerator.refreshRefreshToken(refreshRequestUser));
+        }
+
         return ResponseEntity.status(OK).body(result);
     }
 
