@@ -17,6 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     public User softSaveUser(String email) {
         User user = User.builder()
                 .email(email)
@@ -28,6 +29,12 @@ public class UserService {
         return user;
     }
 
+    @Transactional
+    public boolean matchingPassword(String inputPassword, User user) {
+        return bCryptPasswordEncoder.matches(inputPassword, user.getPassword());
+    }
+
+    @Transactional
     public boolean isSamePassword(Long id, String editRequestPassword) {
         if (bCryptPasswordEncoder.matches(editRequestPassword, userRepository.findById(id).get().getPassword())) {
             return true;

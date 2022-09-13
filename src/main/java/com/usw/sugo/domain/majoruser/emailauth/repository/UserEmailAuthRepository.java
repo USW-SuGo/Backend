@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.majoruser.useremailauth.repository;
+package com.usw.sugo.domain.majoruser.emailauth.repository;
 
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import org.springframework.data.jpa.repository.JpaRepository;

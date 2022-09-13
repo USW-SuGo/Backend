@@ -15,11 +15,19 @@ public class UserRequestDto {
     }
 
     // 인증받은 이메일과 비밀번호를 입력받기
+    // 부가 정보 입력받는 2차 회원가입 요청 DTO
     @Data
     public static class DetailJoinRequest {
         String email;
         String password;
         String department;
+    }
+
+    // 로그인 요청 DTO
+    @Data
+    public static class LoginRequest {
+        String email;
+        String password;
     }
 
     @Data
@@ -28,9 +36,4 @@ public class UserRequestDto {
         String password;
     }
 
-    @Data
-    public static class EditNicknameRequest {
-        Long id;
-        String nickname;
-    }
 }

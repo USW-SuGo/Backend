@@ -6,12 +6,13 @@ import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.user.service.UserService;
-import com.usw.sugo.domain.majoruser.useremailauth.repository.UserEmailAuthRepository;
-import com.usw.sugo.domain.majoruser.useremailauth.service.UserEmailAuthService;
+import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
+import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
+import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.global.jwt.JwtUtilizer;
 import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.usw.sugo.exception.UserErrorCode.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
+    private final JwtUtilizer jwtUtilizer;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final UserService userService;
     private final UserRepository userRepository;
@@ -45,7 +51,7 @@ public class UserController {
             isEmailExistResponse.setExist(true);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(isEmailExistResponse);
+        return ResponseEntity.status(OK).body(isEmailExistResponse);
     }
 
     // 재학생 인증 이메일 전송하기
@@ -73,7 +79,7 @@ public class UserController {
         // 반환
         Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(OK).body(result);
     }
 
     //이메일 인증 링크 클릭 시
@@ -111,7 +117,40 @@ public class UserController {
         }
         // 반환
         Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(OK).body(result);
+    }
+
+    /**
+     로그인 컨트롤러
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
+
+        Optional<User> requestUser = userRepository.findByEmail(loginRequest.getEmail());
+
+        if (requestUser.isEmpty()) throw new CustomException(USER_NOT_EXIST);
+
+        User notWrappedRequestUser = requestUser.get();
+        Map<String, String> result = new HashMap<>(2);
+
+        // 비밀번호가 일치하면
+        if (userService.matchingPassword(loginRequest.getPassword(), notWrappedRequestUser)) {
+            // 토큰 갱신
+            if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isPresent()) {
+                result.put("AccessToken", jwtUtilizer.createAccessToken(notWrappedRequestUser));
+                result.put("RefreshToken", jwtUtilizer.refreshRefreshToken(notWrappedRequestUser));
+            } 
+            // 토큰 신규 생성
+            else if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isEmpty()) {
+                result.put("AccessToken", jwtUtilizer.createAccessToken(notWrappedRequestUser));
+                result.put("RefreshToken", jwtUtilizer.createRefreshToken(notWrappedRequestUser));
+            }
+        }
+        // 비밀번호가 일치하지 않으면 에러 터뜨리기
+        else if (!userService.matchingPassword(loginRequest.getPassword(), requestUser.get())) {
+            throw new CustomException(PASSWORD_NOT_CORRECT);
+        }
+        return ResponseEntity.status(OK).body(result);
     }
 
     // 비밀번호 수정
@@ -127,7 +166,9 @@ public class UserController {
         // 유저 변경 시각 타임스탬프
         userRepository.setModifiedDate(editPasswordRequest.getId());
         //반환
-        Map<String, Boolean> result = new HashMap<>(){{put("Success", true);}};
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        Map<String, Boolean> result = new HashMap<>() {{
+            put("Success", true);
+        }};
+        return ResponseEntity.status(OK).body(result);
     }
 }

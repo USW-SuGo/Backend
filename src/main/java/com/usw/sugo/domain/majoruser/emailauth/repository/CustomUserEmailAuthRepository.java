@@ -1,8 +1,6 @@
-package com.usw.sugo.domain.majoruser.useremailauth.repository;
+package com.usw.sugo.domain.majoruser.emailauth.repository;
 
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
 
 @Repository
 public interface CustomUserEmailAuthRepository {

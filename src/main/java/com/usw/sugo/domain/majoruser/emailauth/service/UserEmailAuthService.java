@@ -1,9 +1,9 @@
-package com.usw.sugo.domain.majoruser.useremailauth.service;
+package com.usw.sugo.domain.majoruser.emailauth.service;
 
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
-import com.usw.sugo.domain.majoruser.useremailauth.repository.UserEmailAuthRepository;
+import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.global.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

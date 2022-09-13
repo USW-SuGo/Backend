@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.majoruser.useremailauth.repository;
+package com.usw.sugo.domain.majoruser.emailauth.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.global.status.Status;
@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 import static com.usw.sugo.domain.majoruser.QUserEmailAuth.*;
 
