@@ -35,7 +35,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public void detailJoin(DetailJoinRequest detailJoinRequest, Long userId) {
-
         queryFactory
                 .update(user)
                 .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
@@ -58,6 +57,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     }
 
+    // 리팩터링 필요*
     @Override
     public void setModifiedDate(Long id) {
         queryFactory

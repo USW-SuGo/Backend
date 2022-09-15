@@ -13,6 +13,7 @@ import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
+import com.usw.sugo.global.status.Status;
 import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.parser.Authorization;
@@ -100,26 +101,39 @@ public class UserController {
         // 유저 Status 컬럼 수정 -> Available
         userRepository.authorizeToken(requestUser.get().getUserId());
 
-        return "인증에 성공";
+        return "인증에 성공하셨습니다.";
     }
 
     @PostMapping("/detail-join")
     public ResponseEntity<?> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
         Optional<User> requestUser = userRepository.findByEmail(detailJoinRequest.getEmail());
+        Map<String, Boolean> result = new HashMap<>();
 
+        // User 가 DB에 존재하고
         if (requestUser.isPresent()) {
-            // 유저 인덱스
-            Long userId = requestUser.get().getId();
-            // 비밀번호 암호화
-            // 닉네임 발급
-            // -> 최종 회원가입 처리
-            userRepository.detailJoin(detailJoinRequest, userId);
-            // 유저 변경 시각 타임스탬프
-            userRepository.setModifiedDate(userId);
+            // 이메일 인증을 받았을 때
+            if (requestUser.get().getStatus().equals(Status.AVAILABLE)) {
+                // 유저 인덱스
+                Long userId = requestUser.get().getId();
+                // 비밀번호 암호화
+                // 닉네임 발급
+                // -> 최종 회원가입 처리
+                userRepository.detailJoin(detailJoinRequest, userId);
+                // 유저 변경 시각 타임스탬프
+                userRepository.setModifiedDate(userId);
+            }
+            // 이메일 인증은 아직 안받았을 때
+            else if (!requestUser.get().getStatus().equals(Status.AVAILABLE)) {
+                throw new CustomException(NOT_AUTHORIZED_EMAIL);
+            }
+        } 
+        // 존재하지 않는 유저일 때
+        else if (requestUser.isEmpty()) {
+            throw new CustomException(USER_NOT_EXIST);
         }
         // 반환
-        Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
+        result.put("Success", true);
         return ResponseEntity.status(OK).body(result);
     }
 
@@ -158,7 +172,6 @@ public class UserController {
 
     // 토큰 만료 시 ERROR 코드 수정 및
     // 엑세스 토큰 만료 요청
-
     @PostMapping("/token-refresh")
     public ResponseEntity<Map<String, String>> refresh(@RequestHeader String authorization) {
 
@@ -187,8 +200,11 @@ public class UserController {
 
     // 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<?> editPassword(@RequestBody EditPasswordRequest editPasswordRequest) {
+    public ResponseEntity<?> editPassword(
+            @RequestHeader String authorization,
+            @RequestBody EditPasswordRequest editPasswordRequest) {
 
+        // 이전 비밀번호와 같은 내용으로 변경하려 할 때
         if (userService.isSamePassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
             throw new CustomException(IS_SAME_PASSWORD);
         }

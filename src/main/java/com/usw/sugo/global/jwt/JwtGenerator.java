@@ -67,7 +67,7 @@ public class JwtGenerator {
         claims.setSubject("USW-SUGO-BY-KDH");
 
         // Access Token 생성
-        String stringRefreshToken =  Jwts.builder()
+        String stringRefreshToken = Jwts.builder()
                 .setHeaderParam("type","JWT")
                 .setClaims(claims)
                 .setExpiration(refreshTokenExpireIn)
