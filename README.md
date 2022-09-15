@@ -17,7 +17,7 @@
 ---
 
 # API 명세서 (Ver. 220915)
-[](https://diger.gitbook.io/untitled-1/)
+![API 명세서 (Ver. 220915)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
@@ -27,6 +27,8 @@
 
 [스터디-자바와깐부맺기](https://github.com/Be-GGanboo-With-Java)에서 학습한 내용 적극적으로 반영해보기.
 
-QueryDSL, JWT Filter 적용, Spring Security 로 인증 인가 관리
-
-Clean Code Convention
+1. QueryDSL
+2. JWT Filter 적용
+3. Spring Security 로 인증 인가 관리 
+4. Clean Code Convention
+5. AOP 를 통한 유저 권한(Status Column) 체크 후 요청 처리
