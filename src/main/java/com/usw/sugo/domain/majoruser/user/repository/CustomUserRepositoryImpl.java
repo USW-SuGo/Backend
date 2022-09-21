@@ -2,8 +2,9 @@ package com.usw.sugo.domain.majoruser.user.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
-import com.usw.sugo.global.status.Status;
+import com.usw.sugo.domain.status.Status;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.usw.sugo.domain.majoruser.QUser.user;
 
@@ -25,10 +27,10 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     private final NicknameGenerator nicknameGenerator;
 
     @Override
-    public void authorizeToken(Long id) {
+    public void modifyingStatusToAvailable(Long id) {
         queryFactory
                 .update(user)
-                .set(user.status, String.valueOf(Status.AVAILABLE))
+                .set(user.status, Status.AVAILABLE)
                 .where(user.id.eq(id))
                 .execute();
     }
@@ -52,10 +54,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .execute();
     }
 
-    @Override
-    public void editNickname(Long id, String nickName) {
-
-    }
 
     // 리팩터링 필요*
     @Override
@@ -77,6 +75,17 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .limit(1);
 
         System.out.println(select);
+    }
+
+    @Override
+    public User findByEmailForUserDetails(String email) {
+        List<String> fetch = queryFactory
+                .select(user.email)
+                .from(user)
+                .where(user.email.eq(email))
+                .fetch();
+
+        return (User) fetch;
     }
 
 }

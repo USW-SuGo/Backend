@@ -12,4 +12,12 @@ public class UserResponseDto {
              this.exist = exist;
          }
     }
+
+    @Data
+    public static class LoginResponse {
+        String accessToken;
+        String refreshToken;
+
+    }
+
 }

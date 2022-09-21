@@ -1,4 +1,4 @@
-package com.usw.sugo.global.util.ses;
+package com.usw.sugo.global.aws.ses;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

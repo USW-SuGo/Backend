@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -24,6 +24,8 @@ public enum UserErrorCode implements ErrorCode {
     JWT_EXPIRED_EXCEPTION(BAD_REQUEST, "JWT_EXPIRED_EXCEPTION"),
     JWT_UNSUPPORTED_EXCEPTION(BAD_REQUEST, "JWT_UNSUPPORTED_EXCEPTION"),
     JWT_IllegalARGUMENT_EXCEPTION(BAD_REQUEST, "JWT_IllegalARGUMENT_EXCEPTION"),
+
+    USER_UNAUTHORIZED(UNAUTHORIZED, "권한이 없습니다.")
 
     ;
 

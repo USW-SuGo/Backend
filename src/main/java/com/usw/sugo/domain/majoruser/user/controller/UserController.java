@@ -10,16 +10,18 @@ import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepositor
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.global.status.Status;
-import com.usw.sugo.global.util.ses.SendEmailServiceFromSES;
+import com.usw.sugo.domain.status.Status;
+import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +41,8 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final SendEmailServiceFromSES sendEmailServiceFromSES;
+
+    private final AuthSuccessViewForm authSuccessViewForm;
 
     private final UserEmailAuthRepository userEmailAuthRepository;
 
@@ -74,7 +78,8 @@ public class UserController {
         User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
 
         // 이메일 토큰 생성 및 DB 저장
-        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
+        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
+                userEmailAuthService.createEmailAuthToken(newUser.getId());
         //String authPayload = "https://api.sugo:8080/user/verify-authorization-email?auth=" + userEmailAuthService.createEmailAuthToken(newUser.getId());
 
         // 이메일 발송
@@ -99,9 +104,9 @@ public class UserController {
         userEmailAuthService.authorizeToken(payload);
 
         // 유저 Status 컬럼 수정 -> Available
-        userRepository.authorizeToken(requestUser.get().getUserId());
+        userRepository.modifyingStatusToAvailable(requestUser.get().getUserId());
 
-        return "인증에 성공하셨습니다.";
+        return authSuccessViewForm.successParagraph();
     }
 
     @PostMapping("/detail-join")
@@ -140,35 +145,40 @@ public class UserController {
     /**
      로그인 컨트롤러
      */
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
-
-        Optional<User> requestUser = userRepository.findByEmail(loginRequest.getEmail());
-
-        if (requestUser.isEmpty()) throw new CustomException(USER_NOT_EXIST);
-
-        User notWrappedRequestUser = requestUser.get();
-        Map<String, String> result = new HashMap<>(2);
-
-        // 비밀번호가 일치하면
-        if (userService.matchingPassword(loginRequest.getPassword(), notWrappedRequestUser)) {
-            // 토큰 갱신
-            if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isPresent()) {
-                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
-                result.put("RefreshToken", jwtGenerator.refreshRefreshToken(notWrappedRequestUser));
-            } 
-            // 토큰 신규 생성
-            else if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isEmpty()) {
-                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
-                result.put("RefreshToken", jwtGenerator.createRefreshToken(notWrappedRequestUser));
-            }
-        }
-        // 비밀번호가 일치하지 않으면 에러 터뜨리기
-        else if (!userService.matchingPassword(loginRequest.getPassword(), requestUser.get())) {
-            throw new CustomException(PASSWORD_NOT_CORRECT);
-        }
-        return ResponseEntity.status(OK).body(result);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest,
+//                                                     HttpServletRequest request, HttpServletResponse response) {
+//
+//        System.out.println("로그인 컨트롤러");
+//
+//        Optional<User> requestUser = userRepository.findByEmail(loginRequest.getEmail());
+//
+//        if (requestUser.isEmpty()) throw new CustomException(USER_NOT_EXIST);
+//
+//        User notWrappedRequestUser = requestUser.get();
+//        Map<String, String> result = new HashMap<>(2);
+//
+//        // 비밀번호가 일치하면
+//        if (userService.matchingPassword(notWrappedRequestUser.getId(), loginRequest.getPassword())) {
+//            // 토큰 갱신
+//            if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isPresent()) {
+//                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
+//                result.put("RefreshToken", jwtGenerator.refreshRefreshToken(notWrappedRequestUser));
+//            }
+//            // 토큰 신규 생성
+//            else if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isEmpty()) {
+//                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
+//                result.put("RefreshToken", jwtGenerator.createRefreshToken(notWrappedRequestUser));
+//            }
+//        }
+//        // 비밀번호가 일치하지 않으면 에러 터뜨리기
+//        else if (!userService.matchingPassword(notWrappedRequestUser.getId(), loginRequest.getPassword())) {
+//            throw new CustomException(PASSWORD_NOT_CORRECT);
+//        }
+//        result.put(response.getHeader("AuthorizationAccessToken"), "AuthorizationAccessToken");
+//        result.put(response.getHeader("AuthorizationRefreshToken"), "AuthorizationRefreshToken");
+//        return ResponseEntity.status(OK).body(result);
+//    }
 
     // 토큰 만료 시 ERROR 코드 수정 및
     // 엑세스 토큰 만료 요청
@@ -205,7 +215,7 @@ public class UserController {
             @RequestBody EditPasswordRequest editPasswordRequest) {
 
         // 이전 비밀번호와 같은 내용으로 변경하려 할 때
-        if (userService.isSamePassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
+        if (userService.matchingPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
 

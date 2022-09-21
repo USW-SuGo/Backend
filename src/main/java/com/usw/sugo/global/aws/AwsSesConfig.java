@@ -1,4 +1,4 @@
-package com.usw.sugo.global.config.aws;
+package com.usw.sugo.global.aws;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

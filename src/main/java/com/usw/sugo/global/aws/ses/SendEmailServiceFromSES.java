@@ -1,4 +1,4 @@
-package com.usw.sugo.global.util.ses;
+package com.usw.sugo.global.aws.ses;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
@@ -23,7 +23,7 @@ public class SendEmailServiceFromSES {
                         .withHtml(createContent(authEmailForm.buildContentWithLink(link))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
-                .withSource("uswsugo@gmail.com")
+                .withSource("sugousw@gmail.com")
                 .withDestination(destination)
                 .withMessage(message);
 

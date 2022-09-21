@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.majoruser.emailauth.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.global.status.Status;
+import com.usw.sugo.domain.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

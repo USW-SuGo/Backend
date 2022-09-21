@@ -4,7 +4,7 @@ import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
-import com.usw.sugo.global.status.Status;
+import com.usw.sugo.domain.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

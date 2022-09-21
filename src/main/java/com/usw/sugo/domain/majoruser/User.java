@@ -1,10 +1,11 @@
 package com.usw.sugo.domain.majoruser;
 
-import com.usw.sugo.global.util.basetime.BaseTimeEntity;
+import com.usw.sugo.domain.status.Status;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class User extends BaseTimeEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +28,13 @@ public class User extends BaseTimeEntity {
     @Column
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String status;
+    private Status status;
 
+    @Column
+    private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime updatedAt;
 }

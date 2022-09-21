@@ -1,6 +1,7 @@
 package com.usw.sugo.global.jwt;
 
 import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.exception.TokenErrorCode;
 import com.usw.sugo.exception.UserErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 
+import static com.usw.sugo.exception.TokenErrorCode.JWT_EXPIRED_EXCEPTION;
+
 @Component
 public class JwtValidator {
 
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
+
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -26,23 +30,15 @@ public class JwtValidator {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
-                    .build();
+                    .build()
+                    .parseClaimsJws(token);
         }
-        // 400 Error - MalFormed
-        catch (MalformedJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_MALFORMED_EXCEPTION);
+        catch (MalformedJwtException | IllegalArgumentException | SignatureException ex) {
+            throw new BadCredentialsException("INVALID", ex);
         }
-        // 401 Error - Expired
-        catch (ExpiredJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_EXPIRED_EXCEPTION);
-        }
-        // 400 Error - UnSupported
-        catch (UnsupportedJwtException ex) {
-            throw new CustomException(UserErrorCode.JWT_UNSUPPORTED_EXCEPTION);
-        }
-        // 400 Error - Illegal
-        catch (IllegalArgumentException ex) {
-            throw new CustomException(UserErrorCode.JWT_IllegalARGUMENT_EXCEPTION);
+        catch (ExpiredJwtException exception) {
+            throw new CustomException(JWT_EXPIRED_EXCEPTION);
         }
     }
+
 }
