@@ -17,7 +17,7 @@
 ---
 
 # API 명세서 (Ver. 220915)
-![API 명세서 (Ver. 220915)](https://diger.gitbook.io/untitled-1/)
+[API 명세서 (Ver. 220915)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
