@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFileRepository;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -44,13 +47,37 @@ public class ProductPostController {
                 .body(productPostRepository.loadMainPagePostList(pageable));
     }
 
+    @PostMapping("/content")
+    public ResponseEntity<Object> postImage(@RequestHeader String authorization,
+                                            @RequestBody PostRequest postRequest) {
+
+        User requestUser = userRepository.findById(
+                jwtResolver.jwtResolveToUserId(
+                        authorization.substring(6))).get();
+
+        ProductPost productPost = ProductPost.builder()
+                .user(requestUser)
+                .title(postRequest.getTitle())
+                .content(postRequest.getContent())
+                .price(postRequest.getPrice())
+                .contactPlace(postRequest.getContactPlace())
+                .category(postRequest.getCategory())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .status(Status.AVAILABLE.getAuthority())
+                .build();
+
+        productPostRepository.save(productPost);
+
+        long returnValue = productPost.getId();
+
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>(){{put("productPostId", returnValue);}});
+
+    }
+
     //@ModelAttribute PostRequest postRequest
     @PostMapping("/image")
-    public ResponseEntity<Object> postImage(@RequestHeader String authorization,
-                                            MultipartFile[] multipartFileList, Long postId) throws IOException {
-
-
-        Long userId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
+    public ResponseEntity<Object> postImage(MultipartFile[] multipartFileList, Long postId) throws IOException {
 
         List<String> imagePathList = new ArrayList<>();
 
@@ -78,9 +105,7 @@ public class ProductPostController {
 
         if (imagePathList.size() == 1) {
             sb.append(imagePathList.get(0));
-        }
-
-        else if (imagePathList.size() > 1) {
+        } else if (imagePathList.size() > 1) {
             for (int i = 0; i < imagePathList.size(); i++) {
                 if (i == imagePathList.size() - 1) {
                     sb.append(imagePathList.get(i));
@@ -101,6 +126,5 @@ public class ProductPostController {
         productPostFileRepository.save(productPostFile);
 
         return new ResponseEntity<>(imagePathList, HttpStatus.OK);
-
     }
 }
