@@ -40,7 +40,7 @@ public class SecurityConfig {
     String[] whiteListURI = {
             "/user/check-email", "/user/send-authorization-email",
             "/user/verify-authorization-email", "/user/detail-join",
-            "post/all"
+            "/post/all"
     };
 
     @Bean

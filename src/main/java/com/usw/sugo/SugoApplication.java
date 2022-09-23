@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 @EnableJpaAuditing
 @SpringBootApplication
 public class SugoApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(SugoApplication.class, args);
 	}
@@ -21,6 +20,4 @@ public class SugoApplication {
 	public JPAQueryFactory jpaQueryFactory(EntityManager em) {
 		return new JPAQueryFactory(em);
 	}
-
-
 }

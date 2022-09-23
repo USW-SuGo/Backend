@@ -142,44 +142,6 @@ public class UserController {
         return ResponseEntity.status(OK).body(result);
     }
 
-    /**
-     로그인 컨트롤러
-     */
-//    @PostMapping("/login")
-//    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest,
-//                                                     HttpServletRequest request, HttpServletResponse response) {
-//
-//        System.out.println("로그인 컨트롤러");
-//
-//        Optional<User> requestUser = userRepository.findByEmail(loginRequest.getEmail());
-//
-//        if (requestUser.isEmpty()) throw new CustomException(USER_NOT_EXIST);
-//
-//        User notWrappedRequestUser = requestUser.get();
-//        Map<String, String> result = new HashMap<>(2);
-//
-//        // 비밀번호가 일치하면
-//        if (userService.matchingPassword(notWrappedRequestUser.getId(), loginRequest.getPassword())) {
-//            // 토큰 갱신
-//            if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isPresent()) {
-//                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
-//                result.put("RefreshToken", jwtGenerator.refreshRefreshToken(notWrappedRequestUser));
-//            }
-//            // 토큰 신규 생성
-//            else if (refreshTokenRepository.findByUserId(notWrappedRequestUser.getId()).isEmpty()) {
-//                result.put("AccessToken", jwtGenerator.createAccessToken(notWrappedRequestUser));
-//                result.put("RefreshToken", jwtGenerator.createRefreshToken(notWrappedRequestUser));
-//            }
-//        }
-//        // 비밀번호가 일치하지 않으면 에러 터뜨리기
-//        else if (!userService.matchingPassword(notWrappedRequestUser.getId(), loginRequest.getPassword())) {
-//            throw new CustomException(PASSWORD_NOT_CORRECT);
-//        }
-//        result.put(response.getHeader("AuthorizationAccessToken"), "AuthorizationAccessToken");
-//        result.put(response.getHeader("AuthorizationRefreshToken"), "AuthorizationRefreshToken");
-//        return ResponseEntity.status(OK).body(result);
-//    }
-
     // 토큰 만료 시 ERROR 코드 수정 및
     // 엑세스 토큰 만료 요청
     @PostMapping("/token-refresh")
@@ -187,8 +149,6 @@ public class UserController {
 
         // "Bearer " 키워드 substring
         String BearerSubStringPayload = authorization.substring(7);
-
-        jwtValidator.validateToken(BearerSubStringPayload);
 
         // 에러가 안터지면 토큰은 유효함.
         Map<String, String> result = new HashMap<>(2);

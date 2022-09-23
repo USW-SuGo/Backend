@@ -25,6 +25,10 @@ public class ProductPostFile {
     @Column
     private String imageLink;
 
+    @JoinColumn(name = "product_post_id")
+    @ManyToOne
+    private ProductPost productPost;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

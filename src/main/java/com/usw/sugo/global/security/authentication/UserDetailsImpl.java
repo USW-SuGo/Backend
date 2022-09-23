@@ -1,4 +1,4 @@
-package com.usw.sugo.global.security;
+package com.usw.sugo.global.security.authentication;
 
 import com.usw.sugo.domain.majoruser.User;
 import lombok.Data;

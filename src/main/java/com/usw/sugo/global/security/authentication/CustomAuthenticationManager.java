@@ -23,7 +23,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         Authentication customAuthentication = new UsernamePasswordAuthenticationToken(
                 authentication.getPrincipal(), authentication.getCredentials(), grantedAuths);
 
-        System.out.println("customAuthentication = " + customAuthentication);
+        // System.out.println("customAuthentication = " + customAuthentication);
 
         return customAuthentication;
     }

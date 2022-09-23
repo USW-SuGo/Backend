@@ -5,7 +5,7 @@ import com.nimbusds.jose.util.StandardCharset;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
-import com.usw.sugo.global.security.UserDetailsImpl;
+import com.usw.sugo.global.security.authentication.UserDetailsImpl;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

@@ -34,15 +34,13 @@ public class ProductPost {
     @Column
     private String contactPlace;
 
+    @Column
+    private String category;
+
     // 작성자 인덱스
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    // 해당 게시글에 포함된 이미지 링크
-    @ManyToOne
-    @JoinColumn(name = "product_post_file_id")
-    private ProductPostFile productPostFile;
 
     @CreatedDate
     private LocalDateTime createdAt;

@@ -1,4 +1,4 @@
-package com.usw.sugo.global.aws;
+package com.usw.sugo.global.aws.ses;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AwsSesConfig {
 
-    @Value("${spring.aws.ses.access-key}")
+    @Value("${cloud.aws.ses.access-key}")
     private String accessKey;
 
-    @Value("${spring.aws.ses.secret-key}")
+    @Value("${cloud.aws.ses.secret-key}")
     private String secretKey;
 
     @Bean

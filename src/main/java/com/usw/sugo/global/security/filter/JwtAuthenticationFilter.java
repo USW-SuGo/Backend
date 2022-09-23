@@ -2,7 +2,6 @@ package com.usw.sugo.global.security.filter;
 
 import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.global.security.UserDetailsImpl;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.jwt.JwtResolver;
 import io.jsonwebtoken.security.SignatureException;
@@ -81,7 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // SecurityContextHolder 에 저장
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        System.out.println("SecurityContextHolder.getContext() = , " + SecurityContextHolder.getContext());
+        // System.out.println("SecurityContextHolder.getContext() = , " + SecurityContextHolder.getContext());
 
         // authenticationManager.authenticate(jwtAuthenticationToken);
         // setDetails(request, jwtAuthenticationToken);

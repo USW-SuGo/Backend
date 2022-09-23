@@ -55,8 +55,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             return;
         }
 
-        System.out.println("테스트1");
-
         try {
             String token = request.getHeader("Authorization").substring(6);
             jwtValidator.validateToken(token);

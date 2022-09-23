@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.majorproduct.repository;
+package com.usw.sugo.domain.majorproduct.repository.productpostfile;
 
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
 import org.springframework.data.jpa.repository.JpaRepository;

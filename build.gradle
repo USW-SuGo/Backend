@@ -41,6 +41,9 @@ dependencies {
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+	// AWS Setting
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
 	// Database
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'mysql:mysql-connector-java'
