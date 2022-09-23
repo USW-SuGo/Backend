@@ -4,6 +4,7 @@ import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.jwt.JwtResolver;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             jwtValidator.validateToken(token);
-        } catch (BadCredentialsException | SignatureException | CustomException ex) {
+        } catch (BadCredentialsException | SignatureException | CustomException | ExpiredJwtException ex) {
             filterChain.doFilter(request, response);
         }
 

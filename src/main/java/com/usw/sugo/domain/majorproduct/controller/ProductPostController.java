@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
@@ -14,7 +13,6 @@ import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFi
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.global.aws.s3.AwsS3Uploader;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -125,6 +123,6 @@ public class ProductPostController {
 
         productPostFileRepository.save(productPostFile);
 
-        return new ResponseEntity<>(imagePathList, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>(){{put("Success", true);}});
     }
 }

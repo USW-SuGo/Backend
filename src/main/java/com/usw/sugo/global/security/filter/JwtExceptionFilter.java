@@ -60,10 +60,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             jwtValidator.validateToken(token);
         } catch (BadCredentialsException | SignatureException | NullPointerException ex) {
             response.sendError(400);
+            return;
         } catch (CustomException exception) {
             response.sendError(400);
+            return;
         } catch (ExpiredJwtException exception) {
             response.sendError(403);
+            return;
         }
 
 
