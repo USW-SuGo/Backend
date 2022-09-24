@@ -26,7 +26,7 @@ public class JwtValidator {
     }
 
     // Jwt 유효성 검사
-    public void validateToken(String token) {
+    public void validateToken(String token) throws ExpiredJwtException {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())

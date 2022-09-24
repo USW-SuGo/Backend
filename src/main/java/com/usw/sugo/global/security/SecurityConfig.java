@@ -58,10 +58,10 @@ public class SecurityConfig {
                 .antMatchers(whiteListURI).permitAll()
                 .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 

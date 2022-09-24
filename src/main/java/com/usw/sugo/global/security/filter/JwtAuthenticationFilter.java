@@ -65,6 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtValidator.validateToken(token);
         } catch (BadCredentialsException | SignatureException | CustomException | ExpiredJwtException ex) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         String email = jwtResolver.jwtResolveToUserEmail(token);

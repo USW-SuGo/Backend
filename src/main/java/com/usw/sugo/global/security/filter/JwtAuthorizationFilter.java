@@ -6,6 +6,8 @@ import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.UserDetailsImpl;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -29,10 +31,6 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
-
-    public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
-
-    public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
     public static final String HTTP_METHOD = "POST";
     private final ObjectMapper mapper;
 
@@ -56,8 +54,6 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException {
 
-        System.out.println("인증 필터 동작");
-
         if (!request.getMethod().equals(HTTP_METHOD) || !request.getContentType().equals("application/json")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
@@ -78,9 +74,6 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
 
-            // setDetails(request, authToken);
-            System.out.println("비밀번호가 올바름");
-
             String accessToken = jwtGenerator.createTestAccessToken(userId, nickname, email);
             String refreshToken = jwtGenerator.createTestRefreshToken(userId);
 
@@ -90,12 +83,20 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
             response.setHeader("Authorization", result.toString());
             response.flushBuffer();
-
-            // return this.getAuthenticationManager().authenticate(authToken);
         }
         else {
-            System.out.println("비밀번호가 올바르지 않음");
+            JSONObject responseJson = new JSONObject();
+            response.setContentType("application/json;charset=UTF-8");
+            try {
+                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("Message", "비밀번호가 일치하지 않거나 존재하지 않는 사용자 입니다.");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print(responseJson);
         }
+
         return null;
     }
 }

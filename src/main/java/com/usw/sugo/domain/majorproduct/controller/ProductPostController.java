@@ -75,7 +75,7 @@ public class ProductPostController {
 
     //@ModelAttribute PostRequest postRequest
     @PostMapping("/image")
-    public ResponseEntity<Object> postImage(MultipartFile[] multipartFileList, Long postId) throws IOException {
+    public ResponseEntity<Object> postImage(@RequestBody MultipartFile[] multipartFileList, Long postId) throws IOException {
 
         List<String> imagePathList = new ArrayList<>();
 
@@ -95,12 +95,12 @@ public class ProductPostController {
 
             String imagePath = amazonS3Client.getUrl("diger-usw-sugo-s3/post-resource", originalName).toString(); // 접근가능한 URL 가져오기
             imagePathList.add(imagePath);
-
         }
 
         ProductPost targetPost = productPostRepository.findById(postId).get();
         StringBuilder sb = new StringBuilder();
 
+        // 문자열 처리, DB에 리스트 형식으로 담기 위함이다.
         if (imagePathList.size() == 1) {
             sb.append(imagePathList.get(0));
         } else if (imagePathList.size() > 1) {
