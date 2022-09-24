@@ -109,7 +109,7 @@ public class UserController {
         return authSuccessViewForm.successParagraph();
     }
 
-    @PostMapping("/detail-join")
+    @PostMapping("/join")
     public ResponseEntity<?> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
         Optional<User> requestUser = userRepository.findByEmail(detailJoinRequest.getEmail());
