@@ -4,7 +4,6 @@ import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.exception.TokenErrorCode;
 import com.usw.sugo.global.jwt.JwtValidator;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;

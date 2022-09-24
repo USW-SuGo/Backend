@@ -75,7 +75,7 @@ public class ProductPostController {
 
     //@ModelAttribute PostRequest postRequest
     @PostMapping("/image")
-    public ResponseEntity<Object> postImage(@RequestBody MultipartFile[] multipartFileList, Long postId) throws IOException {
+    public ResponseEntity<Object> postImage(@RequestBody MultipartFile[] multipartFileList, Long productPostId) throws IOException {
 
         List<String> imagePathList = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class ProductPostController {
             imagePathList.add(imagePath);
         }
 
-        ProductPost targetPost = productPostRepository.findById(postId).get();
+        ProductPost targetPost = productPostRepository.findById(productPostId).get();
         StringBuilder sb = new StringBuilder();
 
         // 문자열 처리, DB에 리스트 형식으로 담기 위함이다.
