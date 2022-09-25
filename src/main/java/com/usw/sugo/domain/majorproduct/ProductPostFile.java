@@ -26,7 +26,7 @@ public class ProductPostFile {
     private String imageLink;
 
     @JoinColumn(name = "product_post_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ProductPost productPost;
 
     @CreatedDate

@@ -9,10 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +58,7 @@ public class JwtGenerator {
     }
 
     // 테스트 AccessToken 생성
-    public String createTestAccessToken(Long id, String nickname, String email) {
+    public String createAccessTokenInFilter(Long id, String nickname, String email) {
         Date now = new Date();
         Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
@@ -101,7 +97,7 @@ public class JwtGenerator {
                 .compact();
 
         RefreshToken entityFormRefreshToken = RefreshToken.builder()
-                .userId(user.getId())
+                .user(user)
                 .payload(stringRefreshToken)
                 .build();
 
@@ -112,7 +108,7 @@ public class JwtGenerator {
 
     // 테스트 RefreshToken 신규 생성
     @Transactional
-    public String createTestRefreshToken(Long id) {
+    public String createRefreshTokenInFilter(User user) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
@@ -129,7 +125,7 @@ public class JwtGenerator {
                 .compact();
 
         RefreshToken entityFormRefreshToken = RefreshToken.builder()
-                .userId(id)
+                .user(user)
                 .payload(stringRefreshToken)
                 .build();
 

@@ -38,7 +38,7 @@ public class ProductPost {
     private String category;
 
     // 작성자 인덱스
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 

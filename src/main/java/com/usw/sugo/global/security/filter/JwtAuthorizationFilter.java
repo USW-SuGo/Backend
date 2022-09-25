@@ -2,7 +2,11 @@ package com.usw.sugo.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.StandardCharset;
+import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.LoginRequest;
+import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
+import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.exception.UserErrorCode;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.UserDetailsImpl;
@@ -27,6 +31,7 @@ import java.util.Map;
  */
 public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilter {
 
+    private final UserDetailsRepository userDetailsRepository;
     private final CustomAuthenticationManager customAuthenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
@@ -37,12 +42,15 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher("/user/login", HTTP_METHOD);
 
-    public JwtAuthorizationFilter(CustomAuthenticationManager customAuthenticationManager,
-                                  BCryptPasswordEncoder bCryptPasswordEncoder,
-                                  UserDetailsService userDetailsService,
-                                  ObjectMapper mapper, JwtGenerator jwtGenerator) {
+    public JwtAuthorizationFilter(
+            UserDetailsRepository userDetailsRepository,
+            CustomAuthenticationManager customAuthenticationManager,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserDetailsService userDetailsService,
+            ObjectMapper mapper, JwtGenerator jwtGenerator) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, customAuthenticationManager);
 
+        this.userDetailsRepository = userDetailsRepository;
         this.customAuthenticationManager = customAuthenticationManager;
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -64,6 +72,24 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         String requestEmail = loginRequest.getEmail();
         String requestPassword = loginRequest.getPassword();
 
+        try {
+            UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestEmail);
+        }
+        catch (CustomException exception) {
+            JSONObject responseJson = new JSONObject();
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            try {
+                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("Message", "존재하지 않는 사용자입니다.");
+                response.getWriter().print(responseJson);
+                return null;
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestEmail);
 
         Long userId = userDetailsImpl.getId();
@@ -74,8 +100,10 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
 
-            String accessToken = jwtGenerator.createTestAccessToken(userId, nickname, email);
-            String refreshToken = jwtGenerator.createTestRefreshToken(userId);
+            User user = userDetailsRepository.findByEmail(email).get();
+
+            String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
+            String refreshToken = jwtGenerator.createRefreshTokenInFilter(user);
 
             Map<String, String> result = new HashMap<>();
             result.put("accessToken", accessToken);
@@ -89,7 +117,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             response.setContentType("application/json;charset=UTF-8");
             try {
                 responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
-                responseJson.put("Message", "비밀번호가 일치하지 않거나 존재하지 않는 사용자 입니다.");
+                responseJson.put("Message", "비밀번호가 일치하지 않습니다.");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

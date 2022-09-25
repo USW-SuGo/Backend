@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.refreshtoken.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.refreshtoken.QRefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +23,7 @@ public class CustomRefreshTokenRepositoryImpl implements CustomRefreshTokenRepos
                 .update(refreshToken)
                 .set(refreshToken.payload, payload)
                 .set(refreshToken.updatedAt, LocalDateTime.now())
-                .where(refreshToken.userId.eq(userId))
+                .where(refreshToken.user.id.eq(userId))
                 .execute();
     }
 
@@ -32,7 +31,7 @@ public class CustomRefreshTokenRepositoryImpl implements CustomRefreshTokenRepos
     public void deleteRefreshTokenInformation(Long userId) {
         queryFactory
                 .delete(refreshToken)
-                .where(refreshToken.userId.eq(userId))
+                .where(refreshToken.user.id.eq(userId))
                 .execute();
     }
 }

@@ -19,6 +19,7 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_DEPARTMENT(BAD_REQUEST, "존재하지 않는 학과입니다."),
     USER_NOT_EXIST(BAD_REQUEST, "존재하지 않는 회원 정보입니다."),
     PASSWORD_NOT_CORRECT(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    USER_ALREADY_JOIN(BAD_REQUEST, "이미 회원가입이 되어있는 유저입니다."),
 
     JWT_MALFORMED_EXCEPTION(BAD_REQUEST, "JWT_MALFORMED_EXCEPTION"),
     JWT_EXPIRED_EXCEPTION(BAD_REQUEST, "JWT_EXPIRED_EXCEPTION"),

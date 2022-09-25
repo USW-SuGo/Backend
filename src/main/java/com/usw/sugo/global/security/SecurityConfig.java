@@ -1,6 +1,7 @@
 package com.usw.sugo.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;
 import com.usw.sugo.global.security.filter.JwtExceptionFilter;
@@ -29,6 +30,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final UserDetailsRepository userDetailsRepository;
     private final CustomAuthenticationManager customAuthenticationManager;
     private final UserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -39,7 +41,7 @@ public class SecurityConfig {
 
     String[] whiteListURI = {
             "/user/check-email", "/user/send-authorization-email",
-            "/user/verify-authorization-email", "/user/detail-join",
+            "/user/verify-authorization-email/**", "/user/join",
             "/post/all"
     };
 
@@ -87,7 +89,8 @@ public class SecurityConfig {
     // 인증 필터
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-        return new JwtAuthorizationFilter(customAuthenticationManager, bCryptPasswordEncoder(),
+        return new JwtAuthorizationFilter(
+                userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
                 userDetailsService, mapper , jwtGenerator);
     }
 

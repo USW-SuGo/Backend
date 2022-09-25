@@ -36,4 +36,10 @@ public class UserRequestDto {
         String password;
     }
 
+    // 회원탈퇴 요청
+    @Data
+    public static class QuitRequest {
+        String email;
+        String password;
+    }
 }

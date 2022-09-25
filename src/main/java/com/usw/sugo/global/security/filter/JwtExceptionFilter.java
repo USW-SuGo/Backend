@@ -28,7 +28,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         String[] whiteListURI = {
                 "/user/check-email", "/user/send-authorization-email",
-                "/user/verify-authorization-email", "/user/detail-join",
+                "/user/verify-authorization-email", "/user/join",
                 "/post/all"};
 
         for (String whiteList : whiteListURI) {

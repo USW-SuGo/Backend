@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.refreshtoken;
 
+import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.global.util.basetime.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +20,9 @@ public class RefreshToken extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
-    private long userId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column
     private String payload;

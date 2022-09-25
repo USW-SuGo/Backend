@@ -28,7 +28,7 @@ public class UserEmailAuthService {
         UserEmailAuth userEmailAuth = UserEmailAuth.builder()
                 .payload(payload)
                 .createdAt(LocalDateTime.now())
-                .userId(user.getId())
+                .user(user)
                 .status(String.valueOf(Status.NOT_AUTH))
                 .build();
 

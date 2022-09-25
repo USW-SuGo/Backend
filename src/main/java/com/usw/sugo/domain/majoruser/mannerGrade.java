@@ -25,7 +25,7 @@ public class mannerGrade {
     @Column
     private BigDecimal grade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -12,7 +12,7 @@
 ---
 
 # ERD (Ver. 220915)
-![](src/main/resources/erd/erd-1.png)
+![](src/main/resources/erd/SUGO%20ERD.png)
 
 ---
 

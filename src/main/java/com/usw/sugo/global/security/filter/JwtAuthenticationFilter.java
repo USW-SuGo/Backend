@@ -39,18 +39,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("인가 필터 동작");
-
-        String[] whiteListURI = {
-                "/user/check-email", "/user/send-authorization-email",
-                "/user/verify-authorization-email", "/user/detail-join",
-                "/post/all"};
-
-        for (String whiteList : whiteListURI) {
-            if (request.getRequestURI().equals(whiteList)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
         
         try {
             request.getHeader("Authorization").substring(6);

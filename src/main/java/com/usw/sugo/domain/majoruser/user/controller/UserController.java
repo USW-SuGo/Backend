@@ -104,7 +104,7 @@ public class UserController {
         userEmailAuthService.authorizeToken(payload);
 
         // 유저 Status 컬럼 수정 -> Available
-        userRepository.modifyingStatusToAvailable(requestUser.get().getUserId());
+        userRepository.modifyingStatusToAvailable(requestUser.get().getUser().getId());
 
         return authSuccessViewForm.successParagraph();
     }
@@ -114,6 +114,16 @@ public class UserController {
 
         Optional<User> requestUser = userRepository.findByEmail(detailJoinRequest.getEmail());
         Map<String, Boolean> result = new HashMap<>();
+
+        // DB에 존재하지 않는 유저일 때
+        if (requestUser.isEmpty()) {
+            throw new CustomException(USER_NOT_EXIST);
+        }
+
+        // 이미 회원가입을 수행한 유저일 때
+        if (requestUser.get().getNickname() != null) {
+            throw new CustomException(USER_ALREADY_JOIN);
+        }
 
         // User 가 DB에 존재하고
         if (requestUser.isPresent()) {
@@ -132,10 +142,6 @@ public class UserController {
             else if (!requestUser.get().getStatus().equals(Status.AVAILABLE)) {
                 throw new CustomException(NOT_AUTHORIZED_EMAIL);
             }
-        } 
-        // 존재하지 않는 유저일 때
-        else if (requestUser.isEmpty()) {
-            throw new CustomException(USER_NOT_EXIST);
         }
         // 반환
         result.put("Success", true);
@@ -156,7 +162,8 @@ public class UserController {
         // RefreshToken 테이블에 페이로드가 존재하는가?
         if (refreshTokenRepository.findByPayload(BearerSubStringPayload).isPresent()) {
             // 테이블에 존재하면, 그 페이로드에 해당하는 userId 가져오기
-            long userId = refreshTokenRepository.findByPayload(BearerSubStringPayload).get().getUserId();
+            long userId = refreshTokenRepository
+                    .findByPayload(BearerSubStringPayload).get().getUser().getId();
 
             // 해당 userId 로 User 객체 가져오기
             User refreshRequestUser = userRepository.findById(userId).get();
@@ -183,6 +190,30 @@ public class UserController {
         userRepository.editPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword());
         // 유저 변경 시각 타임스탬프
         userRepository.setModifiedDate(editPasswordRequest.getId());
+        //반환
+        Map<String, Boolean> result = new HashMap<>() {{
+            put("Success", true);
+        }};
+        return ResponseEntity.status(OK).body(result);
+    }
+
+    // 비밀번호 수정
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@RequestHeader String authorization, @RequestBody QuitRequest quitRequest) {
+
+        Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
+
+        if (userRepository.findByEmail(quitRequest.getEmail()).isEmpty()) {
+            throw new CustomException(USER_NOT_EXIST);
+        }
+        // 비밀번호가 일치하지 않을 때
+        else if (!userService.matchingPassword(requestUserId, quitRequest.getPassword())) {
+            throw new CustomException(PASSWORD_NOT_CORRECT);
+        }
+
+        // 비밀번호 수정
+        userRepository.deleteById(requestUserId);
+
         //반환
         Map<String, Boolean> result = new HashMap<>() {{
             put("Success", true);

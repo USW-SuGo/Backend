@@ -28,6 +28,9 @@ public class User {
     @Column
     private String password;
 
+    @Column
+    private LocalDateTime recentUpPost;
+
     @Enumerated(EnumType.STRING)
     @Column
     private Status status;
