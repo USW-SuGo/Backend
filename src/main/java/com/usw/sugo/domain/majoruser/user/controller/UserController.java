@@ -1,15 +1,19 @@
 package com.usw.sugo.domain.majoruser.user.controller;
 
+import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.UserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.user.service.UserService;
 import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.exception.UserErrorCode;
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
@@ -17,7 +21,9 @@ import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.domain.status.Status;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +46,9 @@ public class UserController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+
+    private final ProductPostRepository productPostRepository;
+
     private final SendEmailServiceFromSES sendEmailServiceFromSES;
 
     private final AuthSuccessViewForm authSuccessViewForm;
@@ -197,7 +206,7 @@ public class UserController {
         return ResponseEntity.status(OK).body(result);
     }
 
-    // 비밀번호 수정
+    // 회원탈퇴
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestHeader String authorization, @RequestBody QuitRequest quitRequest) {
 
@@ -215,9 +224,52 @@ public class UserController {
         userRepository.deleteById(requestUserId);
 
         //반환
-        Map<String, Boolean> result = new HashMap<>() {{
-            put("Success", true);
-        }};
+        Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
         return ResponseEntity.status(OK).body(result);
+    }
+
+    // 유저 페이지
+    @GetMapping("/")
+    public ResponseEntity<UserPageResponse> userPage(@RequestHeader String authorization,
+                                                     @RequestParam @Nullable Long target, Pageable pageable) {
+
+        UserPageResponse userPageResponse = new UserPageResponse();
+
+        // 파라미터 값을 안넣었을 때 (마이페이지 요청)
+        if (target == null) {
+            long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
+            if (userRepository.findById(targetUserId).isEmpty()) {
+                throw new CustomException(USER_NOT_EXIST);
+            }
+            else {
+                User targetUserIsMe = userRepository.findById(targetUserId).get();
+
+                userPageResponse = UserPageResponse.builder()
+                        .userId(targetUserId)
+                        .nickname(targetUserIsMe.getNickname())
+                        .email(targetUserIsMe.getEmail())
+                        .myPosting(productPostRepository.loadUserPageList(targetUserIsMe, pageable))
+                        .build();
+            }
+        }
+        // 파라미터 값을 넣었을 때 (다른 유저의 마이페이지)
+        else if (target != null) {
+            if (userRepository.findById(target).isEmpty()) {
+                throw new CustomException(USER_NOT_EXIST);
+            }
+            else {
+                User targetUser = userRepository.findById(target).get();
+
+                userPageResponse = UserPageResponse.builder()
+                        .userId(target)
+                        .nickname(targetUser.getNickname())
+                        .email(targetUser.getEmail())
+                        .myPosting(productPostRepository.loadUserPageList(targetUser, pageable))
+                        .build();
+
+            }
+        }
+
+        return ResponseEntity.status(200).body(userPageResponse);
     }
 }

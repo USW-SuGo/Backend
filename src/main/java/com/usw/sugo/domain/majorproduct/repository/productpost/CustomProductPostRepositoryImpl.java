@@ -2,7 +2,11 @@ package com.usw.sugo.domain.majorproduct.repository.productpost;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
+import com.usw.sugo.domain.majoruser.User;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -45,6 +49,25 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 mainPageResponse.setImageLink("");
             }
         }
+        return response;
+    }
+
+    @Override
+    public List<MyPosting> loadUserPageList(User user, Pageable pageable) {
+
+        List<MyPosting> response = queryFactory
+                .select(Projections.bean(MyPosting.class,
+                        productPost.id,
+                        productPostFile.imageLink,
+                        productPost.contactPlace, productPost.updatedAt,
+                        productPost.title, productPost.price, productPost.category))
+                .from(productPost)
+                .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                .orderBy(productPost.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
         return response;
     }
 

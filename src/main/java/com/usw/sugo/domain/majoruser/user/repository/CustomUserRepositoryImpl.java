@@ -54,7 +54,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .execute();
     }
 
-
     // 리팩터링 필요*
     @Override
     public void setModifiedDate(Long id) {
@@ -77,15 +76,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         System.out.println(select);
     }
 
-    @Override
-    public User findByEmailForUserDetails(String email) {
-        List<String> fetch = queryFactory
-                .select(user.email)
-                .from(user)
-                .where(user.email.eq(email))
-                .fetch();
 
-        return (User) fetch;
-    }
 
 }

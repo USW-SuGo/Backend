@@ -19,10 +19,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserDetails findByEmailForUserDetailsService(String email) {
-        return (UserDetails) userRepository.findByEmailForUserDetails(email);
-    }
-
     // 이메일 인증을 하지 않은 회원가입 요청 유저
     @Transactional
     public User softSaveUser(String email) {

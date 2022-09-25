@@ -16,21 +16,21 @@ public class PostResponseDto {
     @AllArgsConstructor
     public static class MainPageResponse {
         // 게시글 인덱스
-        public Long id;
+        private Long id;
         // 이미지 링크
-        public String imageLink;
+        private String imageLink;
         // 거래 장소
-        public String contactPlace;
+        private String contactPlace;
         // 게시글 최종 수정 시각
-        public LocalDateTime updatedAt;
+        private LocalDateTime updatedAt;
         // 상품 게시글 제목
-        public String title;
+        private String title;
         // 상품 가격
-        public Integer price;
+        private Integer price;
         // 상품 게시글 작성자
-        public String nickname;
+        private String nickname;
         // 게시글 카테고리
-        public String category;
+        private String category;
     }
 
     @Builder

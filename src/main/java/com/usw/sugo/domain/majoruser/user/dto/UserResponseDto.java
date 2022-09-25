@@ -1,7 +1,11 @@
 package com.usw.sugo.domain.majoruser.user.dto;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserResponseDto {
 
@@ -15,9 +19,30 @@ public class UserResponseDto {
 
     @Data
     public static class LoginResponse {
-        String accessToken;
-        String refreshToken;
+        private String accessToken;
+        private String refreshToken;
 
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserPageResponse {
+        private long userId;
+        private String email;
+        private String nickname;
+        private List<MyPosting> myPosting;
+    }
+
+    @Data
+    public static class MyPosting {
+        private long id;
+        private String imageLink;
+        private String contactPlace;
+        private LocalDateTime updatedAt;
+        private String title;
+        private int price;
+        private String category;
+    }
 }
