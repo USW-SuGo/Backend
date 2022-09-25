@@ -1,9 +1,8 @@
 package com.usw.sugo.domain.majoruser.user.dto;
 
 import lombok.*;
-import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,6 +31,7 @@ public class UserResponseDto {
         private long userId;
         private String email;
         private String nickname;
+        private BigDecimal mannerGrade;
         private List<MyPosting> myPosting;
     }
 

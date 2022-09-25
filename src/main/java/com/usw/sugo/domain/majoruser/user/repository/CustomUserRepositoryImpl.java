@@ -2,7 +2,6 @@ package com.usw.sugo.domain.majoruser.user.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.domain.status.Status;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,6 +41,10 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .update(user)
                 .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
                 .set(user.nickname, nicknameGenerator.generateNickname(userId, detailJoinRequest.getDepartment()))
+                .set(user.mannerGrade, BigDecimal.ZERO)
+                .set(user.countMannerEvaluation, 0L)
+                .set(user.recentUpPost, LocalDateTime.now().minusDays(1))
+                .set(user.recentEvaluationManner, LocalDateTime.now().minusDays(1))
                 .where(user.email.eq(detailJoinRequest.getEmail()))
                 .execute();
     }
@@ -76,6 +80,31 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         System.out.println(select);
     }
 
+    @Override
+    public void setMannerGrade(BigDecimal grade, long targetUserId, long evaluatingUserId) {
+
+        // 매너평가 덧셈 및 카운트 증가
+        queryFactory
+                .update(user)
+                .set(user.mannerGrade, user.mannerGrade.add(grade))
+                .set(user.countMannerEvaluation, user.countMannerEvaluation.add(1))
+                .where(user.id.eq(targetUserId))
+                .execute();
+
+        // 매너평가 평균 구하기
+        queryFactory
+                .update(user)
+                .set(user.mannerGrade, user.mannerGrade.divide(user.countMannerEvaluation))
+                .where(user.id.eq(targetUserId))
+                .execute();
+
+        // 하루에 한 번만 평가할 수 있도록 쿨타임 시작
+        queryFactory
+                .update(user)
+                .set(user.recentEvaluationManner, LocalDateTime.now())
+                .where(user.id.eq(evaluatingUserId))
+                .execute();
+    }
 
 
 }

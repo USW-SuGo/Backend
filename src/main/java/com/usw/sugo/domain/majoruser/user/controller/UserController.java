@@ -246,8 +246,9 @@ public class UserController {
 
                 userPageResponse = UserPageResponse.builder()
                         .userId(targetUserId)
-                        .nickname(targetUserIsMe.getNickname())
                         .email(targetUserIsMe.getEmail())
+                        .nickname(targetUserIsMe.getNickname())
+                        //.mannerGrade(targetUserIsMe.getMannerGrade())
                         .myPosting(productPostRepository.loadUserPageList(targetUserIsMe, pageable))
                         .build();
             }
@@ -269,7 +270,32 @@ public class UserController {
 
             }
         }
-
         return ResponseEntity.status(200).body(userPageResponse);
+    }
+
+    @PostMapping("/manner")
+    public ResponseEntity<?> userPage(@RequestHeader String authorization,
+                                                     @RequestBody MannerEvaluationRequest mannerEvaluationRequest) {
+        long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
+
+        // 평가를 요청한 유저나 평가 타겟 유저가 존재하지 않을 때 에러
+        if (userRepository.findById(requestUserId).isEmpty() ||
+                        userRepository.findById(mannerEvaluationRequest.getTargetUserId()).isEmpty()) {
+            throw new CustomException(USER_NOT_EXIST);
+        }
+
+        User requestUser = userRepository.findById(requestUserId).get();
+
+        // 매너 평가한지 하루가 지나지 않았을 때
+        if (userService.isBeforeDay(requestUser.getRecentEvaluationManner())) {
+            userRepository.setMannerGrade(
+                    mannerEvaluationRequest.getGrade(), mannerEvaluationRequest.getTargetUserId(), requestUserId);
+        } else {
+            throw new CustomException(ALREADY_EVALUATION);
+        }
+
+        Map<String, Boolean> result = new HashMap<>() {{put("Success", true);}};
+
+        return ResponseEntity.status(OK).body(result);
     }
 }

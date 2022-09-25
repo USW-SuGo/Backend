@@ -27,11 +27,14 @@ dependencies {
 
 	// Mail Service
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.300'
+	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.307'
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	// Nullable 사용 시 에러 해결되는 의존성.. 왜지?
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

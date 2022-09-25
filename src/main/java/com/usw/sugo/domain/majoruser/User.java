@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,7 +30,16 @@ public class User {
     private String password;
 
     @Column
+    private BigDecimal mannerGrade;
+
+    @Column
+    private long countMannerEvaluation;
+
+    @Column
     private LocalDateTime recentUpPost;
+
+    @Column
+    private LocalDateTime recentEvaluationManner;
 
     @Enumerated(EnumType.STRING)
     @Column

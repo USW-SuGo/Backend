@@ -41,4 +41,12 @@ public class UserService {
     public boolean matchingPassword(Long id, String inputPassword) {
         return bCryptPasswordEncoder.matches(inputPassword, userRepository.findById(id).get().getPassword());
     }
+
+    @Transactional
+    public boolean isBeforeDay(LocalDateTime requestTime) {
+        if (requestTime.isBefore(LocalDateTime.now().minusDays(1)) || requestTime == null) {
+            return true;
+        }
+        return false;
+    }
 }
