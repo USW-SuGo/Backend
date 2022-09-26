@@ -3,7 +3,6 @@ package com.usw.sugo.domain.refreshtoken;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtValidator;
 import lombok.RequiredArgsConstructor;
