@@ -2,16 +2,15 @@ package com.usw.sugo.domain.majorproduct.repository.productpost;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majoruser.User;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,5 +85,14 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         }
 
         return response;
+    }
+
+    @Override
+    public void refreshUpdateAt(Long productPostId) {
+        queryFactory
+                .update(productPost)
+                .set(productPost.updatedAt, LocalDateTime.now())
+                .where(productPost.id.eq(productPostId))
+                .execute();
     }
 }

@@ -1,18 +1,22 @@
 package com.usw.sugo.domain.majorproduct.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 
 public class PostRequestDto {
 
-    @Getter @Setter
-    public static class PostRequest {
+    @Data
+    public static class PostingContentRequest {
         private String title;
         private String content;
         private int price;
         private String contactPlace;
         private String category;
+    }
+
+    @Data
+    public static class UpPostingRequest {
+        private long productPostId;
     }
 
 }

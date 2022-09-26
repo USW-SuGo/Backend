@@ -1,11 +1,9 @@
 package com.usw.sugo.domain.majoruser.user.controller;
 
-import com.usw.sugo.domain.majorproduct.dto.PostResponseDto;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.UserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
@@ -14,7 +12,6 @@ import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepositor
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.UserErrorCode;
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
@@ -27,8 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -283,7 +278,7 @@ public class UserController {
 
         // 매너 평가한지 하루가 지나지 않았을 때
         if (userService.isBeforeDay(requestUser.getRecentEvaluationManner())) {
-            userRepository.setMannerGrade(
+            userRepository.setRecentMannerGradeDate(
                     mannerEvaluationRequest.getGrade(), mannerEvaluationRequest.getTargetUserId(), requestUserId);
         } else {
             throw new CustomException(ALREADY_EVALUATION);

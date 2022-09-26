@@ -16,8 +16,8 @@ public interface CustomUserRepository {
 
     void setModifiedDate(Long id);
 
-    void findNicknameNumber(String department);
+    void setRecentMannerGradeDate(BigDecimal grade, long targetUserId, long evaluatingUserId);
 
-    void setMannerGrade(BigDecimal grade, long targetUserId, long evaluatingUserId);
+    void setRecentUpPostingDate(Long id);
 
 }

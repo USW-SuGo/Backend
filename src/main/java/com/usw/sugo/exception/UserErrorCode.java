@@ -22,6 +22,7 @@ public enum UserErrorCode implements ErrorCode {
     USER_ALREADY_JOIN(BAD_REQUEST, "이미 회원가입이 되어있는 유저입니다."),
 
     ALREADY_EVALUATION(BAD_REQUEST, "매너 평가는 하루에 한 번만 수행할 수 있습니다."),
+    ALREADY_UP_POSTING(BAD_REQUEST, "게시글 갱신은 하루에 한 번만 수행할 수 있습니다."),
 
 
 

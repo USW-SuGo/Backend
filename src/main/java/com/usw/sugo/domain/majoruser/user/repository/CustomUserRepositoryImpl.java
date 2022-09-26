@@ -69,19 +69,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     }
 
     @Override
-    public void findNicknameNumber(String department) {
-        JPAQuery<String> select = queryFactory
-                .select(user.nickname)
-                .from(user)
-                .where(user.nickname.like(department))
-                .orderBy(user.nickname.desc())
-                .limit(1);
-
-        System.out.println(select);
-    }
-
-    @Override
-    public void setMannerGrade(BigDecimal grade, long targetUserId, long evaluatingUserId) {
+    public void setRecentMannerGradeDate(BigDecimal grade, long targetUserId, long evaluatingUserId) {
 
         // 매너평가 덧셈 및 카운트 증가
         queryFactory
@@ -99,5 +87,12 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .execute();
     }
 
-
+    @Override
+    public void setRecentUpPostingDate(Long id) {
+        queryFactory
+                .update(user)
+                .set(user.recentUpPost, LocalDateTime.now())
+                .where(user.id.eq(id))
+                .execute();
+    }
 }

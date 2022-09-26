@@ -6,13 +6,17 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostRequest;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostingContentRequest;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.UpPostingRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFileRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.status.Status;
+import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.exception.UserErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +51,7 @@ public class ProductPostController {
 
     @PostMapping("/content")
     public ResponseEntity<Object> postImage(@RequestHeader String authorization,
-                                            @RequestBody PostRequest postRequest) {
+                                            @RequestBody PostingContentRequest postingContentRequest) {
 
         User requestUser = userRepository.findById(
                 jwtResolver.jwtResolveToUserId(
@@ -55,11 +59,11 @@ public class ProductPostController {
 
         ProductPost productPost = ProductPost.builder()
                 .user(requestUser)
-                .title(postRequest.getTitle())
-                .content(postRequest.getContent())
-                .price(postRequest.getPrice())
-                .contactPlace(postRequest.getContactPlace())
-                .category(postRequest.getCategory())
+                .title(postingContentRequest.getTitle())
+                .content(postingContentRequest.getContent())
+                .price(postingContentRequest.getPrice())
+                .contactPlace(postingContentRequest.getContactPlace())
+                .category(postingContentRequest.getCategory())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.AVAILABLE.getAuthority())
@@ -69,7 +73,9 @@ public class ProductPostController {
 
         long returnValue = productPost.getId();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>(){{put("productPostId", returnValue);}});
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{
+            put("productPostId", returnValue);
+        }});
 
     }
 
@@ -123,9 +129,24 @@ public class ProductPostController {
 
         productPostFileRepository.save(productPostFile);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>(){{put("Success", true);}});
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("Success", true);}});
     }
 
+    // 게시글 끌어올리기
+    @PostMapping("/up-post")
+    public ResponseEntity<Object> postImage(@RequestHeader String authorization,
+                                            @RequestBody UpPostingRequest upPostingRequest) {
 
+        User requestUser = userRepository.findById(
+                jwtResolver.jwtResolveToUserId(authorization.substring(6))).get();
 
+        if (!requestUser.getRecentUpPost().isBefore(LocalDateTime.now().minusDays(1))) {
+            throw new CustomException(UserErrorCode.ALREADY_UP_POSTING);
+        }
+
+        productPostRepository.refreshUpdateAt(upPostingRequest.getProductPostId());
+        userRepository.setRecentUpPostingDate(requestUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("Success", true);}});
+    }
 }

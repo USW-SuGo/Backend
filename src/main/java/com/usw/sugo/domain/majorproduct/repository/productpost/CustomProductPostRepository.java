@@ -16,4 +16,6 @@ public interface CustomProductPostRepository {
     List<MainPageResponse> loadMainPagePostList(Pageable pageable);
 
     List<MyPosting> loadUserPageList(User user, Pageable pageable);
+
+    void refreshUpdateAt(Long productPostId);
 }
