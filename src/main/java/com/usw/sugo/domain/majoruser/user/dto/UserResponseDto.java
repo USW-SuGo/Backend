@@ -44,5 +44,7 @@ public class UserResponseDto {
         private String title;
         private int price;
         private String category;
+
     }
+
 }

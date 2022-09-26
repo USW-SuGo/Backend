@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.majoruser.user.controller;
 
+import com.usw.sugo.domain.majorproduct.dto.PostResponseDto;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
@@ -238,36 +239,30 @@ public class UserController {
         // 파라미터 값을 안넣었을 때 (마이페이지 요청)
         if (target == null) {
             long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
-            if (userRepository.findById(targetUserId).isEmpty()) {
-                throw new CustomException(USER_NOT_EXIST);
-            }
+            if (userRepository.findById(targetUserId).isEmpty()) throw new CustomException(USER_NOT_EXIST);
             else {
                 User targetUserIsMe = userRepository.findById(targetUserId).get();
-
                 userPageResponse = UserPageResponse.builder()
                         .userId(targetUserId)
                         .email(targetUserIsMe.getEmail())
                         .nickname(targetUserIsMe.getNickname())
-                        //.mannerGrade(targetUserIsMe.getMannerGrade())
+                        .mannerGrade(targetUserIsMe.getMannerGrade())
                         .myPosting(productPostRepository.loadUserPageList(targetUserIsMe, pageable))
                         .build();
             }
         }
         // 파라미터 값을 넣었을 때 (다른 유저의 마이페이지)
         else if (target != null) {
-            if (userRepository.findById(target).isEmpty()) {
-                throw new CustomException(USER_NOT_EXIST);
-            }
+            if (userRepository.findById(target).isEmpty()) throw new CustomException(USER_NOT_EXIST);
             else {
                 User targetUser = userRepository.findById(target).get();
-
                 userPageResponse = UserPageResponse.builder()
                         .userId(target)
                         .nickname(targetUser.getNickname())
                         .email(targetUser.getEmail())
+                        .mannerGrade(targetUser.getMannerGrade())
                         .myPosting(productPostRepository.loadUserPageList(targetUser, pageable))
                         .build();
-
             }
         }
         return ResponseEntity.status(200).body(userPageResponse);

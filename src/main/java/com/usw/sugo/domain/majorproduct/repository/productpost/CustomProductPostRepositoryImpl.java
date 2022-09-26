@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.usw.sugo.domain.majorproduct.QProductPost.productPost;
@@ -24,8 +25,10 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
     private final JPAQueryFactory queryFactory;
 
-    // 메인페이지 반환 메서드
-    // 수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
+    /*
+    메인페이지 조회
+    수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
+     */
     @Override
     public List<MainPageResponse> loadMainPagePostList(Pageable pageable) {
 
@@ -43,15 +46,19 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // null -> 빈 문자열로 치환
-        for (MainPageResponse mainPageResponse : response) {
-            if (mainPageResponse.getImageLink() == null) {
-                mainPageResponse.setImageLink("");
-            }
+        int listSize = response.size();
+
+        String[] imageList;
+
+        for (int i = 0; i < listSize; i++) {
+            imageList = response.get(i).getImageLink().split(",");
+            response.get(i).setImageLink(Arrays.toString(imageList));
         }
+
         return response;
     }
 
+    // 유저 페이지 조회
     @Override
     public List<MyPosting> loadUserPageList(User user, Pageable pageable) {
 
@@ -63,13 +70,21 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                         productPost.title, productPost.price, productPost.category))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                .where(productPost.user.eq(user))
                 .orderBy(productPost.updatedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        int listSize = response.size();
+
+        String[] imageList;
+
+        for (int i = 0; i < listSize; i++) {
+            imageList = response.get(i).getImageLink().split(",");
+            response.get(i).setImageLink(Arrays.toString(imageList));
+        }
+
         return response;
     }
-
-
 }

@@ -42,11 +42,9 @@ public class CustomProductPostFileRepositoryImpl implements CustomProductPostFil
         // null -> 빈 문자열로 치환
         for (MainPageResponse mainPageResponse : response) {
             if (mainPageResponse.getImageLink() == null) {
-                mainPageResponse.setImageLink("");
+                mainPageResponse.setImageLink(null);
             }
         }
         return response;
     }
-
-
 }
