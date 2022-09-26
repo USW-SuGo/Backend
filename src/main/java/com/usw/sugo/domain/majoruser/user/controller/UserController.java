@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.usw.sugo.exception.UserErrorCode.*;
+import static com.usw.sugo.exception.ErrorCode.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -150,33 +150,6 @@ public class UserController {
         }
         // 반환
         result.put("Success", true);
-        return ResponseEntity.status(OK).body(result);
-    }
-
-    // 토큰 만료 시 ERROR 코드 수정 및
-    // 엑세스 토큰 만료 요청
-    @PostMapping("/token-refresh")
-    public ResponseEntity<Map<String, String>> refresh(@RequestHeader String authorization) {
-
-        // "Bearer " 키워드 substring
-        String BearerSubStringPayload = authorization.substring(7);
-
-        // 에러가 안터지면 토큰은 유효함.
-        Map<String, String> result = new HashMap<>(2);
-
-        // RefreshToken 테이블에 페이로드가 존재하는가?
-        if (refreshTokenRepository.findByPayload(BearerSubStringPayload).isPresent()) {
-            // 테이블에 존재하면, 그 페이로드에 해당하는 userId 가져오기
-            long userId = refreshTokenRepository
-                    .findByPayload(BearerSubStringPayload).get().getUser().getId();
-
-            // 해당 userId 로 User 객체 가져오기
-            User refreshRequestUser = userRepository.findById(userId).get();
-
-            result.put("AccessToken", jwtGenerator.createAccessToken(refreshRequestUser));
-            result.put("RefreshToken", jwtGenerator.refreshRefreshToken(refreshRequestUser));
-        }
-
         return ResponseEntity.status(OK).body(result);
     }
 

@@ -1,6 +1,8 @@
 package com.usw.sugo.global.jwt;
 
 import com.usw.sugo.domain.majoruser.User;
+import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
@@ -22,6 +24,7 @@ public class JwtGenerator {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtResolver jwtResolver;
+    private final UserDetailsRepository userRepository;
 
     // 어느시점에 secretKey 값이 등록되는가?
     @Value("${spring.jwt.secret-key}")
@@ -106,9 +109,9 @@ public class JwtGenerator {
         return "Bearer " + stringRefreshToken;
     }
 
-    // 테스트 RefreshToken 신규 생성
+    // RefreshToken 신규 생성
     @Transactional
-    public String createRefreshTokenInFilter(User user) {
+    public String createRefreshTokenInFilter(Long id) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
@@ -124,6 +127,8 @@ public class JwtGenerator {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
 
+        User user = userRepository.findById(id).get();
+
         RefreshToken entityFormRefreshToken = RefreshToken.builder()
                 .user(user)
                 .payload(stringRefreshToken)
@@ -136,7 +141,7 @@ public class JwtGenerator {
 
     //AccessToken 생성
     @Transactional
-    public String refreshRefreshToken(User user) {
+    public String updateRefreshToken(User user) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 

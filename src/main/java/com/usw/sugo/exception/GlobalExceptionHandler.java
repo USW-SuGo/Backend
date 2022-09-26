@@ -1,94 +1,132 @@
 package com.usw.sugo.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.client.HttpServerErrorException;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Object> handleCustomException(CustomException e) {
-        ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
-    }
+    @ExceptionHandler(value = {Exception.class})
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String code = "NO_CATCH_ERROR";
+        String className = e.getClass().getName();
+        String message = e.getMessage();
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e) {
-        log.warn("handleIllegalArgument", e);
-        ErrorCode errorCode = UserErrorCode.INVALID_PARAMETER;
-        return handleExceptionInternal(errorCode, e.getMessage());
-    }
-
-    @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException e,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-        log.warn("handleIllegalArgument", e);
-        ErrorCode errorCode = UserErrorCode.INVALID_PARAMETER;
-        return handleExceptionInternal(e, errorCode);
-    }
-
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleAllException(Exception ex) {
-        log.warn("handleAllException", ex);
-        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode);
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode));
-    }
-
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
-        return ErrorResponse.builder()
-                .error(errorCode.name())
-                .message(errorCode.getMessage())
-                .build();
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode, message));
-    }
-
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode, String message) {
-        return ErrorResponse.builder()
-                .error(errorCode.name())
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
                 .message(message)
+                .status(status.value())
+                .error(status.getReasonPhrase())
                 .build();
+
+        return new ResponseEntity<>(errorResponse, status);
     }
 
-    private ResponseEntity<Object> handleExceptionInternal(BindException e, ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(e, errorCode));
-    }
+    @ExceptionHandler(value = {BaseException.class})
+    public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = e.getErrorCode();
 
-    private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
-        List<ErrorResponse.ValidationError> validationErrorList = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(ErrorResponse.ValidationError::of)
-                .collect(Collectors.toList());
-
-        return ErrorResponse.builder()
-                .error(errorCode.name())
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
                 .message(errorCode.getMessage())
-                .errors(validationErrorList)
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
                 .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
+    public ResponseEntity<ErrorResponse> handleBindValidationException(Exception e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = ErrorCode.PARAM_VALID_ERROR;
+        String message = "";
+
+        if (e instanceof MethodArgumentNotValidException) {
+            message = ((MethodArgumentNotValidException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        } else if (e instanceof BindException) {
+            message = ((BindException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        }
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
+                .message(message)
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
+    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
+                .message(e.getMessage())
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+
+    @ExceptionHandler(value = {HttpMessageNotReadableException.class})
+    public ResponseEntity<ErrorResponse> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = ErrorCode.USER_BAD_REQUEST;
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
+                .message(errorCode.getMessage())
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+    @ExceptionHandler(value = {HttpServerErrorException.InternalServerError.class})
+    public ResponseEntity<ErrorResponse> InternalServerError(HttpServerErrorException.InternalServerError e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = ErrorCode.SERVER_ERROR;
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
+                .message(errorCode.getMessage())
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> IllegalArgumentException(IllegalArgumentException e) {
+        String className = e.getClass().getName();
+        ErrorCode errorCode = ErrorCode.USER_BAD_REQUEST;
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .exception(className.substring(className.lastIndexOf(".") + 1))
+                .message(errorCode.getMessage())
+                .status(errorCode.getStatus().value())
+                .error(errorCode.getStatus().getReasonPhrase())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
     }
 }

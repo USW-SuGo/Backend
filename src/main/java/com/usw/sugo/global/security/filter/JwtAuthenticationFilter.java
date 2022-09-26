@@ -1,5 +1,6 @@
 package com.usw.sugo.global.security.filter;
 
+import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
@@ -34,20 +35,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomAuthenticationManager authenticationManager;
     private final JwtResolver jwtResolver;
     private final JwtValidator jwtValidator;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("인가 필터 동작");
-        
-        try {
-            request.getHeader("Authorization").substring(6);
-        } catch (NullPointerException exception) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // 헤더가 필요없는 요청 필터링 - 시작
+        String[] whiteListURI = {
+                "/user/check-email", "/user/send-authorization-email",
+                "/user/verify-authorization-email", "/user/join",
+                "/post/all", "/token"};
 
-        String token = request.getHeader("Authorization").substring(6);
+        for (String whiteList : whiteListURI) {
+            if (request.getRequestURI().equals(whiteList)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
+        // 헤더가 필요없는 요청 필터링 - 종료
+
+        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
+        if (request.getHeader("Authorization") == null) {
+            filterChain.doFilter(request, response);
+        }
+        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
+
+        String token = request.getHeader("Authorization").substring(7);
 
         try {
             jwtValidator.validateToken(token);
@@ -55,25 +68,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
+        // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String email = jwtResolver.jwtResolveToUserEmail(token);
-
         UserDetails requestUserDetails = userDetailsService.loadUserByUsername(email);
 
         // JWT 를 바탕으로 인증 객체 생성
         Authentication authToken =
                 new UsernamePasswordAuthenticationToken(requestUserDetails.getUsername(), requestUserDetails.getPassword());
-
         // Authorities 부여
         Authentication auth = authenticationManager.authenticate(authToken);
 
         // SecurityContextHolder 에 저장
         SecurityContextHolder.getContext().setAuthentication(auth);
-
-        // System.out.println("SecurityContextHolder.getContext() = , " + SecurityContextHolder.getContext());
-
-        // authenticationManager.authenticate(jwtAuthenticationToken);
-        // setDetails(request, jwtAuthenticationToken);
 
         filterChain.doFilter(request, response);
     }

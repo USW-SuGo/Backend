@@ -5,8 +5,8 @@ import com.nimbusds.jose.util.StandardCharset;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.UserErrorCode;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.UserDetailsImpl;
@@ -38,6 +38,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
     private final JwtGenerator jwtGenerator;
     public static final String HTTP_METHOD = "POST";
     private final ObjectMapper mapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher("/user/login", HTTP_METHOD);
@@ -47,7 +48,8 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             CustomAuthenticationManager customAuthenticationManager,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             UserDetailsService userDetailsService,
-            ObjectMapper mapper, JwtGenerator jwtGenerator) {
+            ObjectMapper mapper, JwtGenerator jwtGenerator,
+            RefreshTokenRepository refreshTokenRepository) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, customAuthenticationManager);
 
         this.userDetailsRepository = userDetailsRepository;
@@ -56,6 +58,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.mapper = mapper;
         this.jwtGenerator = jwtGenerator;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
@@ -99,18 +102,29 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         if (email == null || requestPassword == null) throw new AuthenticationServiceException("DATA IS MISS");
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
+            if (refreshTokenRepository.findByUserId(userId).isEmpty()) {
+                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
+                String refreshToken = jwtGenerator.createRefreshTokenInFilter(userId);
 
-            User user = userDetailsRepository.findByEmail(email).get();
+                Map<String, String> result = new HashMap<>();
+                result.put("AccessToken", accessToken);
+                result.put("RefreshToken", refreshToken);
+                response.setHeader("Authorization", result.toString());
+                response.flushBuffer();
+            }
+            else {
+                User user = userDetailsRepository.findByEmail(email).get();
 
-            String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
-            String refreshToken = jwtGenerator.createRefreshTokenInFilter(user);
+                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
+                String refreshToken = jwtGenerator.updateRefreshToken(user);
 
-            Map<String, String> result = new HashMap<>();
-            result.put("accessToken", accessToken);
-            result.put("refreshToken", refreshToken);
+                Map<String, String> result = new HashMap<>();
+                result.put("AccessToken", accessToken);
+                result.put("RefreshToken", refreshToken);
 
-            response.setHeader("Authorization", result.toString());
-            response.flushBuffer();
+                response.setHeader("Authorization", result.toString());
+                response.flushBuffer();
+            }
         }
         else {
             JSONObject responseJson = new JSONObject();

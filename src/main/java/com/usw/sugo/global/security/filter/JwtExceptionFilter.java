@@ -1,7 +1,6 @@
 package com.usw.sugo.global.security.filter;
 
 import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.TokenErrorCode;
 import com.usw.sugo.global.jwt.JwtValidator;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -17,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.usw.sugo.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+
 
 @RequiredArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter {
@@ -26,10 +27,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/send-authorization-email",
                 "/user/verify-authorization-email", "/user/join",
-                "/post/all"};
+                "/post/all", "/token"};
 
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {
@@ -37,20 +39,20 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 return;
             }
         }
+        // 헤더가 필요없는 요청 필터링 - 종료
 
         JSONObject responseJson = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
 
-        // return 구문이 없으니까 Filter 메서드가 끝나지 않았다.
-        // 특정 구문을 실행하고 끝내고 싶으면 return; 을 추가한다.
+        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
         if (request.getHeader("Authorization") == null) {
             try {
-                responseJson.put("code", new CustomException(TokenErrorCode.JWT_MALFORMED_EXCEPTION).getErrorCode().toString());
+                responseJson.put("code", new CustomException(JWT_MALFORMED_EXCEPTION).getErrorCode().toString());
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
             try {
-                responseJson.put("message", new CustomException(TokenErrorCode.JWT_MALFORMED_EXCEPTION).getMessage());
+                responseJson.put("message", new CustomException(JWT_MALFORMED_EXCEPTION).getMessage());
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -58,9 +60,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             response.getWriter().print(responseJson);
             return;
         }
+        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
 
+        // 토큰 검증 - 시작
         try {
-            String token = request.getHeader("Authorization").substring(6);
+            String token = request.getHeader("Authorization").substring(7);
             jwtValidator.validateToken(token);
         }
         catch (BadCredentialsException | SignatureException | NullPointerException ex) {
@@ -85,6 +89,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 throw new RuntimeException(e);
             }
         }
+        // 토큰 검증 - 종료
         filterChain.doFilter(request, response);
     }
 }

@@ -2,6 +2,7 @@ package com.usw.sugo.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;
 import com.usw.sugo.global.security.filter.JwtExceptionFilter;
@@ -38,11 +39,12 @@ public class SecurityConfig {
     private final JwtGenerator jwtGenerator;
     private final JwtResolver jwtResolver;
     private final ObjectMapper mapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     String[] whiteListURI = {
             "/user/check-email", "/user/send-authorization-email",
             "/user/verify-authorization-email/**", "/user/join",
-            "/post/all"
+            "/post/all", "/token"
     };
 
     @Bean
@@ -91,14 +93,17 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
         return new JwtAuthorizationFilter(
                 userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
-                userDetailsService, mapper , jwtGenerator);
+                userDetailsService, mapper , jwtGenerator, refreshTokenRepository);
     }
 
     // 인가 필터
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         return new JwtAuthenticationFilter(
-                userDetailsService, customAuthenticationManager, jwtResolver, jwtValidator);
+                userDetailsService, customAuthenticationManager,
+                jwtResolver, jwtValidator,
+                refreshTokenRepository
+                );
     }
 
     @Bean
