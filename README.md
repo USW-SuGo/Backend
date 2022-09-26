@@ -11,8 +11,8 @@
 
 ---
 
-# ERD (Ver. 220915)
-![](src/main/resources/erd/SUGO%20ERD.png)
+# ERD (Ver. 220926)
+![](src/main/resources/erd/SUGO%20ERD-2.png)
 
 ---
 
