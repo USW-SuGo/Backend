@@ -86,15 +86,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         // 매너평가 덧셈 및 카운트 증가
         queryFactory
                 .update(user)
-                .set(user.mannerGrade, user.mannerGrade.add(grade))
+                .set(user.mannerGrade, (user.mannerGrade.add(grade)).divide(user.countMannerEvaluation))
                 .set(user.countMannerEvaluation, user.countMannerEvaluation.add(1))
-                .where(user.id.eq(targetUserId))
-                .execute();
-
-        // 매너평가 평균 구하기
-        queryFactory
-                .update(user)
-                .set(user.mannerGrade, user.mannerGrade.divide(user.countMannerEvaluation))
                 .where(user.id.eq(targetUserId))
                 .execute();
 
