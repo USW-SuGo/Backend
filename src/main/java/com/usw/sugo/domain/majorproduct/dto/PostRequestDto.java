@@ -15,8 +15,21 @@ public class PostRequestDto {
     }
 
     @Data
-    public static class UpPostingRequest {
+    public static class PutContentRequest {
+        private String title;
+        private String content;
+        private int price;
+        private String contactPlace;
+        private String category;
+    }
+
+    @Data
+    public static class DeleteContentRequest {
         private long productPostId;
     }
 
+    @Data
+    public static class UpPostingRequest {
+        private long productPostId;
+    }
 }
