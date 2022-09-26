@@ -59,6 +59,10 @@ public class ProductPostController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productPostRepository.loadDetailPostList(productPostId));
     }
+    
+    /*
+    게시글 작성
+     */
 
     @PostMapping("/content")
     public ResponseEntity<Object> postContent(@RequestHeader String authorization,
@@ -89,10 +93,12 @@ public class ProductPostController {
         }});
     }
 
-    @PutMapping("/content-image")
+    /*
+    게시글/이미지 수정
+     */
+    @PutMapping
     public ResponseEntity<Object> putContentImage(@RequestHeader String authorization,
                                                   @RequestBody MultipartFile[] multipartFileList,
-                                                  Long productPostId,
                                                   PostingContentRequest postingContentRequest) throws IOException {
 
         List<String> imagePathList = new ArrayList<>();
@@ -115,7 +121,6 @@ public class ProductPostController {
             imagePathList.add(imagePath);
         }
 
-        ProductPost targetPost = productPostRepository.findById(productPostId).get();
         StringBuilder imageLinkStringBuilder = new StringBuilder();
 
         // 문자열 처리, DB에 리스트 형식으로 담기 위함이다.
@@ -131,12 +136,14 @@ public class ProductPostController {
             }
         }
 
-        productPostRepository.editPostContent(imageLinkStringBuilder, productPostId, postingContentRequest);
+        productPostRepository.editPostContent(imageLinkStringBuilder, postingContentRequest);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{
-            put("Success", true);
-        }});
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("Success", true);}});
     }
+    
+    /*
+    게시글 삭제
+     */
 
     @DeleteMapping
     public ResponseEntity<Object> deleteContent(@RequestHeader String authorization,

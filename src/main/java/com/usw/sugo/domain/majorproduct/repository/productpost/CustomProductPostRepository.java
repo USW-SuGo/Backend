@@ -26,5 +26,5 @@ public interface CustomProductPostRepository {
 
     void refreshUpdateAt(Long productPostId);
 
-    void editPostContent(StringBuilder imageLinkStringBuilder, Long productPostId, PostingContentRequest postingContentRequest);
+    void editPostContent(StringBuilder imageLinkStringBuilder, PostingContentRequest postingContentRequest);
 }

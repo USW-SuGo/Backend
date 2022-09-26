@@ -7,6 +7,7 @@ public class PostRequestDto {
 
     @Data
     public static class PostingContentRequest {
+        private long productPostId;
         private String title;
         private String content;
         private int price;

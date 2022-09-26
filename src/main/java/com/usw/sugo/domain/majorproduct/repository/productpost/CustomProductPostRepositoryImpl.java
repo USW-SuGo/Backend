@@ -131,7 +131,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
     @Override
     public void editPostContent(StringBuilder imageLinkStringBuilder,
-                                Long productPostId,
                                 PostingContentRequest postingContentRequest) {
         queryFactory
                 .update(productPost)
@@ -140,13 +139,13 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .set(productPost.price, postingContentRequest.getPrice())
                 .set(productPost.contactPlace, postingContentRequest.getContactPlace())
                 .set(productPost.category, postingContentRequest.getCategory())
-                .where(productPost.id.eq(productPostId))
+                .where(productPost.id.eq(postingContentRequest.getProductPostId()))
                 .execute();
 
         queryFactory
                 .update(productPostFile)
                 .set(productPostFile.imageLink, imageLinkStringBuilder.toString())
-                .where(productPostFile.productPost.id.eq(productPostId))
+                .where(productPostFile.productPost.id.eq(postingContentRequest.getProductPostId()))
                 .execute();
     }
 }
