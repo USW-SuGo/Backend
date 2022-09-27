@@ -24,13 +24,16 @@ public class ChattingRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "seller_id")
-    private User seller;
+    @Column
+    private String roomValue;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "buyer_id")
-    private User buyer;
+    @JoinColumn(name = "sender")
+    @OneToOne(fetch = FetchType.LAZY)
+    private User sender;
+
+    @JoinColumn(name = "receiver")
+    @OneToOne(fetch = FetchType.LAZY)
+    private User receiver;
 
     @CreatedDate
     private LocalDateTime createdAt;

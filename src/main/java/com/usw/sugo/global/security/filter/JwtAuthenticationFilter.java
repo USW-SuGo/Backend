@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
         if (request.getHeader("Authorization") == null) {
             filterChain.doFilter(request, response);
+            return;
         }
         // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
 

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChattingRoomFile {
+public class ChattingRoomMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,18 +28,19 @@ public class ChattingRoomFile {
     private ChattingRoom chattingRoomId;
 
     @Column
-    private String imageLink;
+    private String message;
 
     @JoinColumn(name = "sender")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User sender;
 
     @JoinColumn(name = "receiver")
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User receiver;
 
     @CreatedDate
     private LocalDateTime createdAt;
+
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
