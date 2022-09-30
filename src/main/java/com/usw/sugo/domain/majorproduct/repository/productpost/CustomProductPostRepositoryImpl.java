@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,28 +36,109 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
      */
     @Override
-    public List<MainPageResponse> loadMainPagePostList(Pageable pageable) {
+    public List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category) {
 
-        List<MainPageResponse> response = queryFactory
-                .select(Projections.bean(MainPageResponse.class,
-                        productPost.id,
-                        productPostFile.imageLink,
-                        productPost.contactPlace, productPost.updatedAt,
-                        productPost.title, productPost.price,
-                        productPost.user.nickname, productPost.category))
-                .from(productPost)
-                .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                .orderBy(productPost.updatedAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        List<MainPageResponse> response = new ArrayList<>();
+
+        if (category.equals("")) {
+            response = queryFactory
+                    .select(Projections.bean(MainPageResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.updatedAt.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        }
+        else if (category.equals("서적")) {
+            response = queryFactory
+                    .select(Projections.bean(MainPageResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .where(productPost.category.eq("서적"))
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.price.desc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        }
+        else if (category.equals("생활용품")) {
+            response = queryFactory
+                    .select(Projections.bean(MainPageResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .where(productPost.category.eq("생활용품"))
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.price.asc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        }
+        else if (category.equals("전자제품")) {
+            response = queryFactory
+                    .select(Projections.bean(MainPageResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .where(productPost.category.eq("전자제품"))
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.contactPlace.asc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        }
+        else if (category.equals("기타")) {
+            response = queryFactory
+                    .select(Projections.bean(MainPageResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .where(productPost.category.eq("기타"))
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.contactPlace.asc())
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+        }
+
+
+
 
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
         int listSize = response.size();
         String[] imageList;
+
+
+        // 쿼리로 불러온 게시글 갯수만큼 반복한다.
         for (int i = 0; i < listSize; i++) {
-            imageList = response.get(i).getImageLink().split(",");
-            response.get(i).setImageLink(Arrays.toString(imageList));
+            // 각 게시글마다 이미지 링크값을 검사하고, 비어있으면 빈 문자열로 반환하도록 한다.
+            if (response.get(i).getImageLink() == null) {
+                response.get(i).setImageLink("");
+            }
+            // 각 게시글마다 이미지 링크값을 검사하고, 값이 있으면 그 값을 ,로 구분하여 반환한다.
+            else if (response.get(i).getImageLink() != null) {
+                imageList = response.get(i).getImageLink().split(",");
+                response.get(i).setImageLink(Arrays.toString(imageList));
+            }
         }
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 종료
 

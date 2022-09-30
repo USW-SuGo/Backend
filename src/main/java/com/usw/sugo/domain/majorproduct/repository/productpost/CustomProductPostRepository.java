@@ -15,7 +15,7 @@ import java.util.List;
 @Transactional
 public interface CustomProductPostRepository {
 
-    List<MainPageResponse> loadMainPagePostList(Pageable pageable);
+    List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category);
 
     DetailPostResponse loadDetailPostList(Long productPostId);
 

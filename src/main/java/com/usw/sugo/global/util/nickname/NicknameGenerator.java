@@ -46,7 +46,7 @@ public class NicknameGenerator {
         add("화학공학과");
         add("컴퓨터SW학과");
         add("미디어SW학과");
-        add("정보통신학과");
+        add("정보통신공학과");
         add("정보보호학과");
         add("간호학과");
         add("아동가족복지학과");

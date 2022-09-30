@@ -33,4 +33,9 @@ public class PostRequestDto {
     public static class UpPostingRequest {
         private long productPostId;
     }
+
+    @Data
+    public static class CategoryRequest {
+        private String category;
+    }
 }

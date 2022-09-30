@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.CategoryRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.DeleteContentRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostingContentRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.UpPostingRequest;
@@ -45,9 +47,15 @@ public class ProductPostController {
 
     // 모든 게시물 조회하기
     @GetMapping("/all")
-    public ResponseEntity<List<MainPageResponse>> loadMainPage(Pageable pageable) {
+    public ResponseEntity<List<MainPageResponse>> loadMainPage(
+            Pageable pageable, @RequestParam(required = false) String category) {
+
+        if (category == null) {
+            category = "";
+        }
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productPostRepository.loadMainPagePostList(pageable));
+                .body(productPostRepository.loadMainPagePostList(pageable, category));
     }
 
     // 게시글 자세히 보기
@@ -60,16 +68,15 @@ public class ProductPostController {
     }
     
     /*
-    게시글 작성
+    게시글 작성하기
      */
-
     @PostMapping("/content")
     public ResponseEntity<Object> postContent(@RequestHeader String authorization,
                                               @RequestBody PostingContentRequest postingContentRequest) {
 
         User requestUser = userRepository.findById(
                 jwtResolver.jwtResolveToUserId(
-                        authorization.substring(6))).get();
+                        authorization.substring(7))).get();
 
         ProductPost productPost = ProductPost.builder()
                 .user(requestUser)
@@ -214,7 +221,7 @@ public class ProductPostController {
                                               @RequestBody UpPostingRequest upPostingRequest) {
 
         User requestUser = userRepository.findById(
-                jwtResolver.jwtResolveToUserId(authorization.substring(6))).get();
+                jwtResolver.jwtResolveToUserId(authorization.substring(7))).get();
 
         if (!requestUser.getRecentUpPost().isBefore(LocalDateTime.now().minusDays(1))) {
             throw new CustomException(ErrorCode.ALREADY_UP_POSTING);
