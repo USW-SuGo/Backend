@@ -16,6 +16,7 @@ import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.status.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -32,26 +32,10 @@ import java.util.UUID;
 public class ChattingRoomService {
 
     private final AmazonS3Client amazonS3Client;
-
     private final ChattingRoomRepository roomRepository;
     private final ChattingRoomMessageRepository messageRepository;
     private final ChattingRoomFileRepository fileRepository;
     private final UserRepository userRepository;
-
-    // 채팅방 생성
-    public void createChattingRoom(long buyerId, long sellerId) {
-        User buyer = userRepository.findById(buyerId).get();
-        User seller = userRepository.findById(sellerId).get();
-
-        ChattingRoom chattingRoom = ChattingRoom.builder()
-                .roomValue(UUID.randomUUID().toString())
-                .sender(buyer)
-                .receiver(seller)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.AVAILABLE.getAuthority())
-                .build();
-    }
 
     // 메세지 저장
     public void saveMessages(ChatRequest chatRequest) {
@@ -65,8 +49,6 @@ public class ChattingRoomService {
                 .message(chatRequest.getMessage())
                 .chattingRoomId(chattingRoom)
                 .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.AVAILABLE.getAuthority())
                 .build();
 
         messageRepository.save(chattingRoomMessage);
@@ -120,10 +102,14 @@ public class ChattingRoomService {
                 .imageLink(imageLinkStringBuilder.toString())
                 .chattingRoomId(chattingRoom)
                 .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .status(Status.AVAILABLE.getAuthority())
                 .build();
 
         fileRepository.save(chattingRoomFile);
+    }
+
+    // 최근 채팅이 1주일이 지난 채팅방 삭제
+    @Scheduled(cron = "* * * * * *")
+    public void autoDeleteChattingRoom() {
+        roomRepository.deleteBeforeWeek();
     }
 }

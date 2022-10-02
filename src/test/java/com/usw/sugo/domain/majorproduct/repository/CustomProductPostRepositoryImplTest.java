@@ -3,6 +3,7 @@ package com.usw.sugo.domain.majorproduct.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFileRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

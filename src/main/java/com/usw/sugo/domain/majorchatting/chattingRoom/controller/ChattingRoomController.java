@@ -23,18 +23,18 @@ import java.util.UUID;
 public class ChattingRoomController {
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
-    
+
     // 채팅방 만들기
     @PostMapping("/room")
     public ResponseEntity<Object> createRoom(@RequestBody RoomRequest request) {
 
-        User sender = userRepository.findById(request.getSenderId()).get();
-        User receiver = userRepository.findById(request.getReceiverId()).get();
+        User seller = userRepository.findById(request.getSenderId()).get();
+        User buyer = userRepository.findById(request.getReceiverId()).get();
 
         ChattingRoom chattingRoom = ChattingRoom.builder()
                 .roomValue(UUID.randomUUID().toString())
-                .sender(sender)
-                .receiver(receiver)
+                .sellerId(seller)
+                .buyerId(buyer)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .status(Status.AVAILABLE.getAuthority())

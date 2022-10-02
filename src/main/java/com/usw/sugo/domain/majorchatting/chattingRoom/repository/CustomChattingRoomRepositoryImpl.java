@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.usw.sugo.domain.majorchatting.QChattingRoom.chattingRoom;
@@ -31,8 +32,19 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
                 .fetch();
     }
 
-    /*
-    메세지 보내기
-    DB 에 파라미터로 들어온 메세지 전송자/수신자/메세지를 저장
-     */
+    // 1주일 동안 채팅이 이루어지지 않으면 자동 삭제
+    @Override
+    public void deleteBeforeWeek() {
+        queryFactory
+                .delete(chattingRoom)
+                .where(chattingRoom.updatedAt.before(LocalDateTime.now().minusWeeks(1)));
+    }
+
+    @Override
+    public void testDeleteBeforeWeek() {
+        queryFactory
+                .delete(chattingRoom)
+                .where(chattingRoom.updatedAt.before(LocalDateTime.now()))
+                .execute();
+    }
 }

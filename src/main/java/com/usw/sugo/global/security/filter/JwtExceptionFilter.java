@@ -31,10 +31,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         String[] whiteListURI = {
                 "/user/check-email", "/user/send-authorization-email",
                 "/user/verify-authorization-email", "/user/join",
-                "/post/all", "/token"};
+                "/post/all", "/token", "/chat", "/ws/chat", "/socket/chat"};
 
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {
+                System.out.println("화이트 리스트 (JwtExceptionFilter)");
                 filterChain.doFilter(request, response);
                 return;
             }

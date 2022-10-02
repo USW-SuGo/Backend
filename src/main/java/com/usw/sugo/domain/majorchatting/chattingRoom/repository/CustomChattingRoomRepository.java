@@ -11,4 +11,7 @@ public interface CustomChattingRoomRepository {
 
     List<ChattingRoom> findAllRoomByRequestUserId(User user);
 
+    void deleteBeforeWeek();
+
+    void testDeleteBeforeWeek();
 }

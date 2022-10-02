@@ -1,13 +1,20 @@
 package com.usw.sugo.domain.majorchatting.chattingRoom.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class ChatRequest {
 
+    public enum MessageType {
+        ENTER, TALK
+    }
+
+    private MessageType type;
     /**
      * 송신자 id
      */

@@ -50,9 +50,7 @@ public class ProductPostController {
     public ResponseEntity<List<MainPageResponse>> loadMainPage(
             Pageable pageable, @RequestParam(required = false) String category) {
 
-        if (category == null) {
-            category = "";
-        }
+        if (category == null) category = "";
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productPostRepository.loadMainPagePostList(pageable, category));

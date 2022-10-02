@@ -27,13 +27,13 @@ public class ChattingRoom {
     @Column
     private String roomValue;
 
-    @JoinColumn(name = "sender")
+    @JoinColumn(name = "seller_id")
     @OneToOne(fetch = FetchType.LAZY)
-    private User sender;
+    private User sellerId;
 
-    @JoinColumn(name = "receiver")
+    @JoinColumn(name = "buyer_id")
     @OneToOne(fetch = FetchType.LAZY)
-    private User receiver;
+    private User buyerId;
 
     @CreatedDate
     private LocalDateTime createdAt;

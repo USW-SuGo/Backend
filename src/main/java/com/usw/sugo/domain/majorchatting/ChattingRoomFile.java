@@ -24,26 +24,20 @@ public class ChattingRoomFile {
     private long id;
 
     @JoinColumn(name = "chatting_room_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChattingRoom chattingRoomId;
 
     @Column
     private String imageLink;
 
-    @JoinColumn(name = "sender")
-    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User sender;
 
-    @JoinColumn(name = "receiver")
-    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User receiver;
 
     @CreatedDate
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column
-    private String status;
 }

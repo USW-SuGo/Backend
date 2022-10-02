@@ -24,27 +24,21 @@ public class ChattingRoomMessage {
     private long id;
 
     @JoinColumn(name = "chatting_room_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChattingRoom chattingRoomId;
 
     @Column
     private String message;
 
-    @JoinColumn(name = "sender")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User sender;
 
-    @JoinColumn(name = "receiver")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User receiver;
+
 
     @CreatedDate
     private LocalDateTime createdAt;
-
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column
-    private String status;
 }

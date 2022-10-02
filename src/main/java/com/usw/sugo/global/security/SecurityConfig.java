@@ -44,7 +44,7 @@ public class SecurityConfig {
     String[] whiteListURI = {
             "/user/check-email", "/user/send-authorization-email",
             "/user/verify-authorization-email/**", "/user/join",
-            "/post/all", "/token"
+            "/post/all", "/token", "/socket/chat"
     };
 
     @Bean
@@ -100,10 +100,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         return new JwtAuthenticationFilter(
-                userDetailsService, customAuthenticationManager,
-                jwtResolver, jwtValidator,
-                refreshTokenRepository
-                );
+                userDetailsService, customAuthenticationManager, jwtResolver, jwtValidator);
     }
 
     @Bean
