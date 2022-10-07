@@ -1,8 +1,8 @@
 # 세부 기술스택
 
-|    프레임워크    |            DB 접근기술             |    DBMS     | Storage  |          Deploy           |  Domain  | Messaging  | MailSender  |
-|:-----------:|:------------------------------:|:-----------:|:--------:|:-------------------------:|:--------:|:----------:|:-----------:|
-| Java/Spring | Spring Data JPA <br> QueryDSL  | RDS(MySQL)  |    S3    | EC2(Ubuntu 20.04, NGINX)  | Route53  |  RabbitMQ  |     SES     |
+|    Framework     |           DB Access           |    DBMS     | Storage  |            Deploy             |  Domain  | Messaging  | MailSender  |
+|:----------------:|:-----------------------------:|:-----------:|:--------:|:-----------------------------:|:--------:|:----------:|:-----------:|
+| Java/Spring Boot | Spring Data JPA <br> QueryDSL | RDS(MySQL)  |    S3    | EC2(Ubuntu 20.04) <br> NGINX) | Route53  |  RabbitMQ  |     SES     |
 
 ---
 
