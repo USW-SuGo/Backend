@@ -1,8 +1,8 @@
 # 세부 기술스택
 
-|프레임워크| DB 접근기술                |RDBMS|Storage|Deploy|Domain|ETC|
+|프레임워크| DB 접근기술                |DBMS|Storage|Deploy|Domain|Messaging|MailSender|
 |---|------------------------|---|---|---|---|---|
-|Java / Spring| Spring Data JPA <br> QueryDSL|MySQL|S3|EC2(Ubuntu 20.04, NGINX)|Route 53|SES|
+|Java/Spring| Spring Data JPA <br> QueryDSL|RDS(MySQL)|S3|EC2(Ubuntu 20.04, NGINX)|Route 53|RabbitMQ|SES|
 
 ---
 
@@ -11,13 +11,13 @@
 
 ---
 
-# ERD (Ver. 220926)
-![](src/main/resources/erd/SUGO%20ERD-2.png)
+# ERD (Ver. 221007)
+![](src/main/resources/erd/SUGO%20ERD-3.png)
 
 ---
 
-# API 명세서 (Ver. 220926)
-[API 명세서 (Ver. 220926)](https://diger.gitbook.io/untitled-1/)
+# API 명세서 (Ver. 221007)
+[API 명세서 (Ver. 221007)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
