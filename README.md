@@ -1,7 +1,7 @@
 # 세부 기술스택
 
 |프레임워크| DB 접근기술                |DBMS|Storage|Deploy|Domain|Messaging|MailSender|
-|---|------------------------|---|---|---|---|---|
+|---|------------------------|---|---|---|---|---|---|
 |Java/Spring| Spring Data JPA <br> QueryDSL|RDS(MySQL)|S3|EC2(Ubuntu 20.04, NGINX)|Route 53|RabbitMQ|SES|
 
 ---
