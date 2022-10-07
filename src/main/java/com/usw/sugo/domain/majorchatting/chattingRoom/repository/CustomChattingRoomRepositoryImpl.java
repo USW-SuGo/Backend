@@ -38,7 +38,8 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
     public void deleteBeforeWeek() {
         queryFactory
                 .delete(chattingRoom)
-                .where(chattingRoom.updatedAt.before(LocalDateTime.now().minusWeeks(1)));
+                .where(chattingRoom.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
+                .execute();
     }
 
     /*
@@ -68,7 +69,6 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
                         .limit(pageable.getPageSize())
                         .fetch();
     }
-
 
     /*
     특정 채팅방에 존재하는 사용자 및 상품 데이터 반환
