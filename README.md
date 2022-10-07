@@ -5,14 +5,9 @@
 | Java/SpringBoot | Spring Data JPA <br> QueryDSL | RDS(MySQL)  |   S3    |
 
 
-| Domain  | Messaging | MailSender | Deploy|
-|:-------:|:---------:|:----------:|:--------:|
-| Route53 | RabbitMQ  |    SES     | EC2(Ubuntu 20.04) <br> NGINX) |
-
----
-
-# UML
-[]()
+| Domain  | Messaging | MailSender |                 Deploy                  |
+|:-------:|:---------:|:----------:|:---------------------------------------:|
+| Route53 | RabbitMQ  |    SES     | EC2(Ubuntu 20.04) <br> NGINX(+ Certbot) |
 
 ---
 
