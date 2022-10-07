@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 public class ChatRequest {
 
     public enum MessageType {
-        ENTER, TALK
+        ENTER, TALK, LEAVE
     }
 
     private MessageType type;

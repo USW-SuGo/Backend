@@ -14,7 +14,6 @@ import com.usw.sugo.domain.majorchatting.chattingRoomFile.repository.ChattingRoo
 import com.usw.sugo.domain.majorchatting.chattingRoomMessage.repository.ChattingRoomMessageRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
-import com.usw.sugo.domain.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -107,8 +106,10 @@ public class ChattingRoomService {
         fileRepository.save(chattingRoomFile);
     }
 
-    // 최근 채팅이 1주일이 지난 채팅방 삭제
-    @Scheduled(cron = "* * * * * *")
+    /*
+    최근 채팅이 1주일이 지난 채팅방 삭제
+     */
+    @Scheduled(cron = "0 * * * * *")
     public void autoDeleteChattingRoom() {
         roomRepository.deleteBeforeWeek();
     }

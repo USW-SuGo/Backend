@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+
 	// Spring Base
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -48,6 +49,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// AWS Setting
+	// 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' path traversal 취약점 발견됨
+
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	// Database
@@ -60,7 +63,9 @@ dependencies {
 
 	// Chatting - WebSocket/Session
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.springframework.session:spring-session-core'
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+	implementation 'com.google.code.gson:gson:2.9.0'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'

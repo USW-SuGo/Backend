@@ -44,7 +44,7 @@ public class SecurityConfig {
     String[] whiteListURI = {
             "/user/check-email", "/user/send-authorization-email",
             "/user/verify-authorization-email/**", "/user/join",
-            "/post/all", "/token", "/socket/chat"
+            "/post/all", "/token", "/chat/*"
     };
 
     @Bean
@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .antMatchers(whiteListURI).permitAll()
                 .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http

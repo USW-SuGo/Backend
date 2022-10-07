@@ -1,6 +1,5 @@
 package com.usw.sugo.domain.majorchatting;
 
-
 import com.usw.sugo.domain.majoruser.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,9 +26,6 @@ public class ChattingRoomFile {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChattingRoom chattingRoomId;
 
-    @Column
-    private String imageLink;
-
     @JoinColumn(name = "sender_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User sender;
@@ -37,6 +33,9 @@ public class ChattingRoomFile {
     @JoinColumn(name = "receiver_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User receiver;
+
+    @Column
+    private String imageLink;
 
     @CreatedDate
     private LocalDateTime createdAt;

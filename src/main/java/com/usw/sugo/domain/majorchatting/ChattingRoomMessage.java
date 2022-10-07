@@ -27,9 +27,6 @@ public class ChattingRoomMessage {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ChattingRoom chattingRoomId;
 
-    @Column
-    private String message;
-
     @JoinColumn(name = "sender_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User sender;
@@ -38,6 +35,8 @@ public class ChattingRoomMessage {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private User receiver;
 
+    @Column
+    private String message;
 
     @CreatedDate
     private LocalDateTime createdAt;
