@@ -1,13 +1,12 @@
 package com.usw.sugo.domain.majoruser.emailauth.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.status.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-import static com.usw.sugo.domain.majoruser.QUserEmailAuth.*;
+import static com.usw.sugo.domain.majoruser.QUserEmailAuth.userEmailAuth;
 
 @Repository
 @Transactional
@@ -20,7 +19,7 @@ public class CustomUserEmailAuthRepositoryImpl implements CustomUserEmailAuthRep
     public void confirmToken(String payload) {
         queryFactory
                 .update(userEmailAuth)
-                .set(userEmailAuth.status, String.valueOf(Status.AVAILABLE))
+                .set(userEmailAuth.status, true)
                 .where(userEmailAuth.payload.eq(payload))
                 .execute();
     }

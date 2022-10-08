@@ -49,5 +49,5 @@ public class ProductPost {
     private LocalDateTime updatedAt;
 
     @Column
-    private String status;
+    private Boolean status;
 }

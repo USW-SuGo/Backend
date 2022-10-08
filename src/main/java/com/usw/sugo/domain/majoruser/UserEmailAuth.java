@@ -28,9 +28,10 @@ public class UserEmailAuth {
     @Column
     private String payload;
 
-    @Column
-    private String status;
-
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @Column
+    private Boolean status;
+
 }

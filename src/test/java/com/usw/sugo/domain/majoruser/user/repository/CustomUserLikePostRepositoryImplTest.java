@@ -12,7 +12,7 @@ import static com.usw.sugo.domain.majoruser.QUser.user;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class CustomUserRepositoryImplTest {
+class CustomUserLikePostRepositoryImplTest {
 
     @Autowired
     JPAQueryFactory queryFactory;

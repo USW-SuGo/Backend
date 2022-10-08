@@ -36,6 +36,9 @@ public class User {
     private long countMannerEvaluation;
 
     @Column
+    private long countTradeAttempt;
+
+    @Column
     private LocalDateTime recentUpPost;
 
     @Column

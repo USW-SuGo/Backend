@@ -7,21 +7,18 @@ import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepositor
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.UserPageResponse;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPageResponse;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.OtherUserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.user.service.UserService;
-import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
-import com.usw.sugo.global.jwt.JwtGenerator;
+import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtResolver;
-import com.usw.sugo.global.jwt.JwtValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,13 +32,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/user")
 public class UserController {
 
-    private final JwtGenerator jwtGenerator;
     private final JwtResolver jwtResolver;
-    private final JwtValidator jwtValidator;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
     private final UserRepository userRepository;
-
+    private final UserLikePostRepository userLikePostRepository;
     private final ProductPostRepository productPostRepository;
 
     private final SendEmailServiceFromSES sendEmailServiceFromSES;
@@ -72,8 +66,9 @@ public class UserController {
             @RequestBody SendAuthorizationEmailRequest sendAuthorizationEmailRequest) {
 
         // 이메일 중복 시 에러
-        userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail())
-                .orElseThrow(() -> new CustomException(DUPLICATED_EMAIL));
+        if (userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail()).isPresent()) {
+            throw new CustomException(DUPLICATED_EMAIL);
+        }
 
         // 신규 유저인 경우, Email DB 에 저장 후 엔티티 반환
         User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
@@ -113,40 +108,23 @@ public class UserController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
         // DB에 존재하지 않는 유저일 때 에러
         User requestUser = userRepository.findByEmail(detailJoinRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
-        // 이미 회원가입을 수행한 유저일 때
-        if (requestUser.getNickname() != null) {
-            throw new CustomException(USER_ALREADY_JOIN);
-        }
-
-        // User 가 DB에 존재하고, 이메일 인증을 받았을 때
-        if (requestUser.getStatus().equals(Status.AVAILABLE)) {
-            Long userId = requestUser.getId();
-
-            // 비밀번호 암호화, 닉네임 발급 -> 최종 회원가입 처리
-            userRepository.detailJoin(detailJoinRequest, userId);
-            // 유저 변경 시각 타임스탬프
-            userRepository.setModifiedDate(userId);
-        }
-        // 이메일 인증은 아직 안받았을 때
-        else if (!requestUser.getStatus().equals(Status.AVAILABLE)) {
-            throw new CustomException(NOT_AUTHORIZED_EMAIL);
-        }
+        userService.realJoin(requestUser, detailJoinRequest);
 
         // 반환
-        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{
+        return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
         }});
     }
 
     // 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<?> editPassword(
+    public ResponseEntity<HashMap<String, Boolean>> editPassword(
             @RequestHeader String authorization,
             @RequestBody EditPasswordRequest editPasswordRequest) {
 
@@ -161,68 +139,83 @@ public class UserController {
         userRepository.setModifiedDate(editPasswordRequest.getId());
         //반환
 
-        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{put("Success", true);}});
+        return ResponseEntity.status(OK).body(new HashMap<>() {{
+            put("Success", true);
+        }});
     }
 
     // 회원탈퇴
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestHeader String authorization, @RequestBody QuitRequest quitRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> deleteUser(@RequestHeader String authorization, @RequestBody QuitRequest quitRequest) {
 
-        Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(6));
+        Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         // DB에 없는 유저면 에러
         userRepository.findByEmail(quitRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
         // 비밀번호가 일치하지 않을 때
-        if (!userService.matchingPassword(requestUserId, quitRequest.getPassword())) {
+        if (!userService.matchingPassword(requestUserId, quitRequest.getPassword()))
             throw new CustomException(PASSWORD_NOT_CORRECT);
-        }
+
 
         // 비밀번호 수정
         userRepository.deleteById(requestUserId);
 
         //반환
-        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{put("Success", true);}});
+        return ResponseEntity
+                .status(OK)
+                .body(new HashMap<>() {{put("Success", true);}});
     }
 
-    // 유저 페이지
+    // 마이 페이지
+    @GetMapping
+    public ResponseEntity<MyPageResponse> userPage(@RequestHeader String authorization, Pageable pageable) {
+
+        long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+        User requestUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+
+        MyPageResponse myPageResponse = MyPageResponse.builder()
+                .userId(targetUserId)
+                .email(requestUser.getEmail())
+                .nickname(requestUser.getNickname())
+                .mannerGrade(requestUser.getMannerGrade())
+                .countMannerEvaluation(requestUser.getCountMannerEvaluation())
+                .countTradeAttempt(requestUser.getCountTradeAttempt())
+                .myPosting(productPostRepository.loadUserPageList(requestUser, pageable))
+                .likePosting(userLikePostRepository.loadMyLikePosting(requestUser.getId()))
+                .build();
+        return ResponseEntity.status(OK).body(myPageResponse);
+    }
+
+    // 다른 유저의 페이지
     @GetMapping("/")
-    public ResponseEntity<UserPageResponse> userPage(@RequestHeader String authorization,
-                                                     @RequestParam @Nullable Long target, Pageable pageable) {
+    public ResponseEntity<OtherUserPageResponse> otherUserPage(@RequestHeader String authorization,
+                                                               @RequestParam long userId, Pageable pageable) {
 
-        UserPageResponse userPageResponse = new UserPageResponse();
+        userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
-        // 파라미터 값을 안넣었을 때 (마이페이지 요청)
-        if (target == null) {
-            long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-            userRepository.findById(targetUserId).orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-            User targetUserIsMe = userRepository.findById(targetUserId).get();
-            userPageResponse = UserPageResponse.builder()
-                    .userId(targetUserId)
-                    .email(targetUserIsMe.getEmail())
-                    .nickname(targetUserIsMe.getNickname())
-                    .mannerGrade(targetUserIsMe.getMannerGrade())
-                    .myPosting(productPostRepository.loadUserPageList(targetUserIsMe, pageable))
-                    .build();
-
-        }
-        // 파라미터 값을 넣었을 때 (다른 유저의 마이페이지)
-        else if (target != null) {
-            userRepository.findById(target).orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-            User targetUser = userRepository.findById(target).get();
-            userPageResponse = UserPageResponse.builder()
-                    .userId(target)
-                    .nickname(targetUser.getNickname())
-                    .email(targetUser.getEmail())
-                    .mannerGrade(targetUser.getMannerGrade())
-                    .myPosting(productPostRepository.loadUserPageList(targetUser, pageable))
-                    .build();
-        }
-        return ResponseEntity.status(200).body(userPageResponse);
+        User targetUser = userRepository.findById(userId).get();
+        OtherUserPageResponse otherUserPageResponse = OtherUserPageResponse.builder()
+                .userId(userId)
+                .nickname(targetUser.getNickname())
+                .email(targetUser.getEmail())
+                .mannerGrade(targetUser.getMannerGrade())
+                .countMannerEvaluation(targetUser.getCountMannerEvaluation())
+                .countTradeAttempt(targetUser.getCountTradeAttempt())
+                .myPosting(productPostRepository.loadUserPageList(targetUser, pageable))
+                .build();
+        return ResponseEntity.status(OK).body(otherUserPageResponse);
     }
+
+
+    /**
+     * 상대 유저 매너 평가하기
+     * @param authorization
+     * @param mannerEvaluationRequest
+     * @return
+     */
 
     @PostMapping("/manner")
     public ResponseEntity<?> userPage(@RequestHeader String authorization,
@@ -246,6 +239,8 @@ public class UserController {
             throw new CustomException(ALREADY_EVALUATION);
         }
 
-        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{put("Success", true);}});
+        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{
+            put("Success", true);
+        }});
     }
 }

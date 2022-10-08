@@ -29,7 +29,7 @@ public class UserEmailAuthService {
                 .payload(payload)
                 .createdAt(LocalDateTime.now())
                 .user(user)
-                .status(String.valueOf(Status.NOT_AUTH))
+                .status(false)
                 .build();
 
         userEmailAuthRepository.save(userEmailAuth);

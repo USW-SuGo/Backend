@@ -31,10 +31,4 @@ public class ProductPostFile {
 
     @CreatedDate
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column
-    private String status;
 }
