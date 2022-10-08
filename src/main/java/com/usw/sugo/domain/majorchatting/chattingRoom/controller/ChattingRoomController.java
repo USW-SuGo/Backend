@@ -1,18 +1,16 @@
 package com.usw.sugo.domain.majorchatting.chattingRoom.controller;
 
 import com.usw.sugo.domain.majorchatting.ChattingRoom;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChatRequest;
+import com.usw.sugo.domain.majorchatting.chattingRoom.dto.MessageRequest;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomRequestDto.CreateRoomRequest;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingListForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.repository.ChattingRoomRepository;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -109,7 +106,7 @@ public class ChattingRoomController {
     메세지 입력
      */
     @MessageMapping(value = "/chat/message")
-    public void send(ChatRequest request) {
+    public void send(MessageRequest request) {
         messagingTemplate.convertAndSend("/sub/chat/room" + request.getMessage());
     }
 }

@@ -2,8 +2,8 @@ package com.usw.sugo.global.security.authentication;
 
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
-import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

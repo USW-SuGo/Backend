@@ -1,4 +1,4 @@
-package com.usw.sugo.exception;
+package com.usw.sugo.global.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

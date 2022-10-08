@@ -50,7 +50,6 @@ dependencies {
 
 	// AWS Setting
 	// 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' path traversal 취약점 발견됨
-
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	// Database
@@ -61,11 +60,13 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
 
-	// Chatting - WebSocket/Session
+	// Chatting - WebSocket/RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty:2.7.4'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp:2.7.4'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.webjars:sockjs-client:1.5.1'
 	implementation 'org.webjars:stomp-websocket:2.3.4'
-	implementation 'com.google.code.gson:gson:2.9.0'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'

@@ -2,7 +2,7 @@ package com.usw.sugo.domain.refreshtoken;
 
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtValidator;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
-import static com.usw.sugo.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor

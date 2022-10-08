@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security.filter;
 
-import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;

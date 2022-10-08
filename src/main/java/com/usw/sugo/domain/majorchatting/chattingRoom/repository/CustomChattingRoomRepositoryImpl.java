@@ -4,16 +4,12 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.majorchatting.ChattingRoom;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingListForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomFileForm;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomMessageForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomForm;
-import com.usw.sugo.domain.majoruser.User;
+import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomMessageForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;

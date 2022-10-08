@@ -1,6 +1,6 @@
 package com.usw.sugo.global.security.filter;
 
-import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtValidator;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.usw.sugo.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
 
 
 @RequiredArgsConstructor

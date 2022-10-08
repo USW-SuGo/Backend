@@ -8,13 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
-public class ChatRequest {
-
-    public enum MessageType {
-        ENTER, TALK, LEAVE
-    }
-
-    private MessageType type;
+public class MessageRequest {
     /**
      * 송신자 id
      */
@@ -36,10 +30,10 @@ public class ChatRequest {
     /**
      * 메시지 내용
      */
-    @NotBlank
+    @NotNull
     private String message;
 
-    public ChatRequest(Long senderId, Long receiverId, Long roomId, String message) {
+    public MessageRequest(Long senderId, Long receiverId, Long roomId, String message) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.roomId = roomId;

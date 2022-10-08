@@ -1,7 +1,7 @@
 package com.usw.sugo.global.jwt;
 
-import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.NoSuchElementException;
 
-import static com.usw.sugo.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
 
 @Component
 public class JwtValidator {

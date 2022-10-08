@@ -1,4 +1,4 @@
-package com.usw.sugo.exception;
+package com.usw.sugo.global.exception;
 
 import lombok.Builder;
 import lombok.Getter;

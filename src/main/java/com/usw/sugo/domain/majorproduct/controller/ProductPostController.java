@@ -6,8 +6,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorproduct.ProductPost;
 import com.usw.sugo.domain.majorproduct.ProductPostFile;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.CategoryRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.DeleteContentRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostingContentRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.UpPostingRequest;
@@ -18,8 +16,8 @@ import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFi
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.exception.CustomException;
-import com.usw.sugo.exception.ErrorCode;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -92,9 +90,7 @@ public class ProductPostController {
 
         long returnValue = productPost.getId();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{
-            put("productPostId", returnValue);
-        }});
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("productPostId", returnValue);}});
     }
 
     /*
@@ -155,9 +151,7 @@ public class ProductPostController {
 
         productPostRepository.deleteById(deleteContentRequest.getProductPostId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{
-            put("Success", true);
-        }});
+        return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("Success", true);}});
     }
 
     //@ModelAttribute PostRequest postRequest
@@ -230,5 +224,4 @@ public class ProductPostController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new HashMap<>() {{put("Success", true);}});
     }
-
 }

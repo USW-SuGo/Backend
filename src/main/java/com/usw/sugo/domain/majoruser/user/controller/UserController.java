@@ -3,21 +3,21 @@ package com.usw.sugo.domain.majoruser.user.controller;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
+import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
+import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.UserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.user.service.UserService;
-import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
-import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.exception.CustomException;
+import com.usw.sugo.domain.status.Status;
+import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
+import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-import static com.usw.sugo.exception.ErrorCode.*;
+import static com.usw.sugo.global.exception.ErrorCode.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController

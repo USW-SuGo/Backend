@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.majorchatting.ChattingRoom;
 import com.usw.sugo.domain.majorchatting.ChattingRoomFile;
 import com.usw.sugo.domain.majorchatting.ChattingRoomMessage;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChatRequest;
+import com.usw.sugo.domain.majorchatting.chattingRoom.dto.MessageRequest;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.FileRequest;
 import com.usw.sugo.domain.majorchatting.chattingRoom.repository.ChattingRoomRepository;
 import com.usw.sugo.domain.majorchatting.chattingRoomFile.repository.ChattingRoomFileRepository;
@@ -37,15 +37,15 @@ public class ChattingRoomService {
     private final UserRepository userRepository;
 
     // 메세지 저장
-    public void saveMessages(ChatRequest chatRequest) {
-        User sender = userRepository.findById(chatRequest.getSenderId()).get();
-        User receiver = userRepository.findById(chatRequest.getReceiverId()).get();
-        ChattingRoom chattingRoom = roomRepository.findById(chatRequest.getRoomId()).get();
+    public void saveMessages(MessageRequest messageRequest) {
+        User sender = userRepository.findById(messageRequest.getSenderId()).get();
+        User receiver = userRepository.findById(messageRequest.getReceiverId()).get();
+        ChattingRoom chattingRoom = roomRepository.findById(messageRequest.getRoomId()).get();
 
         ChattingRoomMessage chattingRoomMessage = ChattingRoomMessage.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .message(chatRequest.getMessage())
+                .message(messageRequest.getMessage())
                 .chattingRoomId(chattingRoom)
                 .createdAt(LocalDateTime.now())
                 .build();
