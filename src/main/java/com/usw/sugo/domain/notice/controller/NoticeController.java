@@ -85,7 +85,7 @@ public class NoticeController {
      * @param authorization
      * @return
      */
-    @PostMapping
+    @PutMapping
     public ResponseEntity<HashMap<String, Boolean>> updateNotice(@RequestHeader String authorization,
                                                                 @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
 
@@ -110,7 +110,7 @@ public class NoticeController {
      * @param authorization
      * @return
      */
-    @PostMapping
+    @DeleteMapping
     public ResponseEntity<HashMap<String, Boolean>> deleteNotice(@RequestHeader String authorization,
                                               @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
 
