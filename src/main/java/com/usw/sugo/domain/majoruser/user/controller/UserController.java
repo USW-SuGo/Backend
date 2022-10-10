@@ -16,7 +16,6 @@ import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostReposit
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
@@ -132,11 +131,6 @@ public class UserController {
         // 비밀번호 암호화
         userRepository.passwordEncode(requestUser, requestUser.getId());
 
-        // 닉네임 자동발급 수행 및 유저 변경시각 타임스탬프
-        userRepository.editNickname(
-                requestUser.getId(),
-                nicknameGenerator.generateNickname(requestUser.getId(), requestUser.getNickname()));
-
         // 유저 Status 컬럼 수정 -> Available
         userRepository.modifyingStatusToAvailable(requestUser.getId());
 
@@ -156,11 +150,20 @@ public class UserController {
             throw new CustomException(DUPLICATED_LOGINID);
         }
 
-        // 닉네임 자동생성 반영됨
-        User requestUser = userService.softJoinAndNicknameGenerate(detailJoinRequest);
+        User requestUser = userService.softJoin(detailJoinRequest);
 
-        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+        // 닉네임 자동발급 수행 및 유저 변경시각 타임스탬프
+        userRepository.editNickname(
+                requestUser.getId(),
+                nicknameGenerator.generateNickname(detailJoinRequest.getDepartment()));
+
+        System.out.println(requestUser.getId());
+
+        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
                 userEmailAuthService.createEmailAuthToken(requestUser.getId());
+
+//        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+//                userEmailAuthService.createEmailAuthToken(requestUser.getId());
 
         // 이메일 발송
         sendEmailServiceFromSES.sendStudentAuthContent(requestUser.getEmail(), authPayload);

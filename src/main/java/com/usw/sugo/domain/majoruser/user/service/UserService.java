@@ -14,8 +14,6 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static com.usw.sugo.domain.majoruser.QUser.user;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -40,13 +38,12 @@ public class UserService {
     }
 
     @Transactional
-    public User softJoinAndNicknameGenerate(DetailJoinRequest detailJoinRequest) {
+    public User softJoin(DetailJoinRequest detailJoinRequest) {
 
         User newSoftUser = User.builder()
                 .email(detailJoinRequest.getEmail())
                 .loginId(detailJoinRequest.getLoginId())
                 .password(detailJoinRequest.getPassword())
-                .nickname(detailJoinRequest.getDepartment())
                 .recentUpPost(LocalDateTime.now().minusDays(1))
                 .recentEvaluationManner(LocalDateTime.now().minusDays(1))
                 .createdAt(LocalDateTime.now())
