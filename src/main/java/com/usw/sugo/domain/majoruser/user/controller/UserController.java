@@ -129,10 +129,10 @@ public class UserController {
         User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
 
         // 이메일 토큰 생성 및 DB 저장
-//        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
-//                userEmailAuthService.createEmailAuthToken(newUser.getId());
-        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
                 userEmailAuthService.createEmailAuthToken(newUser.getId());
+//        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+//                userEmailAuthService.createEmailAuthToken(newUser.getId());
 
         // 이메일 발송
         sendEmailServiceFromSES.sendStudentAuthContent(sendAuthorizationEmailRequest.getEmail(), authPayload);
