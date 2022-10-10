@@ -18,6 +18,7 @@ import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
+import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,7 @@ public class UserController {
 
     private final JwtResolver jwtResolver;
     private final UserService userService;
+    private final NicknameGenerator nicknameGenerator;
     private final UserRepository userRepository;
     private final UserLikePostRepository userLikePostRepository;
     private final ProductPostRepository productPostRepository;
@@ -149,6 +151,9 @@ public class UserController {
 
         // 비밀번호 암호화
         userRepository.passwordEncode(requestUser, requestUser.getId());
+
+        // 닉네임 자동발급 수행
+        nicknameGenerator.generateNickname(requestUser.getId(), requestUser.getNickname());
 
         // 유저 변경 시각 타임스탬프
         userRepository.setModifiedDate(requestUser.getId());
