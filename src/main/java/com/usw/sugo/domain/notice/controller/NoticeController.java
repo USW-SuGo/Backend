@@ -61,7 +61,7 @@ public class NoticeController {
                                               @RequestBody NoticePostRequest noticePostRequest) {
 
         // 관리자 권한이 아니면 에러
-        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ROLE_AVAILABLE")) {
+        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
 

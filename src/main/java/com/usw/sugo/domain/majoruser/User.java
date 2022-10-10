@@ -47,9 +47,8 @@ public class User {
     @Column
     private LocalDateTime recentEvaluationManner;
 
-    @Enumerated(EnumType.STRING)
     @Column
-    private Status status;
+    private String status;
 
     @Column
     private LocalDateTime createdAt;
