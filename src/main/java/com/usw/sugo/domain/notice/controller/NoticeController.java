@@ -90,7 +90,7 @@ public class NoticeController {
                                                                 @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
 
         // 관리자 권한이 아니면 에러
-        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ROLE_AVAILABLE")) {
+        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
 
@@ -115,7 +115,7 @@ public class NoticeController {
                                               @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
 
         // 관리자 권한이 아니면 에러
-        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ROLE_AVAILABLE")) {
+        if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
         noticeRepository.deleteById(noticeDeleteRequest.getId());
