@@ -2,7 +2,6 @@ package com.usw.sugo.global.jwt;
 
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
-import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
