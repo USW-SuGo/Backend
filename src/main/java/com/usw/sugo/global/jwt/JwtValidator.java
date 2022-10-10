@@ -34,8 +34,7 @@ public class JwtValidator {
                     .parseClaimsJws(token);
         }
         catch (NoSuchElementException | BadCredentialsException |
-               MalformedJwtException | IllegalArgumentException |
-               SignatureException ex) {
+               MalformedJwtException | IllegalArgumentException exception) {
             throw new CustomException(ErrorCode.JWT_MALFORMED_EXCEPTION);
         }
         catch (ExpiredJwtException exception) {
