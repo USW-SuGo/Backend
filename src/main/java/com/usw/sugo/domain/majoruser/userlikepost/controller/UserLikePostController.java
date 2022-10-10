@@ -46,6 +46,7 @@ public class UserLikePostController {
         
         // if 좋아요가 이미 박힌 게시글에 대한 요청이라면 좋아요 삭제
 
+
         User requestUser = userRepository.findById(
                 jwtResolver.jwtResolveToUserId(authorization.substring(7))).get();
 
@@ -55,36 +56,21 @@ public class UserLikePostController {
         ProductPostFile productPostFile = productPostFileRepository.findByProductPost(productPost)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        UserLikePost userLikePost = UserLikePost.builder()
-                .user(requestUser)
-                .productPost(productPost)
-                .productPostFile(productPostFile)
-                .createdAt(LocalDateTime.now())
-                .build();
+        
+        // 좋아요를 하지 않은 게시글이면 좋아요 추가
+        if (userLikePostRepository.checkUserLikeStatusForPost(requestUser.getId(), productPost.getId())) {
 
-        userLikePostRepository.save(userLikePost);
+            UserLikePost userLikePost = UserLikePost.builder()
+                    .user(requestUser)
+                    .productPost(productPost)
+                    .productPostFile(productPostFile)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            userLikePostRepository.save(userLikePost);
+        }
 
-        return ResponseEntity.status(OK).body(new HashMap<>() {{
-            put("Success", true);
-        }});
-    }
-
-
-    /**
-     * 게시글 좋아요 삭제
-     * @param authorization
-     * @param likePostRequest
-     * @return
-     */
-    @DeleteMapping
-    public ResponseEntity<HashMap<String, Boolean>> deleteLikePost(
-            @RequestHeader String authorization,
-            @RequestBody LikePostRequest likePostRequest) {
-
-
-        userLikePostRepository.deleteLikePostByUserId(
-                jwtResolver.jwtResolveToUserId(authorization.substring(7)),
-                likePostRequest.getProductPostId());
+        // 좋아요를 이미 했던 게시글이면 좋아요 삭제
+        userLikePostRepository.deleteLikePostByUserId(requestUser.getId(), likePostRequest.getProductPostId());
 
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);

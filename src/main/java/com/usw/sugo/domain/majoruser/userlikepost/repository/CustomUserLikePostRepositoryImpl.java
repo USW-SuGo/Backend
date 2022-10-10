@@ -2,6 +2,7 @@ package com.usw.sugo.domain.majoruser.userlikepost.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.majoruser.UserLikePost;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.LikePosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,22 @@ import static com.usw.sugo.domain.majoruser.QUserLikePost.userLikePost;
 public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepository {
 
     private final JPAQueryFactory queryFactory;
+
+    @Override
+    public boolean checkUserLikeStatusForPost(long userId, long productPostId) {
+        List<UserLikePost> fetch = queryFactory
+                .select(userLikePost)
+                .where(userLikePost.user.id.eq(userId)
+                        .and(userLikePost.productPost.id.eq(productPostId)))
+                .fetch();
+
+        // DB에 이미 좋아요 한 내용이 기록되어있으면
+        if (fetch.get(0) != null) {
+            return false;
+        }
+        return true;
+
+    }
 
     @Override
     public void deleteLikePostByUserId(long userId, long productPostId) {
