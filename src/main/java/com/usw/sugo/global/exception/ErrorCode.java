@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_BAD_REQUEST(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
     CHATTING_ROOM_NOT_FOUND(BAD_REQUEST, "해당 채팅방은 찾을 수 없습니다."),
     POST_NOT_FOUND(BAD_REQUEST, "해당 게시글은 찾을 수 없습니다."),
+    USER_NOT_SENDED_EMAIL_AUTH(BAD_REQUEST, "이메일 인증을 발송하지 않은 사용자입니다."),
 
 
     USER_UNAUTHORIZED(UNAUTHORIZED, "권한이 없습니다."),

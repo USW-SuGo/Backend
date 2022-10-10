@@ -3,8 +3,6 @@ package com.usw.sugo.domain.majoruser.user.service;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
-import com.usw.sugo.domain.status.Status;
-import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,9 +11,6 @@ import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
-
-import static com.usw.sugo.global.exception.ErrorCode.NOT_AUTHORIZED_EMAIL;
-import static com.usw.sugo.global.exception.ErrorCode.USER_ALREADY_JOIN;
 
 @Service
 @Transactional
@@ -40,22 +35,16 @@ public class UserService {
     }
 
     @Transactional
-    public void realJoin(User requestUser, DetailJoinRequest detailJoinRequest) {
-        // 이미 회원가입을 수행한 유저일 때
-        if (requestUser.getNickname() != null) throw new CustomException(USER_ALREADY_JOIN);
+    public void softJoinAndNicknameGenerate(DetailJoinRequest detailJoinRequest) {
 
-        // User 가 DB에 존재하고, 이메일 인증을 받았을 때
-        if (!requestUser.getStatus().equals(Status.AVAILABLE)) throw new CustomException(NOT_AUTHORIZED_EMAIL);
+        User newSoftUser = User.builder()
+                .email(detailJoinRequest.getEmail())
+                .build();
 
-            // 이메일 인증은 아직 안받았을 때
-        else if (requestUser.getStatus().equals(Status.AVAILABLE)) {
-            Long userId = requestUser.getId();
-
-            // 비밀번호 암호화, 닉네임 발급 -> 최종 회원가입 처리
-            userRepository.detailJoin(detailJoinRequest, userId);
-            // 유저 변경 시각 타임스탬프
-            userRepository.setModifiedDate(userId);
-        }
+        // 비밀번호 암호화, 닉네임 발급 -> 최종 회원가입 처리
+        userRepository.detailJoin(detailJoinRequest, newSoftUser.getId());
+        // 유저 변경 시각 타임스탬프
+        userRepository.setModifiedDate(newSoftUser.getId());
     }
 
     /*
@@ -69,6 +58,7 @@ public class UserService {
 
     /**
      * 비밀번호 랜덤값으로 변경
+     *
      * @param userId
      * @return
      */

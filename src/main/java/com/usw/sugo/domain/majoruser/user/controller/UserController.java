@@ -6,7 +6,6 @@ import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsLoginIdExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPageResponse;
@@ -17,7 +16,6 @@ import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostReposit
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -120,19 +118,14 @@ public class UserController {
     public ResponseEntity<Map<String, Boolean>> sendAuthorizationEmail(
             @RequestBody SendAuthorizationEmailRequest sendAuthorizationEmailRequest) {
 
-        // 이메일 중복 시 에러
-        if (userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail()).isPresent()) {
-            throw new CustomException(DUPLICATED_EMAIL);
-        }
-
-        // 신규 유저인 경우, Email DB 에 저장 후 엔티티 반환
-        User newUser = userService.softSaveUser(sendAuthorizationEmailRequest.getEmail());
+        User requestUser = userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail())
+                .orElseThrow(() -> new CustomException(USER_NOT_SENDED_EMAIL_AUTH));
 
         // 이메일 토큰 생성 및 DB 저장
 //        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
 //                userEmailAuthService.createEmailAuthToken(newUser.getId());
         String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
-                userEmailAuthService.createEmailAuthToken(newUser.getId());
+                userEmailAuthService.createEmailAuthToken(requestUser.getId());
 
         // 이메일 발송
         sendEmailServiceFromSES.sendStudentAuthContent(sendAuthorizationEmailRequest.getEmail(), authPayload);
@@ -171,16 +164,7 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
-        // DB에 존재하지 않는 유저일 때 에러
-        User requestUser = userRepository.findByEmail(detailJoinRequest.getEmail())
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-        // 아이디가 중복되었을 때 에러
-        if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
-            throw new CustomException(DUPLICATED_LOGINID);
-        }
-
-        userService.realJoin(requestUser, detailJoinRequest);
+        userService.softJoinAndNicknameGenerate(detailJoinRequest);
 
         // 반환
         return ResponseEntity.status(OK).body(new HashMap<>() {{

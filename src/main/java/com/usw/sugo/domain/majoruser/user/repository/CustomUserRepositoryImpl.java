@@ -42,6 +42,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .set(user.countMannerEvaluation, 0L)
                 .set(user.recentUpPost, LocalDateTime.now().minusDays(1))
                 .set(user.recentEvaluationManner, LocalDateTime.now().minusDays(1))
+                .set(user.status, "NOT_AUTH")
                 .where(user.email.eq(detailJoinRequest.getEmail()))
                 .execute();
     }
