@@ -20,4 +20,6 @@ public interface CustomUserRepository {
 
     void setRecentUpPostingDate(Long id);
 
+    void editNickname(long id, String nickname);
+
 }

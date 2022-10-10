@@ -116,26 +116,6 @@ public class UserController {
         }});
     }
 
-    // 재학생 인증 이메일 전송하기
-    @PostMapping("/send-authorization-email")
-    public ResponseEntity<Map<String, Boolean>> sendAuthorizationEmail(
-            @RequestBody SendAuthorizationEmailRequest sendAuthorizationEmailRequest) {
-
-
-
-        // 이메일 토큰 생성 및 DB 저장
-//        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
-//                userEmailAuthService.createEmailAuthToken(newUser.getId());
-
-
-        // 반환
-        Map<String, Boolean> result = new HashMap<>() {{
-            put("Success", true);
-        }};
-
-        return ResponseEntity.status(OK).body(result);
-    }
-
     //이메일 인증 링크 클릭 시
     @GetMapping("/verify-authorization-email")
     public String ConfirmEmail(@RequestParam("auth") String payload) {
@@ -152,11 +132,10 @@ public class UserController {
         // 비밀번호 암호화
         userRepository.passwordEncode(requestUser, requestUser.getId());
 
-        // 닉네임 자동발급 수행
-        nicknameGenerator.generateNickname(requestUser.getId(), requestUser.getNickname());
-
-        // 유저 변경 시각 타임스탬프
-        userRepository.setModifiedDate(requestUser.getId());
+        // 닉네임 자동발급 수행 및 유저 변경시각 타임스탬프
+        userRepository.editNickname(
+                requestUser.getId(),
+                nicknameGenerator.generateNickname(requestUser.getId(), requestUser.getNickname()));
 
         // 유저 Status 컬럼 수정 -> Available
         userRepository.modifyingStatusToAvailable(requestUser.getId());

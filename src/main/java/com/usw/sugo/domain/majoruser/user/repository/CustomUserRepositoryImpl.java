@@ -87,4 +87,13 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .where(user.id.eq(id))
                 .execute();
     }
+
+    @Override
+    public void editNickname(long id, String nickname) {
+        queryFactory
+                .update(user)
+                .set(user.nickname, nickname)
+                .set(user.updatedAt, LocalDateTime.now())
+                .execute();
+    }
 }
