@@ -1,6 +1,5 @@
 package com.usw.sugo.domain.majoruser.userlikepost.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.LikePosting;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static com.usw.sugo.domain.majoruser.QUserLikePost.userLikePost;

@@ -43,6 +43,8 @@ public class UserLikePostController {
     public ResponseEntity<HashMap<String, Boolean>> likePost(
             @RequestHeader String authorization,
             @RequestBody LikePostRequest likePostRequest) {
+        
+        // if 좋아요가 이미 박힌 게시글에 대한 요청이라면 좋아요 삭제
 
         User requestUser = userRepository.findById(
                 jwtResolver.jwtResolveToUserId(authorization.substring(7))).get();
