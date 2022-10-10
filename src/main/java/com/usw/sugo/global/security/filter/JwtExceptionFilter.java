@@ -29,8 +29,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/send-authorization-email",
-                "/user/verify-authorization-email", "/user/join",
-                "/post/all", "/token", "/chat/room"};
+                "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
+                "/user/find-id","/user/find-pw",
+                "/post/all", "/token", "/chat/room", "/chat/room/enter"
+        };
 
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {

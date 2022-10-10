@@ -241,6 +241,7 @@ public class UserController {
     public ResponseEntity<MyPageResponse> userPage(@RequestHeader String authorization, Pageable pageable) {
 
         long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+
         User requestUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 

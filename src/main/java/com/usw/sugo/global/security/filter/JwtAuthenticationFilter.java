@@ -44,7 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/send-authorization-email",
-                "/user/verify-authorization-email", "/user/join",
+                "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
+                "/user/find-id","/user/find-pw",
                 "/post/all", "/token", "/chat/room", "/chat/room/enter"
         };
 
@@ -74,9 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String email = jwtResolver.jwtResolveToUserEmail(token);
+        String loginId = jwtResolver.jwtResolveToUserLoginId(token);
 
         try {
-            UserDetails requestUserDetails = userDetailsService.loadUserByUsername(email);
+            UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
         } catch (CustomException | NoSuchElementException e) {
             JSONObject responseJson = new JSONObject();
             try {

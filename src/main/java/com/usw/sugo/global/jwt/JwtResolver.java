@@ -48,6 +48,16 @@ public class JwtResolver {
         return String.valueOf(claims);
     }
 
+    // AccessToken 에서 loginId 꺼내기
+    public String jwtResolveToUserLoginId(String token) {
+        Object claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token).getBody().get("loginId");
+
+        return String.valueOf(claims);
+    }
+
     // AccessToken 에서 Nickname 꺼내기
     public String jwtResolveToUserNickname(String token) {
         Object claims = Jwts.parserBuilder()
