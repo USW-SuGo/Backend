@@ -42,9 +42,10 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
 
     String[] whiteListURI = {
-            "/user/check-email", "/user/send-authorization-email",
-            "/user/verify-authorization-email/**", "/user/join",
-            "/post/all", "/token", "/chat/*"
+            "/user/check-email", "/user/check-loginId", "/user/send-authorization-email",
+            "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
+            "/user/find-id","/user/find-pw",
+            "/post/all", "/token", "/chat/room", "/chat/room/enter"
     };
 
     @Bean
