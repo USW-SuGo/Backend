@@ -74,7 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
-        String email = jwtResolver.jwtResolveToUserEmail(token);
         String loginId = jwtResolver.jwtResolveToUserLoginId(token);
 
         try {
@@ -93,7 +92,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        UserDetails requestUserDetails = userDetailsService.loadUserByUsername(email);
+        UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
 
         // JWT 를 바탕으로 인증 객체 생성
         Authentication authToken =
