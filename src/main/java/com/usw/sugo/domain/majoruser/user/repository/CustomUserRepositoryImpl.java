@@ -1,6 +1,7 @@
 package com.usw.sugo.domain.majoruser.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +33,11 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     }
 
     @Override
-    public void detailJoin(DetailJoinRequest detailJoinRequest, Long userId) {
+    public void passwordEncode(User requestUser, Long userId) {
         queryFactory
                 .update(user)
-                .set(user.loginId, detailJoinRequest.getLoginId())
-                .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
-                .set(user.nickname, nicknameGenerator.generateNickname(userId, detailJoinRequest.getDepartment()))
-                .set(user.mannerGrade, BigDecimal.ZERO)
-                .set(user.countMannerEvaluation, 0L)
-                .set(user.recentUpPost, LocalDateTime.now().minusDays(1))
-                .set(user.recentEvaluationManner, LocalDateTime.now().minusDays(1))
-                .set(user.status, "NOT_AUTH")
-                .where(user.email.eq(detailJoinRequest.getEmail()))
+                .set(user.password, encoder.encode(requestUser.getPassword()))
+                .where(user.email.eq(requestUser.getEmail()))
                 .execute();
     }
 

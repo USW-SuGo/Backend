@@ -3,14 +3,18 @@ package com.usw.sugo.domain.majoruser.user.service;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
+import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import static com.usw.sugo.domain.majoruser.QUser.user;
 
 @Service
 @Transactional
@@ -18,6 +22,7 @@ import java.util.Date;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final NicknameGenerator nicknameGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 이메일 인증을 하지 않은 회원가입 요청 유저
@@ -35,16 +40,29 @@ public class UserService {
     }
 
     @Transactional
-    public void softJoinAndNicknameGenerate(DetailJoinRequest detailJoinRequest) {
+    public User softJoinAndNicknameGenerate(DetailJoinRequest detailJoinRequest) {
 
         User newSoftUser = User.builder()
                 .email(detailJoinRequest.getEmail())
+                .loginId(detailJoinRequest.getLoginId())
+                .password(detailJoinRequest.getPassword())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .countMannerEvaluation(0)
+                .countTradeAttempt(0)
+                .mannerGrade(BigDecimal.ZERO)
+                .status("NOT_AUTH")
                 .build();
 
-        // 비밀번호 암호화, 닉네임 발급 -> 최종 회원가입 처리
-        userRepository.detailJoin(detailJoinRequest, newSoftUser.getId());
-        // 유저 변경 시각 타임스탬프
-        userRepository.setModifiedDate(newSoftUser.getId());
+        String generatedNickname = nicknameGenerator.generateNickname(
+                newSoftUser.getId(), detailJoinRequest.getDepartment());
+
+        newSoftUser.builder()
+                .nickname(generatedNickname)
+                .build();
+        userRepository.save(newSoftUser);
+
+        return newSoftUser;
     }
 
     /*

@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.majoruser.user.repository;
 
-import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
+import com.usw.sugo.domain.majoruser.User;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -10,7 +10,7 @@ public interface CustomUserRepository {
 
     void modifyingStatusToAvailable(Long id);
 
-    void detailJoin(DetailJoinRequest detailJoinRequest, Long userId);
+    void passwordEncode(User user, Long userId);
 
     void editPassword(Long id, String password);
 

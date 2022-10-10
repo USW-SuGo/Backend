@@ -118,17 +118,12 @@ public class UserController {
     public ResponseEntity<Map<String, Boolean>> sendAuthorizationEmail(
             @RequestBody SendAuthorizationEmailRequest sendAuthorizationEmailRequest) {
 
-        User requestUser = userRepository.findByEmail(sendAuthorizationEmailRequest.getEmail())
-                .orElseThrow(() -> new CustomException(USER_NOT_SENDED_EMAIL_AUTH));
+
 
         // 이메일 토큰 생성 및 DB 저장
 //        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
 //                userEmailAuthService.createEmailAuthToken(newUser.getId());
-        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
-                userEmailAuthService.createEmailAuthToken(requestUser.getId());
 
-        // 이메일 발송
-        sendEmailServiceFromSES.sendStudentAuthContent(sendAuthorizationEmailRequest.getEmail(), authPayload);
 
         // 반환
         Map<String, Boolean> result = new HashMap<>() {{
@@ -143,14 +138,22 @@ public class UserController {
     public String ConfirmEmail(@RequestParam("auth") String payload) {
 
         // 이메일 인증을 요청한 사용자가 DB 에 없으면 에러
-        UserEmailAuth requestUser = userEmailAuthRepository.findByPayload(payload)
+        UserEmailAuth requestUserEmail = userEmailAuthRepository.findByPayload(payload)
                 .orElseThrow(() -> new CustomException(INVALID_AUTH_TOKEN));
 
-        // 이메일 인증 로직
+        User requestUser = requestUserEmail.getUser();
+
+        // 이메일 인증 로직 수행
         userEmailAuthService.authorizeToken(payload);
 
+        // 비밀번호 암호화
+        userRepository.passwordEncode(requestUser, requestUser.getId());
+
+        // 유저 변경 시각 타임스탬프
+        userRepository.setModifiedDate(requestUser.getId());
+
         // 유저 Status 컬럼 수정 -> Available
-        userRepository.modifyingStatusToAvailable(requestUser.getUser().getId());
+        userRepository.modifyingStatusToAvailable(requestUser.getId());
 
         return authSuccessViewForm.successParagraph();
     }
@@ -164,7 +167,14 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
-        userService.softJoinAndNicknameGenerate(detailJoinRequest);
+        // 닉네임 자동생성 반영됨
+        User requestUser = userService.softJoinAndNicknameGenerate(detailJoinRequest);
+
+        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+                userEmailAuthService.createEmailAuthToken(requestUser.getId());
+
+        // 이메일 발송
+        sendEmailServiceFromSES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
 
         // 반환
         return ResponseEntity.status(OK).body(new HashMap<>() {{
