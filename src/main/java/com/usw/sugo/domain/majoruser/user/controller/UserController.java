@@ -16,6 +16,7 @@ import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostReposit
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -166,6 +167,10 @@ public class UserController {
      */
     @PostMapping("/join")
     public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
+
+        if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
+            throw new CustomException(DUPLICATED_LOGINID);
+        }
 
         // 닉네임 자동생성 반영됨
         User requestUser = userService.softJoinAndNicknameGenerate(detailJoinRequest);

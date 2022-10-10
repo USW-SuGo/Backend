@@ -46,6 +46,8 @@ public class UserService {
                 .email(detailJoinRequest.getEmail())
                 .loginId(detailJoinRequest.getLoginId())
                 .password(detailJoinRequest.getPassword())
+                .recentUpPost(LocalDateTime.now().minusDays(1))
+                .recentEvaluationManner(LocalDateTime.now().minusDays(1))
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .countMannerEvaluation(0)
@@ -54,8 +56,12 @@ public class UserService {
                 .status("NOT_AUTH")
                 .build();
 
+        userRepository.save(newSoftUser);
+
+        long newSoftUserId = userRepository.findByEmail(detailJoinRequest.getEmail()).get().getId();
+
         String generatedNickname = nicknameGenerator.generateNickname(
-                newSoftUser.getId(), detailJoinRequest.getDepartment());
+                newSoftUserId, detailJoinRequest.getDepartment());
 
         newSoftUser.builder()
                 .nickname(generatedNickname)
