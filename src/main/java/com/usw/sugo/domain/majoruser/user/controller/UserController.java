@@ -149,6 +149,9 @@ public class UserController {
         if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
         }
+        if (userRepository.findByEmail(detailJoinRequest.getEmail()).isPresent()) {
+            throw new CustomException(DUPLICATED_EMAIL);
+        }
 
         User requestUser = userService.softJoin(detailJoinRequest);
 
