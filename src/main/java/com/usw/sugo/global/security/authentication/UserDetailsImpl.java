@@ -20,10 +20,10 @@ public final class UserDetailsImpl implements UserDetails {
     private final String status;
     private final ArrayList<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String nickname, String loginId, User user, String status, ArrayList<GrantedAuthority> authorities) {
-        this.id = id;
-        this.nickname = nickname;
-        this.loginId = loginId;
+    public UserDetailsImpl(User user, String status, ArrayList<GrantedAuthority> authorities) {
+        this.id = user.getId();
+        this.nickname = user.getNickname();
+        this.loginId = user.getLoginId();
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.status = status;

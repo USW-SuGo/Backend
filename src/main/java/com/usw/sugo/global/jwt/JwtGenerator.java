@@ -46,9 +46,10 @@ public class JwtGenerator {
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", user.getId());
+        claims.put("loginId", user.getLoginId());
         claims.put("nickname", user.getNickname());
         claims.put("email", user.getEmail());
-        claims.put("status", user.getStatus());
+        claims.put("status", user.getStatus().toString());
 
         // Bearer Access Token 생성
         return "Bearer " + Jwts.builder()
@@ -59,7 +60,7 @@ public class JwtGenerator {
                 .compact();
     }
 
-    // 테스트 AccessToken 생성
+    // 필터 내에서 AccessToken 생성
     public String createAccessTokenInFilter(Long id, String loginId, String nickname, String email, String status) {
         Date now = new Date();
         Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
@@ -68,8 +69,8 @@ public class JwtGenerator {
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", id);
-        claims.put("nickname", nickname);
         claims.put("loginId", loginId);
+        claims.put("nickname", nickname);
         claims.put("email", email);
         claims.put("status", status);
 
