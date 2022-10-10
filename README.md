@@ -5,19 +5,19 @@
 | Java/SpringBoot | Spring Data JPA <br> QueryDSL | RDS(MySQL)  |   S3    |
 
 
-| Domain  | Messaging | MailSender |                Deploy               |
-|:-------:|:---------:|:----------:|:-----------------------------------:|
-| Route53 | RabbitMQ  |    SES     | EC2(Ubuntu 20.04) + NGINX + Certbot |
+| Domain  | Messaging | MailSender |                             Deploy Environment                             |
+|:-------:|:---------:|:----------:|:--------------------------------------------------------------------------:|
+| Route53 |   Kafka   |    SES     | EC2(Ubuntu 20.04 / LoadBalance(HTTP/HTTPS) + NGINX + Gradle 7.5.2 + JDK 11 |
 
 ---
 
-# ERD (Ver. 221007)
-![](src/main/resources/erd/SUGO%20ERD-3.png)
+# ERD (Ver. 221010)
+![](src/main/resources/erd/SUGO%20ERD-4.png)
 
 ---
 
-# API 명세서 (Ver. 221007)
-[API 명세서 (Ver. 221007)](https://diger.gitbook.io/untitled-1/)
+# API 명세서 (Ver. 221010)
+[API 명세서 (Ver. 221010)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
