@@ -76,5 +76,4 @@ public class UserLikePostController {
             put("Success", true);
         }});
     }
-
 }

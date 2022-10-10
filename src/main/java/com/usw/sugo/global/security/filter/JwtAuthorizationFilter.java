@@ -72,11 +72,11 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         LoginRequest loginRequest = mapper.readValue(StreamUtils.copyToString(request.getInputStream(),
                 StandardCharset.UTF_8), LoginRequest.class);
 
-        String requestEmail = loginRequest.getEmail();
+        String requestLoginId = loginRequest.getLoginId();
         String requestPassword = loginRequest.getPassword();
 
         try {
-            UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestEmail);
+            UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestLoginId);
         }
         catch (CustomException exception) {
             JSONObject responseJson = new JSONObject();
@@ -93,17 +93,19 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         }
 
 
-        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestEmail);
+        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestLoginId);
 
         Long userId = userDetailsImpl.getId();
+        String loginId = userDetailsImpl.getLoginId();
         String email = userDetailsImpl.getEmail();
         String nickname = userDetailsImpl.getNickname();
+        String status = userDetailsImpl.getStatus();
 
         if (email == null || requestPassword == null) throw new AuthenticationServiceException("DATA IS MISS");
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
             if (refreshTokenRepository.findByUserId(userId).isEmpty()) {
-                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
+                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, loginId, nickname, email, status);
                 String refreshToken = jwtGenerator.createRefreshTokenInFilter(userId);
 
                 Map<String, String> result = new HashMap<>();
@@ -115,7 +117,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             else {
                 User user = userDetailsRepository.findByEmail(email).get();
 
-                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, nickname, email);
+                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, loginId, nickname, email, status);
                 String refreshToken = jwtGenerator.updateRefreshToken(user);
 
                 Map<String, String> result = new HashMap<>();

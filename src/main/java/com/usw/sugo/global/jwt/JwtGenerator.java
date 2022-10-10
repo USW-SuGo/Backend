@@ -60,7 +60,7 @@ public class JwtGenerator {
     }
 
     // 테스트 AccessToken 생성
-    public String createAccessTokenInFilter(Long id, String nickname, String email) {
+    public String createAccessTokenInFilter(Long id, String loginId, String nickname, String email, String status) {
         Date now = new Date();
         Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
@@ -69,7 +69,9 @@ public class JwtGenerator {
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", id);
         claims.put("nickname", nickname);
+        claims.put("loginId", loginId);
         claims.put("email", email);
+        claims.put("status", status);
 
         // Bearer Access Token 생성
         return "Bearer " + Jwts.builder()

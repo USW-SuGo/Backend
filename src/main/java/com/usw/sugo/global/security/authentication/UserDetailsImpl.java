@@ -4,7 +4,6 @@ import com.usw.sugo.domain.majoruser.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,15 +14,19 @@ public final class UserDetailsImpl implements UserDetails {
 
     private final Long id;
     private final String nickname;
+    private final String loginId;
     private final String email;
     private final String password;
+    private final String status;
     private final ArrayList<GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String nickname, User user, ArrayList<GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String nickname, String loginId, User user, String status, ArrayList<GrantedAuthority> authorities) {
         this.id = id;
         this.nickname = nickname;
+        this.loginId = loginId;
         this.email = user.getEmail();
         this.password = user.getPassword();
+        this.status = status;
         this.authorities = authorities;
     }
 

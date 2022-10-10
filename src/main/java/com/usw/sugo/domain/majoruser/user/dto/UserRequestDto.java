@@ -12,7 +12,22 @@ public class UserRequestDto {
     }
 
     @Data
+    public static class IsLoginIdExistRequest {
+        private String loginId;
+    }
+
+    @Data
     public static class SendAuthorizationEmailRequest {
+        private String email;
+    }
+    @Data
+    public static class FindLoginIdRequest {
+        private String email;
+    }
+
+    @Data
+    public static class SendPasswordRequest {
+        private String loginId;
         private String email;
     }
 
@@ -21,6 +36,7 @@ public class UserRequestDto {
     @Data
     public static class DetailJoinRequest {
         private String email;
+        private String loginId;
         private String password;
         private String department;
     }
@@ -28,7 +44,7 @@ public class UserRequestDto {
     // 로그인 요청 DTO
     @Data
     public static class LoginRequest {
-        private String email;
+        private String loginId;
         private String password;
     }
 

@@ -39,6 +39,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     public void detailJoin(DetailJoinRequest detailJoinRequest, Long userId) {
         queryFactory
                 .update(user)
+                .set(user.loginId, detailJoinRequest.getLoginId())
                 .set(user.password, encoder.encode(detailJoinRequest.getPassword()))
                 .set(user.nickname, nicknameGenerator.generateNickname(userId, detailJoinRequest.getDepartment()))
                 .set(user.mannerGrade, BigDecimal.ZERO)

@@ -6,7 +6,9 @@ import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
+import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsLoginIdExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPageResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.OtherUserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
@@ -15,6 +17,7 @@ import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostReposit
 import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
 import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +49,19 @@ public class UserController {
 
     private final UserEmailAuthService userEmailAuthService;
 
+
+    @PostMapping("/check-loginId")
+    public ResponseEntity<IsLoginIdExistResponse> checkLoginId(@RequestBody IsLoginIdExistRequest isLoginIdExistRequest) {
+
+        IsLoginIdExistResponse isLoginIdExistResponse = new IsLoginIdExistResponse(false);
+
+        // 아이디가 중복되었을 때 에러
+        if (userRepository.findByLoginId(isLoginIdExistRequest.getLoginId()).isPresent()) {
+            throw new CustomException(DUPLICATED_LOGINID);
+        }
+        return ResponseEntity.status(OK).body(isLoginIdExistResponse);
+    }
+
     // 이메일 중복 확인
     @PostMapping("/check-email")
     public ResponseEntity<IsEmailExistResponse> checkEmail(@RequestBody IsEmailExistRequest isEmailExistRequest) {
@@ -58,6 +74,45 @@ public class UserController {
         }
 
         return ResponseEntity.status(OK).body(isEmailExistResponse);
+    }
+
+    /**
+     * 아이디 찾기 결과는 이메일로 전송
+     *
+     * @param findLoginIdRequest
+     * @return
+     */
+    @PostMapping("/find-id")
+    public ResponseEntity<Map<String, Boolean>> findId(@RequestBody FindLoginIdRequest findLoginIdRequest) {
+
+        User requestUser = userRepository.findByEmail(findLoginIdRequest.getEmail())
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+
+        sendEmailServiceFromSES.sendFindLoginIdResult(findLoginIdRequest.getEmail(), requestUser.getLoginId());
+
+        return ResponseEntity.status(OK).body(new HashMap<>() {{
+            put("Success", true);
+        }});
+    }
+
+    /**
+     * 비밀번호 초기화 메일 전송
+     * @param authorization
+     * @param sendPasswordRequest
+     * @return
+     */
+    @PostMapping("/find-pw")
+    public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(@RequestHeader String authorization,
+                                                                  @RequestBody SendPasswordRequest sendPasswordRequest) {
+
+        String newPassword = userService.initPassword(
+                jwtResolver.jwtResolveToUserId(authorization.substring(7)));
+
+        sendEmailServiceFromSES.sendFindPasswordResult(sendPasswordRequest.getEmail(),newPassword);
+
+        return ResponseEntity.status(OK).body(new HashMap<>() {{
+            put("Success", true);
+        }});
     }
 
     // 재학생 인증 이메일 전송하기
@@ -80,7 +135,7 @@ public class UserController {
 //                userEmailAuthService.createEmailAuthToken(newUser.getId());
 
         // 이메일 발송
-        sendEmailServiceFromSES.send(sendAuthorizationEmailRequest.getEmail(), authPayload);
+        sendEmailServiceFromSES.sendStudentAuthContent(sendAuthorizationEmailRequest.getEmail(), authPayload);
 
         // 반환
         Map<String, Boolean> result = new HashMap<>() {{
@@ -107,12 +162,23 @@ public class UserController {
         return authSuccessViewForm.successParagraph();
     }
 
+    /**
+     * 회원가입 컨트롤러
+     *
+     * @param detailJoinRequest
+     * @return
+     */
     @PostMapping("/join")
     public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
 
         // DB에 존재하지 않는 유저일 때 에러
         User requestUser = userRepository.findByEmail(detailJoinRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+
+        // 아이디가 중복되었을 때 에러
+        if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
+            throw new CustomException(DUPLICATED_LOGINID);
+        }
 
         userService.realJoin(requestUser, detailJoinRequest);
 
@@ -165,7 +231,9 @@ public class UserController {
         //반환
         return ResponseEntity
                 .status(OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     // 마이 페이지
@@ -212,6 +280,7 @@ public class UserController {
 
     /**
      * 상대 유저 매너 평가하기
+     *
      * @param authorization
      * @param mannerEvaluationRequest
      * @return
