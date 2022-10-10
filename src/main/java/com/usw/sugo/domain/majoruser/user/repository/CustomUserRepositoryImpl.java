@@ -94,6 +94,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .update(user)
                 .set(user.nickname, nickname)
                 .set(user.updatedAt, LocalDateTime.now())
+                .where(user.id.eq(id))
                 .execute();
     }
 }
