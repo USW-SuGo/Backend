@@ -90,7 +90,7 @@ public class SecurityConfig {
 
     // 인증 필터
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() throws Exception {
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(
                 userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
                 userDetailsService, mapper , jwtGenerator, refreshTokenRepository);
@@ -98,7 +98,7 @@ public class SecurityConfig {
 
     // 인가 필터
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(
                 userDetailsService, customAuthenticationManager, jwtResolver, jwtValidator);
     }
