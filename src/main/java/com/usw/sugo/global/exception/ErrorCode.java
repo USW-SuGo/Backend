@@ -20,6 +20,7 @@ public enum ErrorCode {
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "서버 내부 에러입니다. 관리자에게 문의하세요." ),
 
     DUPLICATED_EMAIL(BAD_REQUEST, "이미 인증메일이 발송된 이메일 입니다. 메일 수신함을 확인해주세요."),
+    DUPLICATED_LOGINID(BAD_REQUEST, "이미 존재하는 아이디 입니다."),
     NOT_AUTHORIZED_EMAIL(BAD_REQUEST, "이메일 인증을 수행하지 않은 사용자 입니다. 메일 수신함을 확인해주세요."),
     INVALID_AUTH_TOKEN(BAD_REQUEST, "인증 토큰이 올바르지 않습니다. 관리자에게 문의해주세요"),
     IS_SAME_PASSWORD(BAD_REQUEST, "변경할 비밀번호가 이전과 같습니다."),

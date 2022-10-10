@@ -12,9 +12,19 @@ public class UserResponseDto {
     @Data
     public static class IsEmailExistResponse {
         boolean exist;
-         public IsEmailExistResponse(boolean exist){
-             this.exist = exist;
-         }
+
+        public IsEmailExistResponse(boolean exist) {
+            this.exist = exist;
+        }
+    }
+
+    @Data
+    public static class IsLoginIdExistResponse {
+        boolean exist;
+
+        public IsLoginIdExistResponse(boolean exist) {
+            this.exist = exist;
+        }
     }
 
     @Data
