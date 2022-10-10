@@ -101,6 +101,21 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         String nickname = userDetailsImpl.getNickname();
         String status = userDetailsImpl.getStatus();
 
+        // 이메일 인증을 받지 않은 사용자의 로그인일 때
+        if (status.equals("NOT_AUTH")) {
+            JSONObject responseJson = new JSONObject();
+            response.setContentType("application/json;charset=UTF-8");
+            try {
+                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("Message", "이메일 인증을 받지 않은 사용자입니다. 웹메일에 이메일 인증 링크를 확인해주세요.");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print(responseJson);
+            return null;
+        }
+
         if (email == null || requestPassword == null) throw new AuthenticationServiceException("DATA IS MISS");
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
@@ -140,7 +155,6 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(responseJson);
         }
-
         return null;
     }
 }
