@@ -11,7 +11,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -19,11 +21,14 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChattingRoom {
+public class ChattingRoom implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column
+    private String uuid;
 
     @JoinColumn(name = "product_post_id")
     @OneToOne
@@ -48,4 +53,10 @@ public class ChattingRoom {
 
     @Column
     private String status;
+
+    public static ChattingRoom create() {
+        ChattingRoom chattingRoom = new ChattingRoom();
+        chattingRoom.uuid = UUID.randomUUID().toString();
+        return chattingRoom;
+    }
 }

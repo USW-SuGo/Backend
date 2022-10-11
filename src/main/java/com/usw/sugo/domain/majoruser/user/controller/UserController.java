@@ -163,11 +163,11 @@ public class UserController {
 
         System.out.println(requestUser.getId());
 
-//        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
-//                userEmailAuthService.createEmailAuthToken(requestUser.getId());
-
-        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
                 userEmailAuthService.createEmailAuthToken(requestUser.getId());
+
+//        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
+//                userEmailAuthService.createEmailAuthToken(requestUser.getId());
 
         // 이메일 발송
         sendEmailServiceFromSES.sendStudentAuthContent(requestUser.getEmail(), authPayload);

@@ -61,9 +61,10 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
 
-	// Chatting - WebSocket / Kafka
-	implementation 'org.springframework.kafka:spring-kafka'
+	// Chatting - WebSocket / Redis
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 @RestController
@@ -54,6 +55,7 @@ public class ChattingRoomController {
 
         ChattingRoom chattingRoom = ChattingRoom.builder()
                 .productPost(productPost)
+                .uuid(UUID.randomUUID().toString())
                 .sellerId(seller)
                 .buyerId(buyer)
                 .createdAt(LocalDateTime.now())

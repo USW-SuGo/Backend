@@ -7,7 +7,14 @@ import java.io.Serializable;
 
 @Data
 public class ChattingMessage implements Serializable {
+
+    public enum MessageType{
+        ENTER, MESSAGE, FILE, OUT
+    }
+
+    private MessageType type;
     private long chattingRoomId;
+    private String uuid;
     private String message;
     private MultipartFile[] multipartFileList;
     private long senderId;
