@@ -2,6 +2,7 @@ package com.usw.sugo.domain.majoruser.user.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -9,32 +10,32 @@ public class UserRequestDto {
 
     @Data
     public static class IsEmailExistRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String email;
     }
 
     @Data
     public static class IsLoginIdExistRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String loginId;
     }
 
     @Data
     public static class SendAuthorizationEmailRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String email;
     }
     @Data
     public static class FindLoginIdRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String email;
     }
 
     @Data
     public static class SendPasswordRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String loginId;
-        @NotNull
+        @NotNull @NotBlank
         private String email;
     }
 
@@ -42,47 +43,47 @@ public class UserRequestDto {
     // 부가 정보 입력받는 2차 회원가입 요청 DTO
     @Data
     public static class DetailJoinRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String email;
-        @NotNull
+        @NotNull @NotBlank
         private String loginId;
-        @NotNull
+        @NotNull @NotBlank
         private String password;
-        @NotNull
+        @NotNull @NotBlank
         private String department;
     }
 
     // 로그인 요청 DTO
     @Data
     public static class LoginRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String loginId;
-        @NotNull
+        @NotNull @NotBlank
         private String password;
     }
 
     @Data
     public static class EditPasswordRequest {
-        @NotNull
+        @NotNull @NotBlank
         private Long id;
-        @NotNull
+        @NotNull @NotBlank
         private String password;
     }
 
     // 회원탈퇴 요청
     @Data
     public static class QuitRequest {
-        @NotNull
+        @NotNull @NotBlank
         private String email;
-        @NotNull
+        @NotNull @NotBlank
         private String password;
     }
 
     @Data
     public static class MannerEvaluationRequest {
-        @NotNull
+        @NotNull @NotBlank
         private long targetUserId;
-        @NotNull
+        @NotNull @NotBlank
         private BigDecimal grade;
     }
 }
