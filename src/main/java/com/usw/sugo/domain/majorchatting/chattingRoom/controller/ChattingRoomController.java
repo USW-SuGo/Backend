@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.majorchatting.chattingRoom.controller;
 
 import com.usw.sugo.domain.majorchatting.ChattingRoom;
-import com.usw.sugo.domain.majorchatting.chattingRoom.dto.MessageRequest;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomRequestDto.CreateRoomRequest;
 import com.usw.sugo.domain.majorchatting.chattingRoom.repository.ChattingRoomRepository;
 import com.usw.sugo.domain.majorproduct.ProductPost;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,13 +98,5 @@ public class ChattingRoomController {
         result.put("ChattingRoomFile", chattingRoomRepository.loadChattingRoomFileFormByRoomId(roomId, pageable));
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    /*
-    메세지 입력
-     */
-    @MessageMapping(value = "/chat/message")
-    public void send(MessageRequest request) {
-        messagingTemplate.convertAndSend("/sub/chat/room" + request.getMessage());
     }
 }

@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.majorchatting.chattingRoomMessage.repository;
+package com.usw.sugo.domain.majorchatting.chattingRoomMessaging.repository;
 
 import com.usw.sugo.domain.majorchatting.ChattingRoomMessage;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class UserController {
 
 
     @PostMapping("/check-loginId")
-    public ResponseEntity<IsLoginIdExistResponse> checkLoginId(@RequestBody IsLoginIdExistRequest isLoginIdExistRequest) {
+    public ResponseEntity<IsLoginIdExistResponse> checkLoginId(@Valid @RequestBody IsLoginIdExistRequest isLoginIdExistRequest) {
 
         IsLoginIdExistResponse isLoginIdExistResponse = new IsLoginIdExistResponse(false);
 
@@ -64,7 +65,7 @@ public class UserController {
 
     // 이메일 중복 확인
     @PostMapping("/check-email")
-    public ResponseEntity<IsEmailExistResponse> checkEmail(@RequestBody IsEmailExistRequest isEmailExistRequest) {
+    public ResponseEntity<IsEmailExistResponse> checkEmail(@Valid @RequestBody IsEmailExistRequest isEmailExistRequest) {
 
         IsEmailExistResponse isEmailExistResponse = new IsEmailExistResponse(false);
 
@@ -83,7 +84,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/find-id")
-    public ResponseEntity<Map<String, Boolean>> findId(@RequestBody FindLoginIdRequest findLoginIdRequest) {
+    public ResponseEntity<Map<String, Boolean>> findId(@Valid @RequestBody FindLoginIdRequest findLoginIdRequest) {
 
         User requestUser = userRepository.findByEmail(findLoginIdRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
@@ -103,7 +104,7 @@ public class UserController {
      */
     @PostMapping("/find-pw")
     public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(@RequestHeader String authorization,
-                                                                  @RequestBody SendPasswordRequest sendPasswordRequest) {
+                                                                  @Valid @RequestBody SendPasswordRequest sendPasswordRequest) {
 
         String newPassword = userService.initPassword(
                 jwtResolver.jwtResolveToUserId(authorization.substring(7)));
@@ -144,7 +145,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/join")
-    public ResponseEntity<HashMap<String, Boolean>> detailJoin(@RequestBody DetailJoinRequest detailJoinRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> detailJoin(@Valid @RequestBody DetailJoinRequest detailJoinRequest) {
 
         if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
@@ -181,7 +182,7 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<HashMap<String, Boolean>> editPassword(
             @RequestHeader String authorization,
-            @RequestBody EditPasswordRequest editPasswordRequest) {
+            @Valid @RequestBody EditPasswordRequest editPasswordRequest) {
 
         // 이전 비밀번호와 같은 내용으로 변경하려 할 때
         if (userService.matchingPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
@@ -201,7 +202,8 @@ public class UserController {
 
     // 회원탈퇴
     @DeleteMapping
-    public ResponseEntity<HashMap<String, Boolean>> deleteUser(@RequestHeader String authorization, @RequestBody QuitRequest quitRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> deleteUser(@RequestHeader String authorization,
+                                                               @Valid @RequestBody QuitRequest quitRequest) {
 
         Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
@@ -278,7 +280,7 @@ public class UserController {
 
     @PostMapping("/manner")
     public ResponseEntity<?> userPage(@RequestHeader String authorization,
-                                      @RequestBody MannerEvaluationRequest mannerEvaluationRequest) {
+                                      @Valid @RequestBody MannerEvaluationRequest mannerEvaluationRequest) {
         long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         // 평가를 요청한 유저가 존재하지 않으면 에러

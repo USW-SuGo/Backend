@@ -61,13 +61,9 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
 
-	// Chatting - WebSocket/RabbitMQ
-	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty:2.7.4'
-	implementation 'org.springframework.boot:spring-boot-starter-amqp:2.7.4'
+	// Chatting - WebSocket / Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.webjars:sockjs-client:1.5.1'
-	implementation 'org.webjars:stomp-websocket:2.3.4'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0-rc1'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
