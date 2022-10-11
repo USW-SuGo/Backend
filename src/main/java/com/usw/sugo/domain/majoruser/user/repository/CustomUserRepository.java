@@ -22,4 +22,6 @@ public interface CustomUserRepository {
 
     void editNickname(long id, String nickname);
 
+    void plusCountTradeAttempt(long sellerId, long buyerId);
+
 }

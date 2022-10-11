@@ -32,7 +32,6 @@ public class ChattingRoomController {
     private final ProductPostRepository productPostRepository;
     private final ChattingRoomRepository chattingRoomRepository;
     private final UserRepository userRepository;
-
     private final JwtResolver jwtResolver;
 
     private SimpMessageSendingOperations messagingTemplate;
@@ -64,6 +63,9 @@ public class ChattingRoomController {
                 .build();
 
         chattingRoomRepository.save(chattingRoom);
+
+        // 거래 시도 횟수 + 1
+        userRepository.plusCountTradeAttempt(seller.getId(), buyer.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, Long>() {{
             put("roomId", chattingRoom.getId());

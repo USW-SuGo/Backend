@@ -97,4 +97,18 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .where(user.id.eq(id))
                 .execute();
     }
+
+    @Override
+    public void plusCountTradeAttempt(long sellerId, long buyerId) {
+        queryFactory
+                .update(user)
+                .set(user.countTradeAttempt, user.countTradeAttempt.add(1))
+                .where(user.id.eq(sellerId))
+                .execute();
+        queryFactory
+                .update(user)
+                .set(user.countTradeAttempt, user.countTradeAttempt.add(1))
+                .where(user.id.eq(buyerId))
+                .execute();
+    }
 }
