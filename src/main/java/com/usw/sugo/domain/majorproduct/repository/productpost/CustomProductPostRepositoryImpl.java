@@ -112,7 +112,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost)
                     .where(productPost.category.eq("서적"))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.price.desc())
+                    .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
@@ -128,7 +128,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost)
                     .where(productPost.category.eq("생활용품"))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.price.asc())
+                    .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
@@ -144,7 +144,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost)
                     .where(productPost.category.eq("전자제품"))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.contactPlace.asc())
+                    .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
@@ -160,7 +160,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost)
                     .where(productPost.category.eq("기타"))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.contactPlace.asc())
+                    .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
