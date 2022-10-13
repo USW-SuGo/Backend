@@ -36,7 +36,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {
-                System.out.println("화이트 리스트 (JwtExceptionFilter)");
                 filterChain.doFilter(request, response);
                 return;
             }

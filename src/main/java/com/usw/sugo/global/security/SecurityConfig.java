@@ -45,7 +45,14 @@ public class SecurityConfig {
             "/user/check-email", "/user/check-loginId", "/user/send-authorization-email",
             "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
             "/user/find-id","/user/find-pw",
-            "/post/all", "/token", "/chat/room", "/chat/room/enter"
+            "/post/all", "/token", "/chat/room", "/chat/room/enter",
+            "/images/**",
+            "/js/**",
+            "/css/**",
+            "/webjars/**",
+            "/app",
+            "/gs-guide-websocket/**",
+            "/"
     };
 
     @Bean
@@ -61,20 +68,24 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .antMatchers(whiteListURI).permitAll()
-                .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
-                .and()
-                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        http
-                .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+                .anyRequest().permitAll()
+                ;
+//        http
+//                .authorizeRequests()
+//                .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
+//                .and()
+//                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+//        http
+//                .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
     }
 
-    // AuthenticationManager
     @Bean
+    // AuthenticationManager
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
@@ -84,13 +95,11 @@ public class SecurityConfig {
         return new CustomAuthenticationProvider();
     }
 
-    @Bean
     public JwtExceptionFilter jwtExceptionFilter() {
         return new JwtExceptionFilter(jwtValidator);
     }
 
     // 인증 필터
-    @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(
                 userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
@@ -98,7 +107,6 @@ public class SecurityConfig {
     }
 
     // 인가 필터
-    @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(
                 userDetailsService, customAuthenticationManager, jwtResolver, jwtValidator);

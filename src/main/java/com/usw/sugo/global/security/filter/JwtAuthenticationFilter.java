@@ -51,7 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {
-                System.out.println("화이트 리스트 (AuthenticationFilter)");
                 filterChain.doFilter(request, response);
                 return;
             }

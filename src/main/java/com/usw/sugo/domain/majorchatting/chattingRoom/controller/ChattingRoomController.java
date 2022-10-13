@@ -34,8 +34,6 @@ public class ChattingRoomController {
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
-    private SimpMessageSendingOperations messagingTemplate;
-
     /*
      채팅방 만들기
      (POST) localhost:8080/chatting
