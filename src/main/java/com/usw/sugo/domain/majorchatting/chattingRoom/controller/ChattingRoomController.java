@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -52,12 +51,10 @@ public class ChattingRoomController {
 
         ChattingRoom chattingRoom = ChattingRoom.builder()
                 .productPost(productPost)
-                .uuid(UUID.randomUUID().toString())
                 .sellerId(seller)
                 .buyerId(buyer)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .status(Status.AVAILABLE.getAuthority())
                 .build();
 
         chattingRoomRepository.save(chattingRoom);

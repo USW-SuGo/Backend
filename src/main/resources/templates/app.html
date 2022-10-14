@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+<button onclick="connect()">연결하기</button>
+<script>
+    function connect() {
+
+    alert("테스트")
+
+    var socket = new SockJS('/chat');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/queue/a', function(response) {
+            console.log(response);
+            console.log(JSON.parse(response.body));
+        });
+    });
+}
+</script>
+
+<button onclick="send()">메세지 보내기</button>
+
+        <script>
+            function send() {
+                console.log("sending");
+
+                stompClient.send("chat/message", JSON.stringify(
+                    {
+                        roomId : 4,
+                        senderId : 1,
+                        receiverId : 2,
+                        message : "테스트 1",
+                        multipartFileList : ""
+                    }
+                ))
+            }
+        </script>
+</body>
+</html>

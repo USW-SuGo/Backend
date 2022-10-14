@@ -43,10 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
-                "/user/check-email", "/user/check-loginId", "/user/send-authorization-email",
-                "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
+                "/user/check-email", "/user/check-loginId",
+                "/user/verify-authorization-email/**", "/user/join",
                 "/user/find-id","/user/find-pw",
-                "/post/all", "/token", "/chat/room", "/chat/room/enter"
+                "/post/all",
+                "/token",
+                "/connect", "/message", "queue/chat/room"
         };
 
         for (String whiteList : whiteListURI) {

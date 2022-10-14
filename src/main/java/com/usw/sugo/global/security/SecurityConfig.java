@@ -42,17 +42,13 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
 
     String[] whiteListURI = {
-            "/user/check-email", "/user/check-loginId", "/user/send-authorization-email",
-            "/user/verify-authorization-email", "/user/join", "/user/check-loginId",
+            "/user/check-email", "/user/check-loginId",
+            "/user/verify-authorization-email/**", "/user/join",
             "/user/find-id","/user/find-pw",
-            "/post/all", "/token", "/chat/room", "/chat/room/enter",
-            "/images/**",
-            "/js/**",
-            "/css/**",
-            "/webjars/**",
-            "/app",
-            "/gs-guide-websocket/**",
-            "/"
+            "/post/all",
+            "/token",
+            "/connect", "/message", "queue/chat/room",
+            "/app"
     };
 
     @Bean
@@ -68,17 +64,16 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .antMatchers(whiteListURI).permitAll()
-                .anyRequest().permitAll()
                 ;
-//        http
-//                .authorizeRequests()
-//                .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
-//                .and()
-//                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-//
-//        http
-//                .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+        http
+                .authorizeRequests()
+                .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
+                .and()
+                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
