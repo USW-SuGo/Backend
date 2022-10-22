@@ -2,6 +2,7 @@ package com.usw.sugo.global.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -26,10 +27,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     // /queue 경로로 접근 시 구독 요청을 할 때 쓰인다.
     // /chat 경로로 접근 시 메세지를 보낼 때 쓰인다.
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/queue");
-        config.setApplicationDestinationPrefixes("/chat");
+        // url을 chat/room/3 -> chat.room.3으로 참조하기 위한 설정
+        config.setPathMatcher(new AntPathMatcher("."));
+        config.enableStompBrokerRelay(
+                "/queue", "/topic", "/exchange", "/amq/queue");
     }
 }

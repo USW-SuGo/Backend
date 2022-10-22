@@ -8,6 +8,9 @@ import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDt
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomFileForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomMessageForm;
+import com.usw.sugo.domain.majornote.QNote;
+import com.usw.sugo.domain.majornote.dto.NoteResponseDto;
+import com.usw.sugo.domain.majornote.dto.NoteResponseDto.LoadNoteListForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -19,6 +22,7 @@ import java.util.List;
 import static com.usw.sugo.domain.majorchatting.QChattingRoom.chattingRoom;
 import static com.usw.sugo.domain.majorchatting.QChattingRoomFile.chattingRoomFile;
 import static com.usw.sugo.domain.majorchatting.QChattingRoomMessage.chattingRoomMessage;
+import static com.usw.sugo.domain.majornote.QNote.note;
 import static com.usw.sugo.domain.majoruser.QUser.user;
 
 @Repository
@@ -33,8 +37,8 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
     @Override
     public void deleteBeforeWeek() {
         queryFactory
-                .delete(chattingRoom)
-                .where(chattingRoom.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
+                .delete(note)
+                .where(note.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
                 .execute();
     }
 
@@ -56,7 +60,6 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
                                 chattingRoom.buyerId.id.as("buyerId"),
                                 chattingRoom.sellerId.nickname.as("sellerNickname"),
                                 chattingRoom.buyerId.nickname.as("buyerNickname"),
-                                chattingRoom.recentContent.as("recentContent"),
                                 chattingRoom.updatedAt.as("recentChattingDate")
                         ))
                         .from(chattingRoom)

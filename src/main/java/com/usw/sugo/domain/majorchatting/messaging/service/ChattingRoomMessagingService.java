@@ -73,9 +73,9 @@ public class ChattingRoomMessagingService {
 
     // 메세지 DB 저장
     @Transactional
-    public ChattingMessage uploadMessageByMessaging(ChattingMessage message) {
+    public ChattingMessage uploadMessageByMessaging(ChattingMessage message, long chattingRoomId) {
         // 메세지를 DB에 저장하는 로직 시작
-        ChattingRoom requestChattingRoom = chattingRoomRepository.findById(message.getChattingRoomId())
+        ChattingRoom requestChattingRoom = chattingRoomRepository.findById(chattingRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATTING_ROOM_NOT_FOUND));
 
         User sender = userRepository.findById(message.getSenderId())
@@ -103,10 +103,10 @@ public class ChattingRoomMessagingService {
 
     // 파일 DB 저장
     @Transactional
-    public ChattingMessage uploadFileByMessaging(ChattingMessage message) throws IOException {
+    public ChattingMessage uploadFileByMessaging(ChattingMessage message, long chattingRoomId) throws IOException {
         // 파일을 DB에 저장하는 로직 시작
 
-        ChattingRoom requestChattingRoom = chattingRoomRepository.findById(message.getChattingRoomId())
+        ChattingRoom requestChattingRoom = chattingRoomRepository.findById(chattingRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATTING_ROOM_NOT_FOUND));
 
         User sender = userRepository.findById(message.getSenderId())

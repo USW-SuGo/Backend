@@ -6,39 +6,43 @@
 
 <body>
 <button onclick="connect()">연결하기</button>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
 <script>
     function connect() {
-
-    alert("테스트")
-
-    var socket = new SockJS('/chat');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function(frame) {
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/queue/a', function(response) {
-            console.log(response);
-            console.log(JSON.parse(response.body));
+        var socket = new SockJS('/connect');
+        var stompClient;
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/queue/4', function(response) {
+                console.log(response);
+                console.log(JSON.parse(response.body));
+            });
         });
-    });
-}
-</script>
+    }
 
+</script>
 <button onclick="send()">메세지 보내기</button>
 
-        <script>
-            function send() {
-                console.log("sending");
+<script>
+    function send() {
+        var socket = new SockJS('/connect');
+        var stompClient;
+        stompClient = Stomp.over(socket);
 
-                stompClient.send("chat/message", JSON.stringify(
-                    {
-                        roomId : 4,
-                        senderId : 1,
-                        receiverId : 2,
-                        message : "테스트 1",
-                        multipartFileList : ""
-                    }
-                ))
+        stompClient.send("chat/message", JSON.stringify(
+            {
+                type : "MESSAGE",
+                chattingRoomId : 4,
+                message : "테스트 1",
+                multipartFileList : "",
+                senderId : 1,
+                receiverId : 2
             }
-        </script>
+        ))
+    }
+</script>
 </body>
 </html>

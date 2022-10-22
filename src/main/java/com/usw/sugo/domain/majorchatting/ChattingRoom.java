@@ -42,17 +42,11 @@ public class ChattingRoom implements Serializable {
     @OneToOne
     private User buyerId;
 
-    @Column
-    private String recentContent;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @Column
-    private String status;
 
     public static ChattingRoom create() {
         ChattingRoom chattingRoom = new ChattingRoom();

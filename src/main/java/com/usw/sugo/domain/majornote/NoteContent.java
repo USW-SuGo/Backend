@@ -1,5 +1,6 @@
-package com.usw.sugo.domain.majorchatting;
+package com.usw.sugo.domain.majornote;
 
+import com.usw.sugo.domain.majorchatting.ChattingRoom;
 import com.usw.sugo.domain.majoruser.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,15 +16,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChattingRoomFile {
+public class NoteContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JoinColumn(name = "chatting_room_id")
+    @JoinColumn(name = "note_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private ChattingRoom chattingRoomId;
+    private Note noteId;
 
     @JoinColumn(name = "sender_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -34,7 +35,7 @@ public class ChattingRoomFile {
     private User receiver;
 
     @Column
-    private String imageLink;
+    private String message;
 
     @CreatedDate
     private LocalDateTime createdAt;

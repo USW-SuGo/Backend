@@ -77,6 +77,51 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     /**
      *
      * @param pageable
+     * @param searchValue
+     * @return 검색결과 조회
+     * 수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
+     */
+    public List<SearchResultResponse> searchPostByField(Pageable pageable, String searchValue) {
+
+        List<SearchResultResponse> response = queryFactory
+                .select(Projections.bean(SearchResultResponse.class,
+                        productPost.id,
+                        productPostFile.imageLink,
+                        productPost.contactPlace, productPost.updatedAt,
+                        productPost.title, productPost.price,
+                        productPost.user.nickname, productPost.category))
+                .from(productPost)
+                .where(productPost.title.contains(searchValue))
+                .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                .orderBy(productPost.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
+        int listSize = response.size();
+        String[] imageList;
+
+        // 쿼리로 불러온 게시글 갯수만큼 반복한다.
+        for (int i = 0; i < listSize; i++) {
+            // 각 게시글마다 이미지 링크값을 검사하고, 비어있으면 빈 문자열로 반환하도록 한다.
+            if (response.get(i).getImageLink() == null) {
+                response.get(i).setImageLink("");
+            }
+            // 각 게시글마다 이미지 링크값을 검사하고, 값이 있으면 그 값을 ,로 구분하여 반환한다.
+            else if (response.get(i).getImageLink() != null) {
+                imageList = response.get(i).getImageLink().split(",");
+                response.get(i).setImageLink(Arrays.toString(imageList));
+            }
+        }
+        // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 종료
+
+        return response;
+    }
+
+    /**
+     *
+     * @param pageable
      * @param category
      * @return 메인페이지 조회
      *         수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
@@ -198,7 +243,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                         productPost.id,
                         productPostFile.imageLink,
                         productPost.contactPlace, productPost.updatedAt,
-                        productPost.title, productPost.price,
+                        productPost.title, productPost.content, productPost.price,
                         productPost.user.nickname, productPost.category))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))

@@ -34,11 +34,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 "/post/all",
                 "/token",
                 "/connect", "/message", "queue/chat/room",
-                "/app"
+                "/chat/room", "/chat/rooms", "/room/enter/", "/app", "/connect",
+                "/default"
         };
 
         for (String whiteList : whiteListURI) {
-            if (request.getRequestURI().equals(whiteList)) {
+            if (request.getRequestURI().contains(whiteList)) {
                 filterChain.doFilter(request, response);
                 return;
             }

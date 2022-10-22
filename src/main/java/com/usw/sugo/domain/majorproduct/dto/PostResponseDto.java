@@ -60,6 +60,8 @@ public class PostResponseDto {
         private LocalDateTime updatedAt;
         // 상품 게시글 제목
         private String title;
+        // 상품 게시글 내용
+        private String content;
         // 상품 가격
         private int price;
         // 상품 게시글 작성자
