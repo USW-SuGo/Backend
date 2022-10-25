@@ -32,7 +32,7 @@ public class NoteController {
     private final JwtResolver jwtResolver;
 
     /*
-     채팅방 만들기
+     쪽지 방 만들기
      */
     @PostMapping
     public ResponseEntity<Object> createRoom(@RequestBody CreateNoteRequest request) {

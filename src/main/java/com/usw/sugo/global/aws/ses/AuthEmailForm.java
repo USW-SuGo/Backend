@@ -13,6 +13,7 @@ public class AuthEmailForm {
 
     public String buildContentWithLink(String link) {
         return "<center>\n" +
+                "<image class=\"sugologo\"src=\"https://avatars.githubusercontent.com/u/112926733?s=200&v=4\">" +
                 "\t<div class=\"container\">\n" +
                 "  \n" +
                 "\t\t<h2>수원대학교 재학생 인증 메일입니다.</h2>\n" +
