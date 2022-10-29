@@ -13,17 +13,18 @@ public class AuthEmailForm {
 
     public String buildContentWithLink(String link) {
         return "<center>\n" +
-                "<image class=\"sugologo\"src=\"https://avatars.githubusercontent.com/u/112926733?s=200&v=4\">" +
-                "\t<div class=\"container\">\n" +
-                "  \n" +
-                "\t\t<h2>수원대학교 재학생 인증 메일입니다.</h2>\n" +
-                "  \n" +
-                "\t\t<hr>\n" +
-                "  \t\t<br>\n" +
-                "  \t\t<a href=\"" + link + "\">링크를 클릭하시면 인증 요청이 수행됩니다.</a> " +
+                "\t<image class=\"sugologo\"src=\"https://avatars.githubusercontent.com/u/112926733?s=200&v=4\" style=\"display:block; \"alt=\"SUGOLOGO\">" +
+                "\t<div class=container>\n" +
+                "\t\t안녕하세요. 수원대학교 중고거래 플랫폼 SUGO 입니다.\n" +
+                "\t\t<p>\n" +
+                "                <b>재학생 인증 메일 전송해드립니다. </b>\n" +
+                "\t\t<p>\n" +
+                "\t\t<a href=\"" + link + "\">링크를 클릭하시면 인증 요청이 수행됩니다.</a>  \n" +
+                "                <p>\n" +
+                "\t\t인증이 정상적으로 수행되지 않을 시, sugousw@gmail.com 으로 문의 부탁드립니다. \n" +
+                "\t\t<p>\n" +
+                "\t\t감사합니다.\n" +
                 "\t</div>\n" +
-                "\n" +
-                "  <p><br />인증이 정상적으로 수행되지 않을 시, sugousw@gmail.com 으로 문의 부탁드립니다. 감사합니다.</p>\n" +
                 "</center>";
     }
 

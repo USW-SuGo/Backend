@@ -154,14 +154,14 @@ public class UserController {
             throw new CustomException(DUPLICATED_EMAIL);
         }
 
+        nicknameGenerator.validateDepartment(detailJoinRequest.getDepartment());
+
         User requestUser = userService.softJoin(detailJoinRequest);
 
         // 닉네임 자동발급 수행 및 유저 변경시각 타임스탬프
         userRepository.editNickname(
                 requestUser.getId(),
                 nicknameGenerator.generateNickname(detailJoinRequest.getDepartment()));
-
-        System.out.println(requestUser.getId());
 
 //        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
 //                userEmailAuthService.createEmailAuthToken(requestUser.getId());
@@ -215,8 +215,6 @@ public class UserController {
         if (!userService.matchingPassword(requestUserId, quitRequest.getPassword()))
             throw new CustomException(PASSWORD_NOT_CORRECT);
 
-
-        // 비밀번호 수정
         userRepository.deleteById(requestUserId);
 
         //반환

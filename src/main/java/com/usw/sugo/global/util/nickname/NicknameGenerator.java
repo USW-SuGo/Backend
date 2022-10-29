@@ -72,6 +72,12 @@ public class NicknameGenerator {
         add("시스템반도체융복합학과");
     }};
 
+    public void validateDepartment(String department) {
+        if (!departmentList.contains(department)) {
+            throw new CustomException(INVALID_DEPARTMENT);
+        }
+    }
+
     public String generateNickname(String department) {
         if (!departmentList.contains(department)) {
             throw new CustomException(INVALID_DEPARTMENT);
