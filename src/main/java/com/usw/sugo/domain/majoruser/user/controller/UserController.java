@@ -98,44 +98,23 @@ public class UserController {
 
     /**
      * 비밀번호 초기화 메일 전송
+     *
      * @param authorization
-     * @param sendPasswordRequest
+     * @param findPasswordRequest
      * @return
      */
     @PostMapping("/find-pw")
     public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(@RequestHeader String authorization,
-                                                                  @Valid @RequestBody SendPasswordRequest sendPasswordRequest) {
+                                                                  @Valid @RequestBody FindPasswordRequest findPasswordRequest) {
 
         String newPassword = userService.initPassword(
                 jwtResolver.jwtResolveToUserId(authorization.substring(7)));
 
-        sendEmailServiceFromSES.sendFindPasswordResult(sendPasswordRequest.getEmail(),newPassword);
+        sendEmailServiceFromSES.sendFindPasswordResult(findPasswordRequest.getEmail(), newPassword);
 
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
         }});
-    }
-
-    //이메일 인증 링크 클릭 시
-    @GetMapping("/verify-authorization-email")
-    public String ConfirmEmail(@RequestParam("auth") String payload) {
-
-        // 이메일 인증을 요청한 사용자가 DB 에 없으면 에러
-        UserEmailAuth requestUserEmail = userEmailAuthRepository.findByPayload(payload)
-                .orElseThrow(() -> new CustomException(INVALID_AUTH_TOKEN));
-
-        User requestUser = requestUserEmail.getUser();
-
-        // 이메일 인증 로직 수행
-        userEmailAuthService.authorizeToken(payload);
-
-        // 비밀번호 암호화
-        userRepository.passwordEncode(requestUser, requestUser.getId());
-
-        // 유저 Status 컬럼 수정 -> Available
-        userRepository.modifyingStatusToAvailable(requestUser.getId());
-
-        return authSuccessViewForm.successParagraph();
     }
 
     /**
@@ -145,7 +124,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/join")
-    public ResponseEntity<HashMap<String, Boolean>> detailJoin(@Valid @RequestBody DetailJoinRequest detailJoinRequest) {
+    public ResponseEntity<Map<String, Object>> detailJoin(@Valid @RequestBody DetailJoinRequest detailJoinRequest) {
 
         if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
@@ -163,11 +142,8 @@ public class UserController {
                 requestUser.getId(),
                 nicknameGenerator.generateNickname(detailJoinRequest.getDepartment()));
 
-//        String authPayload = "http://localhost:8080/user/verify-authorization-email?auth=" +
-//                userEmailAuthService.createEmailAuthToken(requestUser.getId());
-
-        String authPayload = "https://api.sugo-diger.com/user/verify-authorization-email?auth=" +
-                userEmailAuthService.createEmailAuthToken(requestUser.getId());
+        // 인증번호 생성
+        String authPayload = userEmailAuthService.createEmailAuthPayload(requestUser.getId());
 
         // 이메일 발송
         sendEmailServiceFromSES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
@@ -175,7 +151,44 @@ public class UserController {
         // 반환
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
+            put("id", requestUser.getId());
         }});
+    }
+
+    // 인증번호 입력 성공 여부 반환
+    @PostMapping("/auth")
+    public ResponseEntity<Map<String, Boolean>> ConfirmEmail(@RequestBody AuthEmailPayload authEmailPayload) {
+
+        String payload = authEmailPayload.getPayload();
+
+        // 인증번호를 입력한 사용자가 DB 에 없으면 에러
+        // message : 이메일 인증을 발송하지 않은 사용자입니다.
+        UserEmailAuth requestUserEmailAuth = userEmailAuthRepository
+                .findByUserId(authEmailPayload.getUserId())
+
+                .orElseThrow(() -> new CustomException(USER_NOT_SEND_AUTH_EMAIL));
+
+        if (requestUserEmailAuth.getPayload().equals(payload)) {
+            // 이메일 인증 테이블에 저장된 유저 인덱스를 토대로 유저 도메인 꺼내오기
+            User requestUser = requestUserEmailAuth.getUser();
+
+            // 이메일 인증 결과 DB에 반영
+            userEmailAuthService.authorizeEmailByPayload(payload);
+
+            // 유저 비밀번호 암호화
+            userRepository.passwordEncode(requestUser, requestUser.getId());
+
+            // 유저 Status 컬럼 수정 -> Available
+            userRepository.modifyingStatusToAvailable(requestUser.getId());
+
+            return ResponseEntity.status(OK).body(new HashMap<>() {{
+                put("Success", true);
+            }});
+        }
+
+        // 인증번호가 DB에 담긴 내용과 다르면 에러
+        // message : 인증번호가 일치하지 않습니다.
+        throw new CustomException(PAYLOAD_NOT_VALID);
     }
 
     // 비밀번호 수정

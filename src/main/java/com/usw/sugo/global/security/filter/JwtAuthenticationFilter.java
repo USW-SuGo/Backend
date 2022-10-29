@@ -44,11 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/check-loginId",
-                "/user/verify-authorization-email/**", "/user/join",
+                "/user/auth", "/user/join",
                 "/user/find-id","/user/find-pw",
                 "/post/all",
                 "/token",
-                "/connect", "/message", "queue/chat/room"
+                "/connect", "/message", "/queue/chat/room",
+                "/chat/**", "/chat/room", "/app", "/connect/**",
+                "/default/**"
         };
 
         for (String whiteList : whiteListURI) {

@@ -11,16 +11,17 @@ public class AuthEmailForm {
         return "SUGO - 재학생 이메일 인증 요청입니다.";
     }
 
-    public String buildContentWithLink(String link) {
+    public String buildContentWithLink(String payload) {
         return "<center>\n" +
-                "\t<image class=\"sugologo\"src=\"https://avatars.githubusercontent.com/u/112926733?s=200&v=4\" style=\"display:block; \"alt=\"SUGOLOGO\">" +
+                "\t<img class=\"sugologo\"src=\"https://avatars.githubusercontent.com/u/112926733?s=200&v=4\" style=\"display:block; \"alt=\"SUGOLOGO\">" +
                 "\t<div class=container>\n" +
                 "\t\t안녕하세요. 수원대학교 중고거래 플랫폼 SUGO 입니다.\n" +
                 "\t\t<p>\n" +
                 "                <b>재학생 인증 메일 전송해드립니다. </b>\n" +
                 "\t\t<p>\n" +
-                "\t\t<a href=\"" + link + "\">링크를 클릭하시면 인증 요청이 수행됩니다.</a>  \n" +
+                "\t\t" + payload + "\n" +
                 "                <p>\n" +
+                "                <b>회원가입 화면</b>에서 위 <b>인증번호를 입력</b>하시면 정상적으로 서비스 이용이 가능합니다." + "\n" +
                 "\t\t인증이 정상적으로 수행되지 않을 시, sugousw@gmail.com 으로 문의 부탁드립니다. \n" +
                 "\t\t<p>\n" +
                 "\t\t감사합니다.\n" +

@@ -43,7 +43,7 @@ public class SecurityConfig {
 
     String[] whiteListURI = {
             "/user/check-email", "/user/check-loginId",
-            "/user/verify-authorization-email/**", "/user/join",
+            "/user/auth", "/user/join",
             "/user/find-id","/user/find-pw",
             "/post/all",
             "/token",
