@@ -22,17 +22,15 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
     @Override
     public boolean checkUserLikeStatusForPost(long userId, long productPostId) {
         List<UserLikePost> fetch = queryFactory
-                .select(userLikePost)
+                .selectFrom(userLikePost)
                 .where(userLikePost.user.id.eq(userId)
                         .and(userLikePost.productPost.id.eq(productPostId)))
                 .fetch();
 
-        // DB에 이미 좋아요 한 내용이 기록되어있으면
-        if (fetch.get(0) != null) {
-            return false;
-        }
-        return true;
+        System.out.println(fetch.size());
 
+        // DB에 이미 좋아요 한 내용이 기록되어있으면 True 반환
+        return fetch.size() > 0;
     }
 
     @Override
