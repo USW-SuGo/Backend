@@ -35,7 +35,7 @@ public class EmailForm {
                 "\t<div class=container>\n" +
                 "\t\t안녕하세요. 수원대학교 중고거래 플랫폼 SUGO 입니다.\n" +
                 "\t\t<p>\n" +
-                "                <b>재학생 인증 메일 전송해드립니다. </b>\n" +
+                "                <b>아이디 찾기 결과를 안내해드립니다. </b>\n" +
                 "\t\t<p>\n" +
                 "\t\t" + loginId + "\n" +
                 "                <p>\n" +
