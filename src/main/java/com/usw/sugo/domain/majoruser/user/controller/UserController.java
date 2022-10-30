@@ -61,6 +61,8 @@ public class UserController {
     @PostMapping("/check-email")
     public ResponseEntity<IsEmailExistResponse> checkEmail(@Valid @RequestBody IsEmailExistRequest isEmailExistRequest) {
 
+        userService.validateSuwonAcKrEmail(isEmailExistRequest.getEmail());
+
         IsEmailExistResponse isEmailExistResponse = new IsEmailExistResponse(false);
 
         // 이메일이 DB에 존재하면
@@ -120,15 +122,13 @@ public class UserController {
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> detailJoin(@Valid @RequestBody DetailJoinRequest detailJoinRequest) {
 
-        if (userRepository.findByLoginId(detailJoinRequest.getLoginId()).isPresent()) {
-            throw new CustomException(DUPLICATED_LOGINID);
-        }
-        if (userRepository.findByEmail(detailJoinRequest.getEmail()).isPresent()) {
-            throw new CustomException(DUPLICATED_EMAIL);
-        }
+        // 아이디 및 이메일 검증 시작
+        // userService.validateSuwonAcKrEmail(detailJoinRequest.getEmail());
+        userService.validateIsLoginIdAvailable(detailJoinRequest.getLoginId());
+        userService.validateIsEmailIsAvailable(detailJoinRequest.getEmail());
+        // 아이디 및 이메일 검증 종료
 
-        nicknameGenerator.validateDepartment(detailJoinRequest.getDepartment());
-
+        // Soft Join 수행
         User requestUser = userService.softJoin(detailJoinRequest);
 
         // 닉네임 자동발급 수행 및 유저 변경시각 타임스탬프

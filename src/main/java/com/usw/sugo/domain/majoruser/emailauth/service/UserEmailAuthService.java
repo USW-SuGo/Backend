@@ -20,7 +20,7 @@ public class UserEmailAuthService {
 
     private final UserRepository userRepository;
     private final UserEmailAuthRepository userEmailAuthRepository;
-
+ 
     // 인증번호 전송을 위한 랜덤 인증번호 생성 및 DB에 저장
     public String createEmailAuthPayload(Long userId) {
 

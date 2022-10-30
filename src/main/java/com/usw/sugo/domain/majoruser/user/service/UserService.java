@@ -3,7 +3,7 @@ package com.usw.sugo.domain.majoruser.user.service;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
-import com.usw.sugo.global.util.nickname.NicknameGenerator;
+import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,38 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import static com.usw.sugo.global.exception.ErrorCode.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final NicknameGenerator nicknameGenerator;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public void validateSuwonAcKrEmail(String email) {
+
+        // 학교 이메일 양식과 맞지 않으면
+        if (!email.substring(12).equals("@suwon.ac.kr")) {
+            throw new CustomException(EMAIL_NOT_VALIDATED);
+        }
+    }
+
+    @Transactional
+    public void validateIsLoginIdAvailable(String loginId) {
+        if (userRepository.findByLoginId(loginId).isPresent()){
+            throw new CustomException(DUPLICATED_LOGINID);
+        }
+    }
+
+    @Transactional
+    public void validateIsEmailIsAvailable(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new CustomException(DUPLICATED_EMAIL);
+        }
+    }
+
 
     // 이메일 인증을 하지 않은 회원가입 요청 유저
     @Transactional
