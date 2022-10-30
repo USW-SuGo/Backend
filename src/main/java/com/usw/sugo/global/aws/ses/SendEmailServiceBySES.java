@@ -2,14 +2,15 @@ package com.usw.sugo.global.aws.ses;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
+import com.usw.sugo.global.aws.ses.mailfrom.EmailForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SendEmailServiceFromSES {
+public class SendEmailServiceBySES {
 
-    private final AuthEmailForm authEmailForm;
+    private final EmailForm emailForm;
 
     private final AmazonSimpleEmailService amazonSimpleEmailService;
 
@@ -18,9 +19,9 @@ public class SendEmailServiceFromSES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(authEmailForm.setSubject()))
+                .withSubject(createContent(emailForm.setSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(authEmailForm.buildContentWithLink(link))));
+                        .withHtml(createContent(emailForm.buildContentWithLink(link))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")
@@ -35,9 +36,9 @@ public class SendEmailServiceFromSES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(authEmailForm.setSubject()))
+                .withSubject(createContent(emailForm.setSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(authEmailForm.buildContentByFindLoginId(loginId))));
+                        .withHtml(createContent(emailForm.buildContentByFindLoginId(loginId))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")
@@ -52,9 +53,9 @@ public class SendEmailServiceFromSES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(authEmailForm.setSubject()))
+                .withSubject(createContent(emailForm.setSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(authEmailForm.buildContentByFindPasswordString(newPassowrd))));
+                        .withHtml(createContent(emailForm.buildContentByFindPasswordString(newPassowrd))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")

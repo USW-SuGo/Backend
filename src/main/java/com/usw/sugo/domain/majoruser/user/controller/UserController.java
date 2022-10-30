@@ -13,8 +13,7 @@ import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.OtherUserPageRespo
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
 import com.usw.sugo.domain.majoruser.user.service.UserService;
 import com.usw.sugo.domain.majoruser.userlikepost.repository.UserLikePostRepository;
-import com.usw.sugo.global.aws.ses.AuthSuccessViewForm;
-import com.usw.sugo.global.aws.ses.SendEmailServiceFromSES;
+import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
@@ -41,13 +40,8 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserLikePostRepository userLikePostRepository;
     private final ProductPostRepository productPostRepository;
-
-    private final SendEmailServiceFromSES sendEmailServiceFromSES;
-
-    private final AuthSuccessViewForm authSuccessViewForm;
-
+    private final SendEmailServiceBySES sendEmailServiceBySES;
     private final UserEmailAuthRepository userEmailAuthRepository;
-
     private final UserEmailAuthService userEmailAuthService;
 
 
@@ -89,7 +83,7 @@ public class UserController {
         User requestUser = userRepository.findByEmail(findLoginIdRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
-        sendEmailServiceFromSES.sendFindLoginIdResult(findLoginIdRequest.getEmail(), requestUser.getLoginId());
+        sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequest.getEmail(), requestUser.getLoginId());
 
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
@@ -110,7 +104,7 @@ public class UserController {
         String newPassword = userService.initPassword(
                 jwtResolver.jwtResolveToUserId(authorization.substring(7)));
 
-        sendEmailServiceFromSES.sendFindPasswordResult(findPasswordRequest.getEmail(), newPassword);
+        sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequest.getEmail(), newPassword);
 
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
@@ -146,7 +140,7 @@ public class UserController {
         String authPayload = userEmailAuthService.createEmailAuthPayload(requestUser.getId());
 
         // 이메일 발송
-        sendEmailServiceFromSES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
+        sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
 
         // 반환
         return ResponseEntity.status(OK).body(new HashMap<>() {{
