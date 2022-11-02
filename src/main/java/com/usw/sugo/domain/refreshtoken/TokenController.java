@@ -6,13 +6,16 @@ import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
 import static org.springframework.http.HttpStatus.OK;
@@ -43,10 +46,20 @@ public class TokenController {
             String accessToken = jwtGenerator.createAccessToken(requestUser);
             String refreshToken = jwtGenerator.updateRefreshToken(requestUser);
 
-            return ResponseEntity.status(OK).body(new HashMap<>() {{
+            Map<String, String> result = new HashMap<>() {{
                 put("AccessToken", accessToken);
                 put("RefreshToken", refreshToken);
-            }});
+            }};
+
+            HttpHeaders response = new HttpHeaders();
+
+            response.set("Authorization", result.toString());
+
+            return ResponseEntity.status(OK)
+                    .headers(response)
+                    .body(new HashMap<>() {{
+                        put("Success", true);
+                    }});
         }
         // 해당 리프레시 토큰이 DB에 없으면 에러
         throw new CustomException(JWT_MALFORMED_EXCEPTION);
