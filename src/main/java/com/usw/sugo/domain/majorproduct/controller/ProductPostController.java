@@ -1,9 +1,6 @@
 package com.usw.sugo.domain.majorproduct.controller;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto;
 import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.*;
-import com.usw.sugo.domain.majorproduct.dto.PostResponseDto;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.SearchResultResponse;
