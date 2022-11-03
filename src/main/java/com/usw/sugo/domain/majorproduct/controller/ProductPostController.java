@@ -40,11 +40,12 @@ public class ProductPostController {
      * @return
      */
     @GetMapping("/search")
-    public ResponseEntity<List<SearchResultResponse>> searchPost(@RequestParam SearchValue value, Pageable pageable) {
+    public ResponseEntity<List<SearchResultResponse>> searchPost(
+            @RequestParam String value, @RequestParam String category, Pageable pageable) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(productPostRepository.searchPost(pageable, value.getSearchValue()));
+                .body(productPostRepository.searchPost(pageable, value, category));
     }
 
     // 모든 게시물 조회하기

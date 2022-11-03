@@ -6,11 +6,6 @@ import lombok.Data;
 public class PostRequestDto {
 
     @Data
-    public static class SearchValue {
-        private String searchValue;
-    }
-
-    @Data
     public static class PostingRequest {
         private long productPostId;
         private String title;
