@@ -101,7 +101,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .limit(pageable.getPageSize())
                     .fetch();
         }
-        else if (category.equals("서적")) {
+        else if (!category.equals("")) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,
@@ -110,55 +110,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPost.title, productPost.price,
                             productPost.user.nickname, productPost.category))
                     .from(productPost)
-                    .where(productPost.category.eq("서적"))
-                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.updatedAt.desc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-        }
-        else if (category.equals("생활용품")) {
-            response = queryFactory
-                    .select(Projections.bean(MainPageResponse.class,
-                            productPost.id,
-                            productPostFile.imageLink,
-                            productPost.contactPlace, productPost.updatedAt,
-                            productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
-                    .from(productPost)
-                    .where(productPost.category.eq("생활용품"))
-                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.updatedAt.desc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-        }
-        else if (category.equals("전자제품")) {
-            response = queryFactory
-                    .select(Projections.bean(MainPageResponse.class,
-                            productPost.id,
-                            productPostFile.imageLink,
-                            productPost.contactPlace, productPost.updatedAt,
-                            productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
-                    .from(productPost)
-                    .where(productPost.category.eq("전자제품"))
-                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                    .orderBy(productPost.updatedAt.desc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-        }
-        else if (category.equals("기타")) {
-            response = queryFactory
-                    .select(Projections.bean(MainPageResponse.class,
-                            productPost.id,
-                            productPostFile.imageLink,
-                            productPost.contactPlace, productPost.updatedAt,
-                            productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
-                    .from(productPost)
-                    .where(productPost.category.eq("기타"))
+                    .where(productPost.category.eq(category))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
