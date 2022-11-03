@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface CustomProductPostRepository {
 
-    List<SearchResultResponse> searchPost(Pageable pageable, String searchValue, String category);
+    List<SearchResultResponse> searchPost(String searchValue, String category);
 
     List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category);
 

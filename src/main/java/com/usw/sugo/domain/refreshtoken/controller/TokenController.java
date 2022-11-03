@@ -1,6 +1,7 @@
-package com.usw.sugo.domain.refreshtoken;
+package com.usw.sugo.domain.refreshtoken.controller;
 
 import com.usw.sugo.domain.majoruser.User;
+import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;

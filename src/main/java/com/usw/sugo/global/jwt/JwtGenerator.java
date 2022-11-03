@@ -146,7 +146,7 @@ public class JwtGenerator {
         return "Bearer " + stringRefreshToken;
     }
 
-    //AccessToken 생성
+    // RefershToken 갱신
     @Transactional
     public String updateRefreshToken(User user) {
         Date now = new Date();

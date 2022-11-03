@@ -30,13 +30,13 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
     /**
      *
-     * @param pageable
      * @param searchValue
+     * @param category
      * @return 검색결과 조회
-     * 수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
+     * 수정날짜 내림차순
      */
     @Override
-    public List<SearchResultResponse> searchPost(Pageable pageable, String searchValue, String category) {
+    public List<SearchResultResponse> searchPost(String searchValue, String category) {
 
         List<SearchResultResponse> response = queryFactory
                     .select(Projections.bean(SearchResultResponse.class,
@@ -49,8 +49,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .where(productPost.title.contains(searchValue).and(productPost.category.eq(category)))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
                     .fetch();
 
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작

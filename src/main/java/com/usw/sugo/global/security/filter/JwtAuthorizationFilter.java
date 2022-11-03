@@ -119,6 +119,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         if (email == null || requestPassword == null) throw new AuthenticationServiceException("DATA IS MISS");
 
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
+            // 리프레시 토큰을 한 번도 발급받지 않은 유저일 때 -> 리프레시 토큰 신규 발급
             if (refreshTokenRepository.findByUserId(userId).isEmpty()) {
                 String accessToken = jwtGenerator.createAccessTokenInFilter(userId, loginId, nickname, email, status);
                 String refreshToken = jwtGenerator.createRefreshTokenInFilter(userId);
@@ -129,6 +130,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
                 response.setHeader("Authorization", result.toString());
                 response.flushBuffer();
             }
+            // 리프레시 토큰을 발급받은 적이 있는 유저일 때 -> 리프래시 토큰은 갱신한다.
             else {
                 User user = userDetailsRepository.findByEmail(email).get();
 
