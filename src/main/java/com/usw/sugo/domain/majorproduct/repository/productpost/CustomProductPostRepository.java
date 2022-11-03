@@ -9,7 +9,6 @@ import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPosting;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository

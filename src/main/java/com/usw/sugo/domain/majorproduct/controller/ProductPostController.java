@@ -40,8 +40,7 @@ public class ProductPostController {
      * @return
      */
     @GetMapping("/search")
-    public ResponseEntity<List<SearchResultResponse>> searchPost(Pageable pageable,
-                                                                 @RequestBody SearchValue searchValue) {
+    public ResponseEntity<List<SearchResultResponse>> searchPost(@RequestParam SearchValue searchValue, Pageable pageable) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
