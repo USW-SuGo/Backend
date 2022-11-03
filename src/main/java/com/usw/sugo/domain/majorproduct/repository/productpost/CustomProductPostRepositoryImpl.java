@@ -29,7 +29,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     private final JPAQueryFactory queryFactory;
 
     /**
-     *
      * @param searchValue
      * @param category
      * @return 검색결과 조회
@@ -38,7 +37,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     @Override
     public List<SearchResultResponse> searchPost(String searchValue, String category) {
 
-        List<SearchResultResponse> response = queryFactory
+        if (category.equals("")) {
+            List<SearchResultResponse> response = queryFactory
                     .select(Projections.bean(SearchResultResponse.class,
                             productPost.id,
                             productPostFile.imageLink,
@@ -46,10 +46,24 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPost.title, productPost.price,
                             productPost.user.nickname, productPost.category))
                     .from(productPost)
-                    .where(productPost.title.contains(searchValue).and(productPost.category.eq(category)))
+                    .where(productPost.title.contains(searchValue))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .fetch();
+        }
+
+        List<SearchResultResponse> response = queryFactory
+                .select(Projections.bean(SearchResultResponse.class,
+                        productPost.id,
+                        productPostFile.imageLink,
+                        productPost.contactPlace, productPost.updatedAt,
+                        productPost.title, productPost.price,
+                        productPost.user.nickname, productPost.category))
+                .from(productPost)
+                .where(productPost.title.contains(searchValue).and(productPost.category.eq(category)))
+                .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                .orderBy(productPost.updatedAt.desc())
+                .fetch();
 
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
         int listSize = response.size();
@@ -73,11 +87,10 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     }
 
     /**
-     *
      * @param pageable
      * @param category
      * @return 메인페이지 조회
-     *         수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
+     * 수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
      */
     @Override
     public List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category) {
@@ -98,8 +111,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
-        }
-        else if (!category.equals("")) {
+        } else if (!category.equals("")) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,
