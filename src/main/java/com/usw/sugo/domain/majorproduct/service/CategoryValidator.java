@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class CategoryValidator {
 
     public static boolean validateCategory(String category) {
-        if (category.equals("서적") || category.equals("생활용품") || category.equals("전자제품") || category.equals("기타")) {
+        if (category.equals("서적") || category.equals("생활용품") || category.equals("전자기기") || category.equals("기타")) {
             return true;
         }
 
