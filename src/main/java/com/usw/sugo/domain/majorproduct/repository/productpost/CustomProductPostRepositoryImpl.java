@@ -2,7 +2,8 @@ package com.usw.sugo.domain.majorproduct.repository.productpost;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PostingRequest;
+import com.usw.sugo.domain.majorproduct.service.CategoryValidator;
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.SearchResultResponse;
@@ -27,18 +28,19 @@ import static com.usw.sugo.domain.majorproduct.QProductPostFile.productPostFile;
 public class CustomProductPostRepositoryImpl implements CustomProductPostRepository {
 
     private final JPAQueryFactory queryFactory;
-
     /**
-     * @param searchValue
-     * @param category
+     * @param value
+     * @param inputCategory
      * @return 검색결과 조회
      * 수정날짜 내림차순
      */
     @Override
-    public List<SearchResultResponse> searchPost(String searchValue, String category) {
+    public List<SearchResultResponse> searchPost(String value, String inputCategory) {
 
-        if (category.equals("")) {
-            List<SearchResultResponse> response = queryFactory
+        List<SearchResultResponse> response = new ArrayList<>();
+
+        if (inputCategory == null) {
+            response = queryFactory
                     .select(Projections.bean(SearchResultResponse.class,
                             productPost.id,
                             productPostFile.imageLink,
@@ -46,24 +48,27 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPost.title, productPost.price,
                             productPost.user.nickname, productPost.category))
                     .from(productPost)
-                    .where(productPost.title.contains(searchValue))
+                    .where(productPost.title.contains(value))
+                    .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .orderBy(productPost.updatedAt.desc())
+                    .fetch();
+            System.out.println("response = " + response);
+        }
+        else if (CategoryValidator.validateCategory(inputCategory)){
+            response = queryFactory
+                    .select(Projections.bean(SearchResultResponse.class,
+                            productPost.id,
+                            productPostFile.imageLink,
+                            productPost.contactPlace, productPost.updatedAt,
+                            productPost.title, productPost.price,
+                            productPost.user.nickname, productPost.category))
+                    .from(productPost)
+                    .where(productPost.title.contains(value)
+                            .and(productPost.category.eq(inputCategory)))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .fetch();
         }
-
-        List<SearchResultResponse> response = queryFactory
-                .select(Projections.bean(SearchResultResponse.class,
-                        productPost.id,
-                        productPostFile.imageLink,
-                        productPost.contactPlace, productPost.updatedAt,
-                        productPost.title, productPost.price,
-                        productPost.user.nickname, productPost.category))
-                .from(productPost)
-                .where(productPost.title.contains(searchValue).and(productPost.category.eq(category)))
-                .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                .orderBy(productPost.updatedAt.desc())
-                .fetch();
 
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
         int listSize = response.size();
@@ -88,16 +93,16 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
     /**
      * @param pageable
-     * @param category
+     * @param inputCategory
      * @return 메인페이지 조회
      * 수정날짜 내림차순으로, 10개를 뽑아온다. (페이징)
      */
     @Override
-    public List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category) {
+    public List<MainPageResponse> loadMainPagePostList(Pageable pageable, String inputCategory) {
 
         List<MainPageResponse> response = new ArrayList<>();
 
-        if (category.equals("")) {
+        if (inputCategory == null) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,
@@ -111,7 +116,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
-        } else if (!category.equals("")) {
+        }
+        else if (CategoryValidator.validateCategory(inputCategory)) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,
@@ -120,7 +126,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPost.title, productPost.price,
                             productPost.user.nickname, productPost.category))
                     .from(productPost)
-                    .where(productPost.category.eq(category))
+                    .where(productPost.category.eq(inputCategory))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
@@ -217,21 +223,21 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
     @Override
     public void editPostContent(StringBuilder imageLinkStringBuilder,
-                                PostingRequest postingRequest) {
+                                PutContentRequest putContentRequest) {
         queryFactory
                 .update(productPost)
-                .set(productPost.title, postingRequest.getTitle())
-                .set(productPost.content, postingRequest.getContent())
-                .set(productPost.price, postingRequest.getPrice())
-                .set(productPost.contactPlace, postingRequest.getContactPlace())
-                .set(productPost.category, postingRequest.getCategory())
-                .where(productPost.id.eq(postingRequest.getProductPostId()))
+                .set(productPost.title, putContentRequest.getTitle())
+                .set(productPost.content, putContentRequest.getContent())
+                .set(productPost.price, putContentRequest.getPrice())
+                .set(productPost.contactPlace, putContentRequest.getContactPlace())
+                .set(productPost.category, putContentRequest.getCategory())
+                .where(productPost.id.eq(putContentRequest.getProductPostId()))
                 .execute();
 
         queryFactory
                 .update(productPostFile)
                 .set(productPostFile.imageLink, imageLinkStringBuilder.toString())
-                .where(productPostFile.productPost.id.eq(postingRequest.getProductPostId()))
+                .where(productPostFile.productPost.id.eq(putContentRequest.getProductPostId()))
                 .execute();
     }
 
@@ -239,7 +245,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     public void convertStatus(long productPostId) {
         queryFactory
                 .update(productPost)
-                .set(productPost.status, true)
+                .set(productPost.status, false)
                 .where(productPost.id.eq(productPostId))
                 .execute();
     }

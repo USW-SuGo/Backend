@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class ProductPostController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchResultResponse>> searchPost(
-            @RequestParam String value, @RequestParam String category) {
+            @RequestParam String value, @RequestParam(required = false) String category) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -50,10 +51,8 @@ public class ProductPostController {
 
     // 모든 게시물 조회하기
     @GetMapping("/all")
-    public ResponseEntity<List<MainPageResponse>> loadMainPage(Pageable pageable,
-                                                               @RequestParam(required = false) String category) {
-
-        if (category == null) category = "";
+    public ResponseEntity<List<MainPageResponse>> loadMainPage(
+            Pageable pageable, @RequestParam(required = false) String category) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -78,9 +77,9 @@ public class ProductPostController {
      * @return 게시글 작성 성공여부
      */
     @PostMapping
-    public ResponseEntity<HashMap<String, Boolean>> postContent(@RequestHeader String authorization,
-                                                                PostingRequest postingRequest,
-                                              @RequestBody MultipartFile[] multipartFileList) throws IOException {
+    public ResponseEntity<Map<String, Boolean>> postContent(@RequestHeader String authorization,
+                                                            PostingRequest postingRequest,
+                                                            @RequestBody MultipartFile[] multipartFileList) throws IOException {
 
         commonProductService.savePosting(authorization, postingRequest, multipartFileList);
 
@@ -95,11 +94,11 @@ public class ProductPostController {
     @PutMapping
     public ResponseEntity<Object> editContentImage(@RequestHeader String authorization,
                                                   @RequestBody MultipartFile[] multipartFileList,
-                                                  PostingRequest postingRequest) throws IOException {
+                                                  PutContentRequest putContentRequest) throws IOException {
 
-        StringBuilder imageLinkStringBuilder = commonProductService.savePosting(authorization, postingRequest, multipartFileList);
+        StringBuilder imageLinkStringBuilder = commonProductService.putPosting(authorization, putContentRequest, multipartFileList);
 
-        productPostRepository.editPostContent(imageLinkStringBuilder, postingRequest);
+        productPostRepository.editPostContent(imageLinkStringBuilder, putContentRequest);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
