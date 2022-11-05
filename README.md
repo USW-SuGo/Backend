@@ -7,17 +7,17 @@
 
 | Domain  | Messaging | MailSender |                             Deploy Environment                             |
 |:-------:|:---------:|:----------:|:--------------------------------------------------------------------------:|
-| Route53 |   Kafka   |    SES     | EC2(Ubuntu 20.04 / LoadBalance(HTTP/HTTPS) + NGINX + Gradle 7.5.2 + JDK 11 |
+| Route53 | RabbitMQ  |    SES     | EC2(Ubuntu 20.04 / LoadBalance(HTTP/HTTPS) + NGINX + Gradle 7.5.2 + JDK 11 |
 
 ---
 
-# ERD (Ver. 221010)
-![](src/main/resources/erd/SUGO%20ERD-4.png)
+# ERD (Ver. 22/11/05)
+![](src/main/resources/erd/SUGO%20ERD-5.png)
 
 ---
 
-# API 명세서 (Ver. 221010)
-[API 명세서 (Ver. 221010)](https://diger.gitbook.io/untitled-1/)
+# API 명세서 (Ver. 22/11/05)
+[API 명세서 (Ver. 22/11/05)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
@@ -31,4 +31,3 @@
 2. JWT Filter 적용
 3. Spring Security 로 인증 인가 관리 
 4. Clean Code Convention
-5. AOP 를 통한 유저 권한(Status Column) 체크 후 요청 처리
