@@ -1,6 +1,5 @@
 package com.usw.sugo.domain.majoruser.emailauth.repository;
 
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import lombok.RequiredArgsConstructor;

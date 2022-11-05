@@ -36,12 +36,12 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     private final JPAQueryFactory queryFactory;
 
 
-    // 1주일 동안 채팅이 이루어지지 않으면 자동 삭제
+    // 한달 동안 쪽지가 이루어지지 않으면 자동 삭제
     @Override
     public void deleteBeforeWeek() {
         queryFactory
                 .delete(note)
-                .where(note.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
+                .where(note.updatedAt.before(LocalDateTime.now().minusMonths(1)))
                 .execute();
     }
 
