@@ -19,9 +19,9 @@ public class SendEmailServiceBySES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(emailForm.setSubject()))
+                .withSubject(createContent(emailForm.setStudentAuthFormSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(emailForm.buildContentWithLink(link))));
+                        .withHtml(createContent(emailForm.buildStudentAuthForm(link))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")
@@ -36,9 +36,9 @@ public class SendEmailServiceBySES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(emailForm.setSubject()))
+                .withSubject(createContent(emailForm.setStudentFindLoginIdSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(emailForm.buildContentByFindLoginId(loginId))));
+                        .withHtml(createContent(emailForm.buildFindLoginIdForm(loginId))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")
@@ -53,9 +53,9 @@ public class SendEmailServiceBySES {
         Destination destination = new Destination().withToAddresses(receivers);
 
         Message message = new Message()
-                .withSubject(createContent(emailForm.setSubject()))
+                .withSubject(createContent(emailForm.setStudentFindPasswordSubject()))
                 .withBody(new Body()
-                        .withHtml(createContent(emailForm.buildContentByFindPasswordString(newPassowrd))));
+                        .withHtml(createContent(emailForm.buildFindPasswordForm(newPassowrd))));
 
         SendEmailRequest buildingRequest = new SendEmailRequest()
                 .withSource("sugousw@gmail.com")

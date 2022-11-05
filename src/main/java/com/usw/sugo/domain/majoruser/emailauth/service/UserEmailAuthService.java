@@ -7,13 +7,13 @@ import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepositor
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +59,11 @@ public class UserEmailAuthService {
 
     // 인증번호 인증 됨에 따른 DB에 반영
     public void authorizeEmailByPayload(String payload) {
-        Optional<UserEmailAuth> requestUser = userEmailAuthRepository.findByPayload(payload);
-
         userEmailAuthRepository.confirmToken(payload);
+    }
+    // 1시간 내로 인증을 수행하지 않으면 제거
+    @Scheduled(cron = "0 * * * * *")
+    public void deleteAuthenticatedUserAndToken() {
+        userEmailAuthRepository.deleteBeforeWeek();
     }
 }

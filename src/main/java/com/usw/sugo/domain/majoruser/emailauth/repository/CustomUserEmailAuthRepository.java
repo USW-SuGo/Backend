@@ -7,4 +7,6 @@ public interface CustomUserEmailAuthRepository {
 
     void confirmToken(String payload);
 
+    void deleteBeforeWeek();
+
 }

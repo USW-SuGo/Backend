@@ -8,9 +8,6 @@ import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDt
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomFileForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomForm;
 import com.usw.sugo.domain.majorchatting.chattingRoom.dto.ChattingRoomResponseDto.LoadChattingRoomMessageForm;
-import com.usw.sugo.domain.majornote.QNote;
-import com.usw.sugo.domain.majornote.dto.NoteResponseDto;
-import com.usw.sugo.domain.majornote.dto.NoteResponseDto.LoadNoteListForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -22,7 +19,6 @@ import java.util.List;
 import static com.usw.sugo.domain.majorchatting.QChattingRoom.chattingRoom;
 import static com.usw.sugo.domain.majorchatting.QChattingRoomFile.chattingRoomFile;
 import static com.usw.sugo.domain.majorchatting.QChattingRoomMessage.chattingRoomMessage;
-import static com.usw.sugo.domain.majornote.QNote.note;
 import static com.usw.sugo.domain.majoruser.QUser.user;
 
 @Repository
@@ -37,8 +33,8 @@ public class CustomChattingRoomRepositoryImpl implements CustomChattingRoomRepos
     @Override
     public void deleteBeforeWeek() {
         queryFactory
-                .delete(note)
-                .where(note.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
+                .delete(chattingRoom)
+                .where(chattingRoom.updatedAt.before(LocalDateTime.now().minusWeeks(1)))
                 .execute();
     }
 
