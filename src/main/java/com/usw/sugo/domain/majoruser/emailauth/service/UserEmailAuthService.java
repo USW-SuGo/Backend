@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -61,9 +62,16 @@ public class UserEmailAuthService {
     public void authorizeEmailByPayload(String payload) {
         userEmailAuthRepository.confirmToken(payload);
     }
+
+    // 인증하지 않은 유저 목록 가져오기
+    public List<UserEmailAuth> getNotAuthenticatedUserEmailAuth() {
+        return userEmailAuthRepository.loadNotAuthenticatedUserEmailAuth();
+    }
+
     // 1시간 내로 인증을 수행하지 않으면 제거
     @Scheduled(cron = "0 * * * * *")
-    public void deleteAuthenticatedUserAndToken() {
-        userEmailAuthRepository.deleteBeforeWeek();
+    public void deleteNotAuthenticatedUserAndToken() {
+        List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();
+        userEmailAuthRepository.deleteBeforeWeek(loadedNotAuthenticatedUser);
     }
 }
