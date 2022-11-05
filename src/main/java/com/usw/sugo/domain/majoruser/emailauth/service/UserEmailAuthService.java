@@ -9,6 +9,7 @@ import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,11 +17,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserEmailAuthService {
 
     private final UserRepository userRepository;
     private final UserEmailAuthRepository userEmailAuthRepository;
- 
+
     // 인증번호 전송을 위한 랜덤 인증번호 생성 및 DB에 저장
     public String createEmailAuthPayload(Long userId) {
 

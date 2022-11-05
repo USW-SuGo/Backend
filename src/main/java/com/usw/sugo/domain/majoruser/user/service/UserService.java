@@ -26,39 +26,33 @@ public class UserService {
 
     public void validateSuwonAcKrEmail(String email) {
 
-        // 학교 이메일 양식과 맞지 않으면
-        if (!email.substring(12).equals("@suwon.ac.kr")) {
+        int emailLength = email.length();
+        int separatorIndex = 0;
+
+        for (int index = 0; index < emailLength; index++) {
+            if (email.charAt(index) == '@') {
+                separatorIndex = index;
+                break;
+            }
+        }
+
+        if (!email.substring(separatorIndex).equals("@suwon.ac.kr")) {
             throw new CustomException(EMAIL_NOT_VALIDATED);
         }
     }
 
     @Transactional
-    public void validateIsLoginIdAvailable(String loginId) {
+    public void validateLoginIdDuplicated(String loginId) {
         if (userRepository.findByLoginId(loginId).isPresent()){
             throw new CustomException(DUPLICATED_LOGINID);
         }
     }
 
     @Transactional
-    public void validateIsEmailIsAvailable(String email) {
+    public void validateEmailDuplicated(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATED_EMAIL);
         }
-    }
-
-
-    // 이메일 인증을 하지 않은 회원가입 요청 유저
-    @Transactional
-    public User softSaveUser(String email) {
-        User user = User.builder()
-                .email(email)
-                .status("NOT_AUTH")
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        userRepository.save(user);
-
-        return user;
     }
 
     @Transactional
@@ -143,9 +137,24 @@ public class UserService {
 
     @Transactional
     public boolean isBeforeDay(LocalDateTime requestTime) {
-        if (requestTime.isBefore(LocalDateTime.now().minusDays(1))
-                || requestTime == null) return true;
+        if (requestTime.isBefore(
+                LocalDateTime.now()
+                        .minusDays(1)) ||
+                requestTime == null)
+            return true;
 
         return false;
+    }
+
+    @Transactional
+    public void isUserExistByUserId(long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+    }
+
+    @Transactional
+    public void isUserExistByLoginId(String loginId) {
+        userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
     }
 }

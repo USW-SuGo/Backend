@@ -2,8 +2,6 @@ package com.usw.sugo.domain.majoruser.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.majoruser.User;
-import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.DetailJoinRequest;
-import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -21,7 +19,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     private final JPAQueryFactory queryFactory;
     private final BCryptPasswordEncoder encoder;
-    private final NicknameGenerator nicknameGenerator;
 
     @Override
     public void modifyingStatusToAvailable(Long id) {

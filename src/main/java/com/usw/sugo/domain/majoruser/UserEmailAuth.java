@@ -22,7 +22,7 @@ public class UserEmailAuth {
     private Long id;
 
     @JoinColumn(name = "user_id")
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Column

@@ -40,6 +40,7 @@ public class UserRequestDto {
     public static class AuthEmailPayload {
         @NotNull @NotBlank
         private long userId;
+        @NotNull @NotBlank
         private String payload;
     }
 
@@ -80,6 +81,8 @@ public class UserRequestDto {
     // 회원탈퇴 요청 DTO
     @Data
     public static class QuitRequest {
+        @NotNull @NotBlank
+        private String loginId;
         @NotNull @NotBlank
         private String email;
         @NotNull @NotBlank

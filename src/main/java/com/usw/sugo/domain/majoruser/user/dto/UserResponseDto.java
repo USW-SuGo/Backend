@@ -1,7 +1,9 @@
 package com.usw.sugo.domain.majoruser.user.dto;
 
-import com.usw.sugo.domain.majoruser.UserLikePost;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,7 +14,6 @@ public class UserResponseDto {
     @Data
     public static class IsEmailExistResponse {
         boolean exist;
-
         public IsEmailExistResponse(boolean exist) {
             this.exist = exist;
         }
