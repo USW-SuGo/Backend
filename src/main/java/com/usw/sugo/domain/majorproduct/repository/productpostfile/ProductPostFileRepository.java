@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProductPostFileRepository extends JpaRepository<ProductPostFile, Long> {
+public interface ProductPostFileRepository extends JpaRepository<ProductPostFile, Long>, CustomProductPostFileRepository {
 
     Optional<ProductPostFile> findByProductPost(ProductPost productPost);
 }

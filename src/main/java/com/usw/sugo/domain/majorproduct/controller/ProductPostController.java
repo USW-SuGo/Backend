@@ -5,6 +5,7 @@ import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.majorproduct.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.majorproduct.repository.productpost.ProductPostRepository;
+import com.usw.sugo.domain.majorproduct.repository.productpostfile.ProductPostFileRepository;
 import com.usw.sugo.domain.majorproduct.service.CommonProductService;
 import com.usw.sugo.domain.majoruser.User;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
@@ -30,12 +31,14 @@ import java.util.Map;
 public class ProductPostController {
 
     private final ProductPostRepository productPostRepository;
+    private final ProductPostFileRepository productPostFileRepository;
     private final CommonProductService commonProductService;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
     /**
      * 게시글 검색하기
+     *
      * @param
      * @param value
      * @return
@@ -59,65 +62,74 @@ public class ProductPostController {
                 .body(productPostRepository.loadMainPagePostList(pageable, category));
     }
 
+
     // 게시글 자세히 보기
     @GetMapping("/")
-    public ResponseEntity<DetailPostResponse> loadDetailPost(@RequestHeader String authorization,
-                                                             @RequestParam long productPostId) {
-
+    public ResponseEntity<DetailPostResponse> loadDetailPost(@RequestParam long productPostId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(productPostRepository.loadDetailPostList(productPostId));
     }
 
-
     /**
      * 게시글 작성하기 API
+     *
      * @param authorization
      * @param postingRequest
      * @return 게시글 작성 성공여부
      */
     @PostMapping
-    public ResponseEntity<Map<String, Boolean>> postContent(@RequestHeader String authorization,
-                                                            PostingRequest postingRequest,
-                                                            @RequestBody MultipartFile[] multipartFileList) throws IOException {
+    public ResponseEntity<Map<String, Boolean>> postContent(
+            @RequestHeader String authorization, PostingRequest postingRequest,
+            @RequestBody MultipartFile[] multipartFileList) throws IOException {
 
         commonProductService.savePosting(authorization, postingRequest, multipartFileList);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     /*
     게시글/이미지 수정
      */
     @PutMapping
-    public ResponseEntity<Object> editContentImage(@RequestHeader String authorization,
-                                                  @RequestBody MultipartFile[] multipartFileList,
-                                                  PutContentRequest putContentRequest) throws IOException {
+    public ResponseEntity<Object> putProductPostAndImage(
+            @RequestBody MultipartFile[] multipartFileList, PutContentRequest putContentRequest) throws IOException {
 
-        StringBuilder imageLinkStringBuilder = commonProductService.putPosting(authorization, putContentRequest, multipartFileList);
-
-        productPostRepository.editPostContent(imageLinkStringBuilder, putContentRequest);
+        // 게시글 테이블에 수정 내용 적용
+        productPostRepository.editPostContent(putContentRequest);
+        // S3 에 수정된 파일 적용 및 저장된 링크 추출
+        String updatedImageLink = commonProductService.updateS3Content(putContentRequest, multipartFileList);
+        // S3 에 수정된 파일 DB에 적용
+        productPostFileRepository.editPostFile(updatedImageLink, putContentRequest);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
-    
+
     /*
     게시글 삭제
      */
-
     @DeleteMapping
-    public ResponseEntity<Object> deleteContent(@RequestHeader String authorization,
-                                             @RequestBody DeleteContentRequest deleteContentRequest) {
+    public ResponseEntity<Object> deleteProductPostAndImage(
+            @RequestBody DeleteContentRequest deleteContentRequest) {
 
+        // S3 버킷 내용 삭제
+        commonProductService.deleteS3Content(deleteContentRequest.getProductPostId());
+        // DB 에서 삭제
         productPostRepository.deleteById(deleteContentRequest.getProductPostId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
 
@@ -138,22 +150,21 @@ public class ProductPostController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     // 게시글 거래완료 표시하기
     @PostMapping("/close")
-    public ResponseEntity<Object> closePost(@RequestHeader String authorization,
-                                            @RequestBody ClosePostRequest closePostRequest) {
-
-        User requestUser = userRepository.findById(
-                jwtResolver.jwtResolveToUserId(authorization.substring(7))).get();
-
+    public ResponseEntity<Object> closePost(@RequestBody ClosePostRequest closePostRequest) {
 
         productPostRepository.convertStatus(closePostRequest.getProductPostId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>() {{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 }

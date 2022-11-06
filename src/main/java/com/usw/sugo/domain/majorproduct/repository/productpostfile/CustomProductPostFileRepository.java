@@ -1,9 +1,12 @@
 package com.usw.sugo.domain.majorproduct.repository.productpostfile;
 
+import com.usw.sugo.domain.majorproduct.dto.PostRequestDto.PutContentRequest;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 
 @Repository
 public interface CustomProductPostFileRepository {
+
+    void editPostFile(String imageLinkStringBuilder, PutContentRequest putContentRequest);
+
 }

@@ -24,6 +24,8 @@ public class PostResponseDto {
         private String nickname;
         // 게시글 카테고리
         private String category;
+        // 게시글 거래 완료 상태 유무
+        private boolean status;
     }
 
     // 전체 포스트 조회에 대한 DTO
@@ -45,6 +47,8 @@ public class PostResponseDto {
         private String nickname;
         // 게시글 카테고리
         private String category;
+        // 게시글 거래 완료 상태 유무
+        private boolean status;
     }
 
     // 특정 게시물 조회에 대한 반환 DTO
@@ -68,5 +72,7 @@ public class PostResponseDto {
         private String nickname;
         // 게시글 카테고리
         private String category;
+        // 게시글 거래 완료 상태 유무
+        private boolean status;
     }
 }

@@ -14,25 +14,17 @@ public class UserResponseDto {
     @Data
     public static class IsEmailExistResponse {
         boolean exist;
-        public IsEmailExistResponse(boolean exist) {
-            this.exist = exist;
-        }
     }
 
     @Data
     public static class IsLoginIdExistResponse {
         boolean exist;
-
-        public IsLoginIdExistResponse(boolean exist) {
-            this.exist = exist;
-        }
     }
 
     @Data
     public static class LoginResponse {
         private String accessToken;
         private String refreshToken;
-
     }
 
     @Data
@@ -73,6 +65,7 @@ public class UserResponseDto {
         private String title;
         private int price;
         private String category;
+        private boolean status;
     }
 
     @Data
@@ -84,5 +77,6 @@ public class UserResponseDto {
         private String title;
         private int price;
         private String category;
+        private boolean status;
     }
 }

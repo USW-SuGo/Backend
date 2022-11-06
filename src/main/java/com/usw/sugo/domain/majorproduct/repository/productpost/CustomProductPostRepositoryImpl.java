@@ -28,6 +28,7 @@ import static com.usw.sugo.domain.majorproduct.QProductPostFile.productPostFile;
 public class CustomProductPostRepositoryImpl implements CustomProductPostRepository {
 
     private final JPAQueryFactory queryFactory;
+
     /**
      * @param value
      * @param inputCategory
@@ -46,22 +47,21 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
                             productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
+                            productPost.user.nickname, productPost.category, productPost.status))
                     .from(productPost)
                     .where(productPost.title.contains(value))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .fetch();
             System.out.println("response = " + response);
-        }
-        else if (CategoryValidator.validateCategory(inputCategory)){
+        } else if (CategoryValidator.validateCategory(inputCategory)) {
             response = queryFactory
                     .select(Projections.bean(SearchResultResponse.class,
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
                             productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
+                            productPost.user.nickname, productPost.category, productPost.status))
                     .from(productPost)
                     .where(productPost.title.contains(value)
                             .and(productPost.category.eq(inputCategory)))
@@ -109,22 +109,21 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
                             productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
+                            productPost.user.nickname, productPost.category, productPost.status))
                     .from(productPost)
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetch();
-        }
-        else if (CategoryValidator.validateCategory(inputCategory)) {
+        } else if (CategoryValidator.validateCategory(inputCategory)) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
                             productPost.title, productPost.price,
-                            productPost.user.nickname, productPost.category))
+                            productPost.user.nickname, productPost.category, productPost.status))
                     .from(productPost)
                     .where(productPost.category.eq(inputCategory))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
@@ -160,14 +159,13 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
      */
     @Override
     public DetailPostResponse loadDetailPostList(long productPostId) {
-
         DetailPostResponse response = queryFactory
                 .select(Projections.bean(DetailPostResponse.class,
                         productPost.id,
                         productPostFile.imageLink,
                         productPost.contactPlace, productPost.updatedAt,
                         productPost.title, productPost.content, productPost.price,
-                        productPost.user.nickname, productPost.category))
+                        productPost.user.nickname, productPost.category, productPost.status))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                 .where(productPost.id.eq(productPostId))
@@ -191,7 +189,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                         productPost.id,
                         productPostFile.imageLink,
                         productPost.contactPlace, productPost.updatedAt,
-                        productPost.title, productPost.price, productPost.category))
+                        productPost.title, productPost.price, productPost.category, productPost.status))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                 .where(productPost.user.eq(user))
@@ -222,8 +220,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     }
 
     @Override
-    public void editPostContent(StringBuilder imageLinkStringBuilder,
-                                PutContentRequest putContentRequest) {
+    public void editPostContent(PutContentRequest putContentRequest) {
         queryFactory
                 .update(productPost)
                 .set(productPost.title, putContentRequest.getTitle())
@@ -232,12 +229,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .set(productPost.contactPlace, putContentRequest.getContactPlace())
                 .set(productPost.category, putContentRequest.getCategory())
                 .where(productPost.id.eq(putContentRequest.getProductPostId()))
-                .execute();
-
-        queryFactory
-                .update(productPostFile)
-                .set(productPostFile.imageLink, imageLinkStringBuilder.toString())
-                .where(productPostFile.productPost.id.eq(putContentRequest.getProductPostId()))
                 .execute();
     }
 

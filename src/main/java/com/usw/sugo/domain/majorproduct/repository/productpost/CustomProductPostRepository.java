@@ -24,7 +24,7 @@ public interface CustomProductPostRepository {
 
     void refreshUpdateAt(long productPostId);
 
-    void editPostContent(StringBuilder imageLinkStringBuilder, PutContentRequest putContentRequest);
+    void editPostContent(PutContentRequest putContentRequest);
 
     void convertStatus(long productPostId);
 }
