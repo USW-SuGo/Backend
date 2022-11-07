@@ -40,7 +40,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
         List<SearchResultResponse> response = new ArrayList<>();
 
-        if (inputCategory == null) {
+        if (inputCategory.equals("")) {
             response = queryFactory
                     .select(Projections.bean(SearchResultResponse.class,
                             productPost.id,
@@ -102,7 +102,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
         List<MainPageResponse> response = new ArrayList<>();
 
-        if (inputCategory == null) {
+        if (inputCategory.equals("")) {
             response = queryFactory
                     .select(Projections.bean(MainPageResponse.class,
                             productPost.id,

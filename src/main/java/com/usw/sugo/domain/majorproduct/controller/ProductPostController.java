@@ -45,7 +45,7 @@ public class ProductPostController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<SearchResultResponse>> searchPost(
-            @RequestParam String value, @RequestParam(required = false) String category) {
+            @RequestParam String value, @RequestParam String category) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -55,7 +55,7 @@ public class ProductPostController {
     // 모든 게시물 조회하기
     @GetMapping("/all")
     public ResponseEntity<List<MainPageResponse>> loadMainPage(
-            Pageable pageable, @RequestParam(required = false) String category) {
+            Pageable pageable, @RequestParam String category) {
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -6,8 +6,6 @@ import com.usw.sugo.domain.majoruser.UserEmailAuth;
 import com.usw.sugo.domain.majoruser.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.majoruser.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.majoruser.user.dto.UserRequestDto.*;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsEmailExistResponse;
-import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.IsLoginIdExistResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.MyPageResponse;
 import com.usw.sugo.domain.majoruser.user.dto.UserResponseDto.OtherUserPageResponse;
 import com.usw.sugo.domain.majoruser.user.repository.UserRepository;
@@ -236,7 +234,7 @@ public class UserController {
 
     // 마이 페이지
     @GetMapping
-    public ResponseEntity<MyPageResponse> userPage(@RequestHeader String authorization, Pageable pageable) {
+    public ResponseEntity<MyPageResponse> myPage(@RequestHeader String authorization, Pageable pageable) {
 
         long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
@@ -291,8 +289,8 @@ public class UserController {
      */
 
     @PostMapping("/manner")
-    public ResponseEntity<?> userPage(@RequestHeader String authorization,
-                                      @Valid @RequestBody MannerEvaluationRequest mannerEvaluationRequest) {
+    public ResponseEntity<?> myPage(@RequestHeader String authorization,
+                                    @Valid @RequestBody MannerEvaluationRequest mannerEvaluationRequest) {
         long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         // 평가를 요청한 유저가 존재하지 않으면 에러
