@@ -1,33 +1,43 @@
-package com.usw.sugo.domain.productpost;
+package com.usw.sugo.domain.note.entity;
 
+import com.usw.sugo.domain.productpost.entity.ProductPost;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductPostFile {
+public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
-    private String imageLink;
+    private long id;
 
     @JoinColumn(name = "product_post_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne
     private ProductPost productPost;
+
+    @JoinColumn(name = "seller_id")
+    @OneToOne
+    private User sellerId;
+
+    @JoinColumn(name = "buyer_id")
+    @OneToOne
+    private User buyerId;
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

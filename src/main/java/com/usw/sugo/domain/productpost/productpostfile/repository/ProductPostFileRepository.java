@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.productpost.productpostfile.repository;
 
-import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.ProductPostFile;
+import com.usw.sugo.domain.productpost.entity.ProductPost;
+import com.usw.sugo.domain.productpost.entity.ProductPostFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

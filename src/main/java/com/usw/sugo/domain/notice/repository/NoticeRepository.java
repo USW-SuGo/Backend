@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.notice.repository;
 
-import com.usw.sugo.domain.notice.Notice;
+import com.usw.sugo.domain.notice.entity.Notice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

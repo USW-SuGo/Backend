@@ -1,8 +1,8 @@
-package com.usw.sugo.domain.chatting;
+package com.usw.sugo.domain.chatting.entity;
 
 
-import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.productpost.entity.ProductPost;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

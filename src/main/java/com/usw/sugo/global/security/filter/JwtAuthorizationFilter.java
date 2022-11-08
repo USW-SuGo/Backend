@@ -2,7 +2,7 @@ package com.usw.sugo.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.StandardCharset;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;

@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.notice.controller;
 
-import com.usw.sugo.domain.notice.Notice;
-import com.usw.sugo.domain.notice.dto.NoticeRequestDto;
+import com.usw.sugo.domain.notice.entity.Notice;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeDeleteRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticePostRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeUpdateRequest;

@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.emailauth.repository;
 
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.UserEmailAuth;
+import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

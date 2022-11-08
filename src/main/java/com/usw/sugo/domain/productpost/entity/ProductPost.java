@@ -1,6 +1,6 @@
-package com.usw.sugo.domain.productpost;
+package com.usw.sugo.domain.productpost.entity;
 
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

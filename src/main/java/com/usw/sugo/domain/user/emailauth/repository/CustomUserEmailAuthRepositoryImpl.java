@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.emailauth.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.user.UserEmailAuth;
+import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.user;
+package com.usw.sugo.domain.user.entity;
 
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

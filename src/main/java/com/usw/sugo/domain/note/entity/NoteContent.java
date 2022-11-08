@@ -1,7 +1,6 @@
-package com.usw.sugo.domain.chatting;
+package com.usw.sugo.domain.note.entity;
 
-
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,15 +15,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChattingRoomMessage {
+public class NoteContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JoinColumn(name = "chatting_room_id")
+    @JoinColumn(name = "note_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private ChattingRoom chattingRoomId;
+    private Note noteId;
 
     @JoinColumn(name = "sender_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

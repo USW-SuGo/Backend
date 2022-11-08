@@ -5,7 +5,7 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import com.usw.sugo.domain.productpost.productpost.service.CommonProductService;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;

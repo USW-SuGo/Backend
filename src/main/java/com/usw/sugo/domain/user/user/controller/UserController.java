@@ -1,8 +1,8 @@
 package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.UserEmailAuth;
+import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import com.usw.sugo.domain.user.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.user.emailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;

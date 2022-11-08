@@ -1,8 +1,8 @@
 package com.usw.sugo.global.jwt;
 
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
-import com.usw.sugo.domain.refreshtoken.RefreshToken;
+import com.usw.sugo.domain.refreshtoken.entity.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

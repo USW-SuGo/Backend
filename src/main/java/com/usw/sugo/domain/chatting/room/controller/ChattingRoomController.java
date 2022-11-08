@@ -1,11 +1,11 @@
 package com.usw.sugo.domain.chatting.room.controller;
 
-import com.usw.sugo.domain.chatting.ChattingRoom;
+import com.usw.sugo.domain.chatting.entity.ChattingRoom;
 import com.usw.sugo.domain.chatting.room.dto.ChattingRoomRequestDto.CreateRoomRequest;
 import com.usw.sugo.domain.chatting.room.repository.ChattingRoomRepository;
-import com.usw.sugo.domain.productpost.ProductPost;
+import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;

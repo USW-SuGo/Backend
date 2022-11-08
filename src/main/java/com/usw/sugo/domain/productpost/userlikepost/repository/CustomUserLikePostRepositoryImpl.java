@@ -2,7 +2,7 @@ package com.usw.sugo.domain.productpost.userlikepost.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.user.UserLikePost;
+import com.usw.sugo.domain.productpost.entity.UserLikePost;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.LikePosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

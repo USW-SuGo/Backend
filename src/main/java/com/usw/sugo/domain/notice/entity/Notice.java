@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.notice;
+package com.usw.sugo.domain.notice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

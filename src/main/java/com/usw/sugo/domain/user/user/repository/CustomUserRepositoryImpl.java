@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;

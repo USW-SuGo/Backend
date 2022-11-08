@@ -1,11 +1,11 @@
 package com.usw.sugo.domain.note.note.controller;
 
-import com.usw.sugo.domain.note.Note;
+import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
-import com.usw.sugo.domain.productpost.ProductPost;
+import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;

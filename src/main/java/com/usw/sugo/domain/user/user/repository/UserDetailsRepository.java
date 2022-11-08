@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.user.user.repository;
 
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

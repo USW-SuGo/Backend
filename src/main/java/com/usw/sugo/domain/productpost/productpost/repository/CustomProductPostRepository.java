@@ -4,7 +4,7 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContent
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

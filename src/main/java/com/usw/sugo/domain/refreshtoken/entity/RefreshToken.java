@@ -1,6 +1,6 @@
-package com.usw.sugo.domain.refreshtoken;
+package com.usw.sugo.domain.refreshtoken.entity;
 
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.global.util.basetime.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

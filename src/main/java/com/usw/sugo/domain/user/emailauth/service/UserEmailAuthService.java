@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.emailauth.service;
 
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.UserEmailAuth;
+import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.global.exception.CustomException;

@@ -1,13 +1,11 @@
-package com.usw.sugo.domain.user;
+package com.usw.sugo.domain.note.entity;
 
-import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.ProductPostFile;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,26 +13,28 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class UserLikePost {
+@AllArgsConstructor
+public class NoteFile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
+    @JoinColumn(name = "note_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Note noteId;
 
+    @JoinColumn(name = "sender_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_post_id")
-    private ProductPost productPost;
+    private User sender;
 
+    @JoinColumn(name = "receiver_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_post_file_id")
-    private ProductPostFile productPostFile;
+    private User receiver;
+
+    @Column
+    private String imageLink;
 
     @CreatedDate
     private LocalDateTime createdAt;
