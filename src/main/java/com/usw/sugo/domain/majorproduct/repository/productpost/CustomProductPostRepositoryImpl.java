@@ -180,7 +180,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         return response;
     }
 
-    // 유저 페이지 조회
+    // 유저 페이지 조회 (마이페이지 포함)
     @Override
     public List<MyPosting> loadUserPageList(User user, Pageable pageable) {
 
@@ -200,11 +200,11 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
         int listSize = response.size();
 
-        String[] imageList;
+        String imageLink;
 
         for (int i = 0; i < listSize; i++) {
-            imageList = response.get(i).getImageLink().split(",");
-            response.get(i).setImageLink(Arrays.toString(imageList));
+            imageLink = response.get(i).getImageLink().split(",")[0];
+            response.get(i).setImageLink(imageLink);
         }
 
         return response;
