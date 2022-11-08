@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.usw.sugo.domain.majoruser.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;

@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.refreshtoken.controller;
 
-import com.usw.sugo.domain.majoruser.User;
+import com.usw.sugo.domain.user.User;
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.global.exception.CustomException;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 

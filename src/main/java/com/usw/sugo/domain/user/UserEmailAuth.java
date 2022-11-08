@@ -1,29 +1,37 @@
-package com.usw.sugo.domain.refreshtoken;
+package com.usw.sugo.domain.user;
 
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.global.util.basetime.BaseTimeEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshToken extends BaseTimeEntity {
+public class UserEmailAuth {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Column
     private String payload;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @Column
+    private Boolean status;
+
 }

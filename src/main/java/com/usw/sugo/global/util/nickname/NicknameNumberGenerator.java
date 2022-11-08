@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.usw.sugo.domain.majoruser.QUser.user;
+import static com.usw.sugo.domain.user.QUser.user;
 
 @Service
 @RequiredArgsConstructor
