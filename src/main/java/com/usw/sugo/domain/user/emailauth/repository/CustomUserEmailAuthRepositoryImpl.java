@@ -29,7 +29,7 @@ public class CustomUserEmailAuthRepositoryImpl implements CustomUserEmailAuthRep
     }
 
     @Override
-    public void deleteBeforeWeek(List<UserEmailAuth> notAuthenticatedUserEmailAuth) {
+    public void deleteNotProceedEmailAuthBeforeTenMinutes(List<UserEmailAuth> notAuthenticatedUserEmailAuth) {
 
         for (UserEmailAuth notAuth : notAuthenticatedUserEmailAuth) {
             queryFactory

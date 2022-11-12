@@ -10,7 +10,7 @@ public interface CustomUserEmailAuthRepository {
 
     void confirmToken(String payload);
 
-    void deleteBeforeWeek(List<UserEmailAuth> notAuthenticatedUserEmailAuth);
+    void deleteNotProceedEmailAuthBeforeTenMinutes(List<UserEmailAuth> notAuthenticatedUserEmailAuth);
 
     List<UserEmailAuth> loadNotAuthenticatedUserEmailAuth();
 

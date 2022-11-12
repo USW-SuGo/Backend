@@ -72,6 +72,6 @@ public class UserEmailAuthService {
     @Scheduled(cron = "0 * * * * *")
     public void deleteNotAuthenticatedUserAndToken() {
         List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();
-        userEmailAuthRepository.deleteBeforeWeek(loadedNotAuthenticatedUser);
+        userEmailAuthRepository.deleteNotProceedEmailAuthBeforeTenMinutes(loadedNotAuthenticatedUser);
     }
 }
