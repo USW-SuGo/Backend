@@ -33,8 +33,6 @@ public class CommonProductService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    private final int bucketNameLength = bucketName.length();
-
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
     private final ProductPostRepository productPostRepository;

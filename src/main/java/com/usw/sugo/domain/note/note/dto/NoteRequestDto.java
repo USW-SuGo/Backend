@@ -21,11 +21,4 @@ public class NoteRequestDto {
         @NotBlank
         private long productPostId;
     }
-
-    @Data
-    public static class LoadNoteRequest {
-        @NotNull
-        @NotBlank
-        private long requestUser;
-    }
 }

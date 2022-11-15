@@ -31,7 +31,7 @@ public class NoteContentController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<>(){{
+                .body(new HashMap<>() {{
                     put("Success", true);
                 }});
     }

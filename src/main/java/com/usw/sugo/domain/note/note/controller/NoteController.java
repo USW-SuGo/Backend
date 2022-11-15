@@ -3,7 +3,6 @@ package com.usw.sugo.domain.note.note.controller;
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
-import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.entity.User;
@@ -30,8 +29,6 @@ public class NoteController {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
-    private final NoteService noteService;
-
     /*
      쪽지 방 만들기
      */
@@ -92,16 +89,15 @@ public class NoteController {
 
     /*
     채팅방 인덱스로, 특정 채팅방 컨텐츠/파일 조회하기
-    (Get) localhost:8080/chatting/?roomId={}&page={}&size={}
+    (Get) localhost:8080/note/?roomId={}&page={}&size={}
     */
     @GetMapping("/")
-    public ResponseEntity<Object> loadAllNoteContentByRoomId(@RequestParam Long roomId, Pageable pageable) {
+    public ResponseEntity<Object> loadAllNoteContentByRoomId(@RequestParam Long noteId, Pageable pageable) {
 
         Map<String, Object> result = new HashMap<>();
 
-        // result.put("Note", noteRepository.loadNoteFormByRoomId(roomId));
-        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(roomId, pageable));
-        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(roomId, pageable));
+        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(noteId, pageable));
+        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(noteId, pageable));
 
         return ResponseEntity
                 .status(HttpStatus.OK)

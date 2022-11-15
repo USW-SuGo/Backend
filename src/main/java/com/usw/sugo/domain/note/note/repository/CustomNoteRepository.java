@@ -13,8 +13,6 @@ public interface CustomNoteRepository {
 
     List<Object> loadNoteListByUserId(long requestUserId, long opponentUserIdx, Pageable pageable);
 
-    // List<LoadNoteForm> loadNoteFormByRoomId(long roomId);
-
     List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable);
 
     List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable);

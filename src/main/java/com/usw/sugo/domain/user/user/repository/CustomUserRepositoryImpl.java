@@ -10,7 +10,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.usw.sugo.domain.user.QUser.user;
+import static com.usw.sugo.domain.user.entity.QUser.user;
 
 @Transactional
 @Repository

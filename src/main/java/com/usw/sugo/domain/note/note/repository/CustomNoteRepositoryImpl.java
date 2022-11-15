@@ -85,27 +85,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     /*
-    특정 채팅방에 존재하는 사용자 및 상품 데이터 반환
-     */
-//    @Override
-//    public List<LoadNoteForm> loadNoteFormByRoomId(long roomId) {
-//        return queryFactory
-//                .select(Projections.bean(LoadNoteForm.class,
-//                        note.id.as("roomId"),
-//                        note.creatingUserNickname.id.as("sellerId"),
-//                        note.buyerId.id.as("buyerId"),
-//                        note.sellerId.nickname.as("sellerNickname"),
-//                        note.buyerId.nickname.as("buyerNickname"),
-//                        note.productPost.title, note.productPost.contactPlace,
-//                        note.productPost.price))
-//                .from(note)
-//                .where(note.id.eq(roomId))
-//                .fetch();
-//    }
-
-    /*
-    특정 채팅방에 존재하는 채팅 메세지, 파일 반환
-    (채팅 내역 추가 해야함)
+    특정 채팅방에 존재하는 채팅 메세지 반환
      */
     @Override
     public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable) {
@@ -129,8 +109,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     /*
-    특정 채팅방에 존재하는 채팅 메세지, 파일 반환
-    (채팅 내역 추가 해야함)
+    특정 채팅방에 존재하는 파일 반환
      */
     @Override
     public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable) {
