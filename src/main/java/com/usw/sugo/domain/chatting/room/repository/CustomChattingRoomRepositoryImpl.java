@@ -16,10 +16,10 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.usw.sugo.domain.chatting.QChattingRoom.chattingRoom;
-import static com.usw.sugo.domain.chatting.QChattingRoomFile.chattingRoomFile;
-import static com.usw.sugo.domain.chatting.QChattingRoomMessage.chattingRoomMessage;
-import static com.usw.sugo.domain.user.QUser.user;
+import static com.usw.sugo.domain.chatting.entity.QChattingRoom.chattingRoom;
+import static com.usw.sugo.domain.chatting.entity.QChattingRoomFile.chattingRoomFile;
+import static com.usw.sugo.domain.chatting.entity.QChattingRoomMessage.chattingRoomMessage;
+import static com.usw.sugo.domain.user.entity.QUser.user;
 
 @Repository
 @Transactional

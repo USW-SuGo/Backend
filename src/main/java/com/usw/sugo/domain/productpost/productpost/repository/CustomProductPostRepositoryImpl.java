@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.usw.sugo.domain.productpost.QProductPost.productPost;
-import static com.usw.sugo.domain.productpost.QProductPostFile.productPostFile;
+import static com.usw.sugo.domain.productpost.entity.QProductPost.productPost;
+import static com.usw.sugo.domain.productpost.entity.QProductPostFile.productPostFile;
 
 @Transactional
 @Repository

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static com.usw.sugo.domain.user.QUserLikePost.userLikePost;
+import static com.usw.sugo.domain.productpost.entity.QUserLikePost.userLikePost;
 
 @Repository
 @RequiredArgsConstructor

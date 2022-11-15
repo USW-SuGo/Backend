@@ -27,13 +27,19 @@ public class Note {
     @OneToOne
     private ProductPost productPost;
 
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "creating_user_id")
     @OneToOne
-    private User sellerId;
+    private User creatingUserId;
 
-    @JoinColumn(name = "buyer_id")
+    @JoinColumn(name = "opponent_user_id")
     @OneToOne
-    private User buyerId;
+    private User opponentUserId;
+
+    @Column
+    private String creatingUserNickname;
+
+    @Column
+    private String opponentUserNickname;
 
     @CreatedDate
     private LocalDateTime createdAt;

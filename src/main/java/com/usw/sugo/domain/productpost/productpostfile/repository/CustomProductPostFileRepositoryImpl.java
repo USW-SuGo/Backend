@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-import static com.usw.sugo.domain.productpost.QProductPostFile.productPostFile;
+import static com.usw.sugo.domain.productpost.entity.QProductPostFile.productPostFile;
 
 @Transactional
 @Repository

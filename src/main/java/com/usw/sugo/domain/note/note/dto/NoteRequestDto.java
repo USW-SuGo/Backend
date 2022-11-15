@@ -6,8 +6,8 @@ public class NoteRequestDto {
 
     @Data
     public static class CreateNoteRequest {
-        private long sellerId;
-        private long buyerId;
+        private long creatingUserId;
+        private long opponentUserId;
         private long productPostId;
     }
 

@@ -4,8 +4,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteFileForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByOpponentUserForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByRequestUserForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteMessageForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +13,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.usw.sugo.domain.note.QNote.note;
-import static com.usw.sugo.domain.note.QNoteContent.noteContent;
-import static com.usw.sugo.domain.note.QNoteFile.noteFile;
+import static com.usw.sugo.domain.note.entity.QNote.note;
+import static com.usw.sugo.domain.note.entity.QNoteContent.noteContent;
+import static com.usw.sugo.domain.note.entity.QNoteFile.noteFile;
 
 @Repository
 @Transactional
@@ -45,49 +46,69 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
      --> 여러번의 조인보다 컬럼 하나를 추가하는게 더 좋을 수도 있겠다는생각으로 도입하였다.
      */
     @Override
-    public List<LoadNoteListForm> loadChattingRoomListByUserId(long userId, Pageable pageable) {
-        return
-                queryFactory
-                        .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("roomId"),
-                                note.sellerId.id.as("sellerId"),
-                                note.buyerId.id.as("buyerId"),
-                                note.sellerId.nickname.as("sellerNickname"),
-                                note.buyerId.nickname.as("buyerNickname"),
-                                note.updatedAt.as("recentChattingDate")
-                        ))
-                        .from(note)
-                        .where(note.sellerId.id.eq(userId).or(note.buyerId.id.eq(userId)))
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .fetch();
+    public List<Object> loadNoteListByUserId(
+            long requestUserId, long opponentUserId, Pageable pageable) {
+
+        // 요청한 유저가 만든 쪽지방 리스트
+        List<LoadNoteListCreatingByRequestUserForm> creatingUserFormList = queryFactory
+                .select(Projections.bean(LoadNoteListCreatingByRequestUserForm.class,
+                        note.id.as("roomId"),
+                        note.opponentUserId.id.as("opponentUserId"),
+                        note.opponentUserId.nickname.as("opponentUserNickname"),
+                        note.updatedAt.as("recentChattingDate")
+                ))
+                .from(note)
+                .where(note.creatingUserId.id.eq(requestUserId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 다른 유저가 만든 쪽지방 리스트에 요청한 유저가 속한경우
+        List<LoadNoteListCreatingByOpponentUserForm> opponentUserFormList = queryFactory
+                .select(Projections.bean(LoadNoteListCreatingByOpponentUserForm.class,
+                        note.id.as("roomId"),
+                        note.creatingUserId.id.as("creatingUserId"),
+                        note.creatingUserId.nickname.as("creatingUserNickname"),
+                        note.updatedAt.as("recentChattingDate")
+                ))
+                .from(note)
+                .where(note.creatingUserId.id.eq(requestUserId).not()
+                        .and(note.opponentUserId.id.eq(requestUserId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new ArrayList<>() {{
+            add(creatingUserFormList);
+            add(opponentUserFormList);
+        }};
     }
 
     /*
     특정 채팅방에 존재하는 사용자 및 상품 데이터 반환
      */
-    @Override
-    public List<LoadNoteForm> loadChattingRoomFormByRoomId(long roomId) {
-        return queryFactory
-                .select(Projections.bean(LoadNoteForm.class,
-                        note.id.as("roomId"),
-                        note.sellerId.id.as("sellerId"),
-                        note.buyerId.id.as("buyerId"),
-                        note.sellerId.nickname.as("sellerNickname"),
-                        note.buyerId.nickname.as("buyerNickname"),
-                        note.productPost.title, note.productPost.contactPlace,
-                        note.productPost.price))
-                .from(note)
-                .where(note.id.eq(roomId))
-                .fetch();
-    }
+//    @Override
+//    public List<LoadNoteForm> loadNoteFormByRoomId(long roomId) {
+//        return queryFactory
+//                .select(Projections.bean(LoadNoteForm.class,
+//                        note.id.as("roomId"),
+//                        note.creatingUserNickname.id.as("sellerId"),
+//                        note.buyerId.id.as("buyerId"),
+//                        note.sellerId.nickname.as("sellerNickname"),
+//                        note.buyerId.nickname.as("buyerNickname"),
+//                        note.productPost.title, note.productPost.contactPlace,
+//                        note.productPost.price))
+//                .from(note)
+//                .where(note.id.eq(roomId))
+//                .fetch();
+//    }
 
     /*
     특정 채팅방에 존재하는 채팅 메세지, 파일 반환
     (채팅 내역 추가 해야함)
      */
     @Override
-    public List<LoadNoteMessageForm> loadChattingRoomMessageFormByRoomId(long roomId, Pageable pageable) {
+    public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable) {
         return queryFactory
                 .select(Projections.bean(LoadNoteMessageForm.class,
                         noteContent.sender.id.as("senderId"),
@@ -112,7 +133,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     (채팅 내역 추가 해야함)
      */
     @Override
-    public List<LoadNoteFileForm> loadChattingRoomFileFormByRoomId(long roomId, Pageable pageable) {
+    public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable) {
         return queryFactory
                 .select(Projections.bean(LoadNoteFileForm.class,
                         noteFile.sender.id.as("senderId"),

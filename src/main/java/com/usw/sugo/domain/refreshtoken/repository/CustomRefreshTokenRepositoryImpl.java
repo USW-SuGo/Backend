@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.usw.sugo.domain.refreshtoken.QRefreshToken.refreshToken;
+import static com.usw.sugo.domain.refreshtoken.entity.QRefreshToken.refreshToken;
 
 @Repository
 @Transactional

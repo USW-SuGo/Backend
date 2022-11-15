@@ -7,12 +7,19 @@ import java.time.LocalDateTime;
 public class NoteResponseDto {
 
     @Data
-    public static class LoadNoteListForm {
+    public static class LoadNoteListCreatingByRequestUserForm {
         private long id;
-        private long sellerId;
-        private long buyerId;
-        private String sellerNickname;
-        private String buyerNickname;
+        private long opponentUserId;
+        private String opponentNickname;
+        private String recentContent;
+        private LocalDateTime recentChattingDate;
+    }
+
+    @Data
+    public static class LoadNoteListCreatingByOpponentUserForm {
+        private long id;
+        private long opponentUserId;
+        private String opponentNickname;
         private String recentContent;
         private LocalDateTime recentChattingDate;
     }

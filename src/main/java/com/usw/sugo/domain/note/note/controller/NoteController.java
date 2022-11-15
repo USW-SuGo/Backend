@@ -34,21 +34,26 @@ public class NoteController {
      쪽지 방 만들기
      */
     @PostMapping
-    public ResponseEntity<Object> createRoom(@RequestBody CreateNoteRequest request) {
+    public ResponseEntity<Object> createRoom(@RequestHeader String authorization, @RequestBody CreateNoteRequest request) {
+
+        long creatingRequestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         ProductPost productPost = productPostRepository.findById(request.getProductPostId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_BAD_REQUEST));
 
-        User seller = userRepository.findById(request.getSellerId())
+        User creatingRequestUser = userRepository.findById(creatingRequestUserId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        User buyer = userRepository.findById(request.getBuyerId())
+        User opponentUser = userRepository.findById(request.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
 
         Note note = Note.builder()
                 .productPost(productPost)
-                .sellerId(seller)
-                .buyerId(buyer)
+                .creatingUserId(creatingRequestUser)
+                .creatingUserNickname(creatingRequestUser.getNickname())
+                .opponentUserId(opponentUser)
+                .opponentUserNickname(opponentUser.getNickname())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -56,11 +61,13 @@ public class NoteController {
         noteRepository.save(note);
 
         // 거래 시도 횟수 + 1
-        userRepository.plusCountTradeAttempt(seller.getId(), buyer.getId());
+        userRepository.plusCountTradeAttempt(creatingRequestUser.getId(), opponentUser.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new HashMap<String, Long>() {{put("noteId", note.getId());}});
+                .body(new HashMap<String, Long>() {{
+                    put("noteId", note.getId());
+                }});
     }
 
     /*
@@ -68,7 +75,7 @@ public class NoteController {
     채팅방 인덱스, 상호 유저간의 인덱스, 상호 유저간의 닉네임, 최근 채팅시간, 최근 채팅 메세지
     */
     @GetMapping("/list")
-    public ResponseEntity<Object> loadAllChattingRoomByUserId(
+    public ResponseEntity<Object> loadAllNoteListByUserId(
             @RequestHeader String authorization, Pageable pageable) {
 
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
@@ -78,7 +85,7 @@ public class NoteController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(noteRepository.loadChattingRoomListByUserId(requestUser.getId(), pageable));
+                .body(noteRepository.loadNoteListByUserId(userId, requestUser.getId(), pageable));
     }
 
     /*
@@ -86,13 +93,13 @@ public class NoteController {
     (Get) localhost:8080/chatting/?roomId={}&page={}&size={}
     */
     @GetMapping("/")
-    public ResponseEntity<Object> loadAllChattingRoomContentByRoomId(@RequestParam Long roomId, Pageable pageable) {
+    public ResponseEntity<Object> loadAllNoteContentByRoomId(@RequestParam Long roomId, Pageable pageable) {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("Note", noteRepository.loadChattingRoomFormByRoomId(roomId));
-        result.put("NoteContent", noteRepository.loadChattingRoomMessageFormByRoomId(roomId, pageable));
-        result.put("NoteFile", noteRepository.loadChattingRoomFileFormByRoomId(roomId, pageable));
+        // result.put("Note", noteRepository.loadNoteFormByRoomId(roomId));
+        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(roomId, pageable));
+        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(roomId, pageable));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
