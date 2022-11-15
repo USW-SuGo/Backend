@@ -3,6 +3,7 @@ package com.usw.sugo.domain.note.note.controller;
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.entity.User;
@@ -29,6 +30,7 @@ public class NoteController {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
+    private final NoteService noteService;
 
     /*
      쪽지 방 만들기

@@ -41,6 +41,9 @@ public class Note {
     @Column
     private String opponentUserNickname;
 
+    @Column
+    private String recentContent;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

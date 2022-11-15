@@ -152,4 +152,22 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .orderBy(noteFile.createdAt.desc())
                 .fetch();
     }
+
+    @Override
+    public void updateRecentContent(long roomId, String content, String imageLink) {
+
+        if (!content.isEmpty()) {
+            queryFactory
+                    .update(note)
+                    .set(note.recentContent, content)
+                    .set(note.updatedAt, LocalDateTime.now())
+                    .execute();
+        } else {
+            queryFactory
+                    .update(note)
+                    .set(note.recentContent, imageLink)
+                    .set(note.updatedAt, LocalDateTime.now())
+                    .execute();
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package com.usw.sugo.domain.productpost.productpost.controller;
 
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto;
+import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
+import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
@@ -78,7 +80,7 @@ public class ProductPostController {
      */
     @PostMapping
     public ResponseEntity<Map<String, Boolean>> postContent(
-            @RequestHeader String authorization, PostRequestDto.PostingRequest postingRequest,
+            @RequestHeader String authorization, PostingRequest postingRequest,
             @RequestBody MultipartFile[] multipartFileList) throws IOException {
 
         commonProductService.savePosting(authorization, postingRequest, multipartFileList);
@@ -95,7 +97,7 @@ public class ProductPostController {
      */
     @PutMapping
     public ResponseEntity<Object> putProductPostAndImage(
-            @RequestBody MultipartFile[] multipartFileList, PostRequestDto.PutContentRequest putContentRequest) throws IOException {
+            @RequestBody MultipartFile[] multipartFileList, PutContentRequest putContentRequest) throws IOException {
 
         // 게시글 테이블에 수정 내용 적용
         productPostRepository.editPostContent(putContentRequest);
