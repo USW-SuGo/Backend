@@ -8,9 +8,9 @@ public class NoteResponseDto {
 
     @Data
     public static class LoadNoteListCreatingByRequestUserForm {
-        private long id;
+        private long roomId;
         private long opponentUserId;
-        private String opponentNickname;
+        private String opponentUserNickname;
         private String recentContent;
         private int creatingUserUnreadCount;
         private LocalDateTime recentChattingDate;

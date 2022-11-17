@@ -29,6 +29,7 @@ public class NoteController {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
+
     /*
      쪽지 방 만들기
      */

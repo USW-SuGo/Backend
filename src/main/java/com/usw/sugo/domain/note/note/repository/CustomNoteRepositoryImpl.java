@@ -69,7 +69,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .select(Projections.bean(LoadNoteListCreatingByOpponentUserForm.class,
                         note.id.as("roomId"),
                         note.creatingUserId.id.as("creatingUserId"),
-                        note.creatingUserId.nickname.as("creatingUserNickname"),
+                        note.creatingUserId.nickname.as("opponentUserNickname"),
                         note.recentContent, note.opponentUserUnreadCount,
                         note.updatedAt.as("recentChattingDate")
                 ))
