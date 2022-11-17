@@ -12,6 +12,7 @@ public class NoteResponseDto {
         private long opponentUserId;
         private String opponentNickname;
         private String recentContent;
+        private int creatingUserUnreadCount;
         private LocalDateTime recentChattingDate;
     }
 
@@ -21,6 +22,7 @@ public class NoteResponseDto {
         private long opponentUserId;
         private String opponentNickname;
         private String recentContent;
+        private int opponentUserUnreadCount;
         private LocalDateTime recentChattingDate;
     }
 

@@ -55,6 +55,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                         note.id.as("roomId"),
                         note.opponentUserId.id.as("opponentUserId"),
                         note.opponentUserId.nickname.as("opponentUserNickname"),
+                        note.recentContent, note.creatingUserUnreadCount,
                         note.updatedAt.as("recentChattingDate")
                 ))
                 .from(note)
@@ -69,6 +70,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                         note.id.as("roomId"),
                         note.creatingUserId.id.as("creatingUserId"),
                         note.creatingUserId.nickname.as("creatingUserNickname"),
+                        note.recentContent, note.opponentUserUnreadCount,
                         note.updatedAt.as("recentChattingDate")
                 ))
                 .from(note)
@@ -85,7 +87,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     /*
-    특정 채팅방에 존재하는 채팅 메세지 반환
+    특정 쪽지방에 입장, 채팅 메세지 반환
      */
     @Override
     public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable) {
@@ -109,10 +111,11 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     /*
-    특정 채팅방에 존재하는 파일 반환
+    특정 쪽지방에 입장, 존재하는 파일 반환
      */
     @Override
     public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable) {
+
         return queryFactory
                 .select(Projections.bean(LoadNoteFileForm.class,
                         noteFile.sender.id.as("senderId"),
@@ -133,19 +136,45 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     @Override
-    public void updateRecentContent(long roomId, String content, String imageLink) {
+    public void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink) {
 
-        if (!content.isEmpty()) {
+        if (!content.equals("")) {
             queryFactory
                     .update(note)
                     .set(note.recentContent, content)
                     .set(note.updatedAt, LocalDateTime.now())
+                    .where(note.id.eq(roomId))
+                    .execute();
+            queryFactory
+                    .update(note)
+                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                    .where(note.id.eq(roomId)
+                            .and(note.opponentUserId.id.eq(unreadUserId)))
+                    .execute();
+            queryFactory
+                    .update(note)
+                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                    .where(note.id.eq(roomId)
+                            .and(note.creatingUserId.id.eq(unreadUserId)))
                     .execute();
         } else {
             queryFactory
                     .update(note)
                     .set(note.recentContent, imageLink)
                     .set(note.updatedAt, LocalDateTime.now())
+                    .where(note.id.eq(roomId))
+                    .execute();
+            queryFactory
+                    .update(note)
+                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                    .where(note.id.eq(roomId)
+                            .and(note.opponentUserId.id.eq(unreadUserId)))
+                    .execute();
+            queryFactory
+                    .update(note)
+                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                    .where(note.id.eq(roomId)
+                            .and(note.creatingUserId.id.eq(unreadUserId)))
                     .execute();
         }
     }

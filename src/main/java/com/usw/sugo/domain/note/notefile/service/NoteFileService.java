@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.entity.NoteFile;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notefile.dto.NoteFileRequestDto.SendNoteFileForm;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -87,8 +89,17 @@ public class NoteFileService {
                 .imageLink(uploadedInS3ImageLink.toString())
                 .build();
 
+        long unreadUserId = -1;
+
+        Optional<Note> targetNote = noteRepository.findById(sendNoteFileForm.getNoteId());
+        if (targetNote.get().getCreatingUserId().getId() == sendNoteFileForm.getSenderId()) {
+            unreadUserId = targetNote.get().getOpponentUserId().getId();
+        } else if (targetNote.get().getCreatingUserId().getId() != sendNoteFileForm.getSenderId()) {
+            unreadUserId = targetNote.get().getCreatingUserId().getId();
+        }
+
         // 게시글 이미지 저장
         noteFileRepository.save(noteFile);
-        noteRepository.updateRecentContent(sendNoteFileForm.getNoteId(), "", noteFile.toString());
+        noteRepository.updateRecentContent(unreadUserId, sendNoteFileForm.getNoteId(), "", noteFile.toString());
     }
 }

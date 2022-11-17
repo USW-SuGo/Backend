@@ -51,8 +51,10 @@ public class NoteController {
                 .productPost(productPost)
                 .creatingUserId(creatingRequestUser)
                 .creatingUserNickname(creatingRequestUser.getNickname())
+                .creatingUserUnreadCount(0)
                 .opponentUserId(opponentUser)
                 .opponentUserNickname(opponentUser.getNickname())
+                .opponentUserUnreadCount(0)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

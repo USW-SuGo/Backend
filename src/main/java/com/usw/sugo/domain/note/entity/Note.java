@@ -44,6 +44,12 @@ public class Note {
     @Column
     private String recentContent;
 
+    @Column
+    private int creatingUserUnreadCount;
+
+    @Column
+    private int opponentUserUnreadCount;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
