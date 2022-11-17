@@ -90,7 +90,22 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     특정 쪽지방에 입장, 채팅 메세지 반환
      */
     @Override
-    public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable) {
+    public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long requestUserId, long roomId, Pageable pageable) {
+
+        queryFactory
+                .update(note)
+                .set(note.creatingUserUnreadCount, 0)
+                .where(note.creatingUserId.id.eq(requestUserId)
+                        .and(note.id.eq(roomId)))
+                .execute();
+
+        queryFactory
+                .update(note)
+                .set(note.opponentUserUnreadCount, 0)
+                .where(note.opponentUserId.id.eq(requestUserId)
+                        .and(note.id.eq(roomId)))
+                .execute();
+
         return queryFactory
                 .select(Projections.bean(LoadNoteMessageForm.class,
                         noteContent.sender.id.as("senderId"),
@@ -114,7 +129,21 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     특정 쪽지방에 입장, 존재하는 파일 반환
      */
     @Override
-    public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable) {
+    public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long requestUserId, long roomId, Pageable pageable) {
+
+        queryFactory
+                .update(note)
+                .set(note.creatingUserUnreadCount, 0)
+                .where(note.creatingUserId.id.eq(requestUserId)
+                        .and(note.id.eq(roomId)))
+                .execute();
+
+        queryFactory
+                .update(note)
+                .set(note.opponentUserUnreadCount, 0)
+                .where(note.opponentUserId.id.eq(requestUserId)
+                        .and(note.id.eq(roomId)))
+                .execute();
 
         return queryFactory
                 .select(Projections.bean(LoadNoteFileForm.class,

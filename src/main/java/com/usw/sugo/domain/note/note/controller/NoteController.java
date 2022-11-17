@@ -94,12 +94,18 @@ public class NoteController {
     (Get) localhost:8080/note/?roomId={}&page={}&size={}
     */
     @GetMapping("/")
-    public ResponseEntity<Object> loadAllNoteContentByRoomId(@RequestParam Long noteId, Pageable pageable) {
+    public ResponseEntity<Object> loadAllNoteContentByRoomId(
+            @RequestHeader String authorization, @RequestParam Long noteId, Pageable pageable) {
+
+        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+
+        User requestUser = userRepository.findById(userId).orElseThrow(()
+                -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(noteId, pageable));
-        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(noteId, pageable));
+        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(requestUser.getId(), noteId, pageable));
+        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(requestUser.getId(), noteId, pageable));
 
         return ResponseEntity
                 .status(HttpStatus.OK)

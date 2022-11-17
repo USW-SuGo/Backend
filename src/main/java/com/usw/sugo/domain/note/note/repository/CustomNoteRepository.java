@@ -12,9 +12,9 @@ public interface CustomNoteRepository {
 
     List<Object> loadNoteListByUserId(long requestUserId, long opponentUserIdx, Pageable pageable);
 
-    List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long roomId, Pageable pageable);
+    List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long requestUserId, long roomId, Pageable pageable);
 
-    List<LoadNoteFileForm> loadNoteFileFormByRoomId(long roomId, Pageable pageable);
+    List<LoadNoteFileForm> loadNoteFileFormByRoomId(long requestUserId, long roomId, Pageable pageable);
 
     void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink);
 }
