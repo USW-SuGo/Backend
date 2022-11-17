@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -84,9 +85,15 @@ public class NoteController {
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
+        List<Object> daoResult = noteRepository.loadNoteListByUserId(userId, requestUser.getId(), pageable);
+
+        Map<Object, Object> returnResult = new HashMap<>();
+        returnResult.put("LoadNoteListCreatingByRequestUserForm", daoResult.get(0));
+        returnResult.put("LoadNoteListCreatingByOpponentUserForm", daoResult.get(1));
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(noteRepository.loadNoteListByUserId(userId, requestUser.getId(), pageable));
+                .body(returnResult);
     }
 
     /*
