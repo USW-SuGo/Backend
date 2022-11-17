@@ -3,10 +3,13 @@ package com.usw.sugo.domain.note.note.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteFileForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByOpponentUserForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByRequestUserForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteMessageForm;
+import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -205,6 +208,20 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .where(note.id.eq(roomId)
                             .and(note.creatingUserId.id.eq(unreadUserId)))
                     .execute();
+        }
+    }
+
+    @Override
+    public void findByNoteRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
+        List<Note> fetch = queryFactory
+                .selectFrom(note)
+                .where(note.creatingUserId.id.eq(noteRequestUserId)
+                        .and(note.opponentUserId.id.eq(targetUserId))
+                        .and(note.productPost.id.eq(productPostId)))
+                .fetch();
+
+        if (fetch.size() != 0) {
+            throw new CustomException(ErrorCode.NOTE_ALREADY_CREATED);
         }
     }
 }

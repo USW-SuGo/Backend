@@ -17,4 +17,6 @@ public interface CustomNoteRepository {
     List<LoadNoteFileForm> loadNoteFileFormByRoomId(long requestUserId, long roomId, Pageable pageable);
 
     void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink);
+
+    void findByNoteRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId);
 }

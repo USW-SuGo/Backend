@@ -17,6 +17,7 @@ public enum ErrorCode {
     USER_NOT_SEND_AUTH_EMAIL(BAD_REQUEST, "이메일 인증을 발송하지 않은 사용자입니다."),
     PAYLOAD_NOT_VALID(BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     NOTE_NOT_FOUNDED(BAD_REQUEST, "해당 쪽지방을 찾을 수 없습니다."),
+    NOTE_ALREADY_CREATED(BAD_REQUEST, "이미 생성된 쪽지방이 존재합니다."),
 
     USER_UNAUTHORIZED(UNAUTHORIZED, "권한이 없습니다."),
     PARAM_VALID_ERROR(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
