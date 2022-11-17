@@ -11,10 +11,6 @@ public class NoteRequestDto {
     public static class CreateNoteRequest {
         @NotNull
         @NotBlank
-        private long creatingUserId;
-
-        @NotNull
-        @NotBlank
         private long opponentUserId;
 
         @NotNull

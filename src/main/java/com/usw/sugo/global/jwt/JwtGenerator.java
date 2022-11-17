@@ -37,9 +37,10 @@ public class JwtGenerator {
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
 //     테스트 환경 JWT 만료기간 1 종료
 
-    // 테스트 환경 JWT 만료기간
+    // 테스트 환경 JWT 만료기간 2 시작
     private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
     private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
+    // 테스트 환경 JWT 만료기간 2 종료
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);

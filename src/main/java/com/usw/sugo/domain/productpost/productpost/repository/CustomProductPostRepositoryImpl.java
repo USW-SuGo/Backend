@@ -2,6 +2,8 @@ package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.productpost.entity.QUserLikePost;
+import com.usw.sugo.domain.productpost.entity.UserLikePost;
 import com.usw.sugo.domain.productpost.productpost.service.CategoryValidator;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import static com.usw.sugo.domain.productpost.entity.QProductPost.productPost;
 import static com.usw.sugo.domain.productpost.entity.QProductPostFile.productPostFile;
+import static com.usw.sugo.domain.productpost.entity.QUserLikePost.userLikePost;
 
 @Transactional
 @Repository
@@ -161,7 +164,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     public DetailPostResponse loadDetailPostList(long productPostId) {
         DetailPostResponse response = queryFactory
                 .select(Projections.bean(DetailPostResponse.class,
-                        productPost.id,
+                        productPost.id, productPost.user.id,
                         productPostFile.imageLink,
                         productPost.contactPlace, productPost.updatedAt,
                         productPost.title, productPost.content, productPost.price,
@@ -170,6 +173,19 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                 .where(productPost.id.eq(productPostId))
                 .fetchOne();
+
+        UserLikePost likePost = queryFactory
+                .select(userLikePost)
+                .from(userLikePost)
+                .where(userLikePost.productPost.id.eq(productPostId))
+                .fetchOne();
+
+        if (likePost.getUser() != null) {
+            response.setUserLikeStatus(false);
+        } else {
+            response.setUserLikeStatus(true);
+        }
+
 
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
         String[] imageList;

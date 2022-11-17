@@ -46,7 +46,6 @@ public class NoteController {
         User opponentUser = userRepository.findById(request.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-
         Note note = Note.builder()
                 .productPost(productPost)
                 .creatingUserId(creatingRequestUser)

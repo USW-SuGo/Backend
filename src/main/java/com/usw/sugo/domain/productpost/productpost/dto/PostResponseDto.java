@@ -56,6 +56,7 @@ public class PostResponseDto {
     public static class DetailPostResponse {
         // 게시글 인덱스
         private long id;
+        private long writerId;
         // 이미지 링크
         private String imageLink;
         // 거래 장소
@@ -68,11 +69,12 @@ public class PostResponseDto {
         private String content;
         // 상품 가격
         private int price;
-        // 상품 게시글 작성자
+        // 상품 게시글 작성자 닉네임
         private String nickname;
         // 게시글 카테고리
         private String category;
         // 게시글 거래 완료 상태 유무
         private boolean status;
+        private boolean userLikeStatus;
     }
 }
