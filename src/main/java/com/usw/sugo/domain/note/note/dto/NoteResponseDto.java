@@ -19,8 +19,8 @@ public class NoteResponseDto {
     @Data
     public static class LoadNoteListCreatingByOpponentUserForm {
         private long id;
-        private long opponentUserId;
-        private String opponentNickname;
+        private long creatingUserId;
+        private String creatingUserNickname;
         private String recentContent;
         private int opponentUserUnreadCount;
         private LocalDateTime recentChattingDate;
