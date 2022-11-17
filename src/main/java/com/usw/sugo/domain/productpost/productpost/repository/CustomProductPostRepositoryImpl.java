@@ -2,13 +2,12 @@ package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.productpost.entity.QUserLikePost;
 import com.usw.sugo.domain.productpost.entity.UserLikePost;
-import com.usw.sugo.domain.productpost.productpost.service.CategoryValidator;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.service.CategoryValidator;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import lombok.RequiredArgsConstructor;
@@ -174,25 +173,29 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .where(productPost.id.eq(productPostId))
                 .fetchOne();
 
-        UserLikePost likePost = queryFactory
-                .select(userLikePost)
-                .from(userLikePost)
-                .where(userLikePost.productPost.id.eq(productPostId))
-                .fetchOne();
-
-        if (likePost.getUser() != null) {
+        try {
+            UserLikePost likePost = queryFactory
+                    .select(userLikePost)
+                    .from(userLikePost)
+                    .where(userLikePost.productPost.id.eq(productPostId))
+                    .fetchOne();
+        } catch (NullPointerException nullPointerException) {
             response.setUserLikeStatus(false);
-        } else {
-            response.setUserLikeStatus(true);
+
+            // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
+            String[] imageList;
+            imageList = response.getImageLink().split(",");
+            response.setImageLink(Arrays.toString(imageList));
+            // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 종료
+            return response;
         }
 
-
+        response.setUserLikeStatus(true);
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
         String[] imageList;
         imageList = response.getImageLink().split(",");
         response.setImageLink(Arrays.toString(imageList));
         // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 종료
-
         return response;
     }
 
