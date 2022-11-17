@@ -163,7 +163,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     public DetailPostResponse loadDetailPostList(long productPostId) {
         DetailPostResponse response = queryFactory
                 .select(Projections.bean(DetailPostResponse.class,
-                        productPost.id, productPost.user.id,
+                        productPost.id, productPost.user.id.as("writerId"),
                         productPostFile.imageLink,
                         productPost.contactPlace, productPost.updatedAt,
                         productPost.title, productPost.content, productPost.price,
