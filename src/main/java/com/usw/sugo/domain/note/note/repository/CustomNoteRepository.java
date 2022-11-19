@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.note.note.repository;
 
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomForm;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -12,9 +11,9 @@ public interface CustomNoteRepository {
 
     List<List<LoadNoteListForm>> loadNoteListByUserId(long requestUserId, Pageable pageable);
 
-    List<LoadNoteRoomForm> loadNoteRoomAllContentByRoomId(long requestUserId, long roomId, Pageable pageable);
+    void readNoteRoom(long requestUserId, long noteId);
 
-    void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink);
+    void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink);
 
     void findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId);
 }

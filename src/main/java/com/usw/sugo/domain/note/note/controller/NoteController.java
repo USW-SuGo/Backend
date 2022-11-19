@@ -2,8 +2,14 @@ package com.usw.sugo.domain.note.note.controller;
 
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomContentForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomFileForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
+import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
 import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.entity.User;
@@ -18,10 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @RestController
@@ -31,6 +34,8 @@ public class NoteController {
 
     private final ProductPostRepository productPostRepository;
     private final NoteRepository noteRepository;
+    private final NoteContentRepository noteContentRepository;
+    private final NoteFileRepository noteFileRepository;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
@@ -125,8 +130,21 @@ public class NoteController {
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
+        // 요청유저 유저 읽음처리
+        noteRepository.readNoteRoom(requestUser.getId(), noteId);
+
+        List<LoadNoteRoomContentForm> loadNoteRoomContentForms =
+                noteContentRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable);
+
+        List<LoadNoteRoomFileForm> loadNoteRoomFileForms =
+                noteFileRepository.loadNoteRoomAllFileByRoomId(requestUser.getId(), noteId, pageable);
+
+        List<Object> tempResult = new ArrayList<>();
+        tempResult.add(loadNoteRoomContentForms);
+        tempResult.add(loadNoteRoomFileForms);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(noteRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable));
+                .body(tempResult);
     }
 }

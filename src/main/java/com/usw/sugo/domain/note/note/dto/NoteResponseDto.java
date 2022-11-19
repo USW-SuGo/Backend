@@ -8,7 +8,7 @@ public class NoteResponseDto {
 
     @Data
     public static class LoadNoteListForm {
-        private long roomId;
+        private long noteId;
         private long requestUserId;
         private long opponentUserId;
         private String opponentUserNickname;
@@ -18,7 +18,7 @@ public class NoteResponseDto {
     }
 
     @Data
-    public static class LoadNoteRoomForm {
+    public static class LoadNoteAllContentForm {
         private String message;
         private long messageSenderId;
         private long messageReceiverId;
@@ -30,18 +30,18 @@ public class NoteResponseDto {
     }
 
     @Data
-    public static class LoadNoteMessageForm {
-        private long senderId;
-        private long receiverId;
+    public static class LoadNoteRoomContentForm extends LoadNoteAllContentForm {
         private String message;
-        private LocalDateTime createdAt;
+        private long messageSenderId;
+        private long messageReceiverId;
+        private LocalDateTime messageCreatedAt;
     }
 
     @Data
-    public static class LoadNoteFileForm {
-        private long senderId;
-        private long receiverId;
+    public static class LoadNoteRoomFileForm extends LoadNoteAllContentForm {
         private String imageLink;
-        private LocalDateTime createdAt;
+        private long fileSenderId;
+        private long fileReceiverId;
+        private LocalDateTime fileCreatedAt;
     }
 }

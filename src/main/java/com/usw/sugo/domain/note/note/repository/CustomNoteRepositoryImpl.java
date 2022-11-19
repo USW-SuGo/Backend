@@ -1,11 +1,9 @@
 package com.usw.sugo.domain.note.note.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomForm;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.usw.sugo.domain.note.entity.QNote.note;
-import static com.usw.sugo.domain.note.entity.QNoteContent.noteContent;
-import static com.usw.sugo.domain.note.entity.QNoteFile.noteFile;
 
 @Repository
 @Transactional
@@ -54,7 +50,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
                 queryFactory
                         .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("roomId"),
+                                note.id.as("noteId"),
                                 note.creatingUserId.id.as("requestUserId"),
                                 note.opponentUserId.id.as("opponentUserId"),
                                 note.opponentUserId.nickname.as("opponentUserNickname"),
@@ -95,48 +91,29 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     /*
-    특정 쪽지방에 입장, 채팅 메세지 반환
+    특정 쪽지방에 입장 -> 유저 읽음처리
      */
     @Override
-    public List<LoadNoteRoomForm> loadNoteRoomAllContentByRoomId(long requestUserId, long roomId, Pageable pageable) {
+    public void readNoteRoom(long requestUserId, long noteId) {
 
         queryFactory
                 .update(note)
                 .set(note.creatingUserUnreadCount, 0)
                 .where(note.creatingUserId.id.eq(requestUserId)
-                        .and(note.id.eq(roomId)))
+                        .and(note.id.eq(noteId)))
                 .execute();
 
         queryFactory
                 .update(note)
                 .set(note.opponentUserUnreadCount, 0)
                 .where(note.opponentUserId.id.eq(requestUserId)
-                        .and(note.id.eq(roomId)))
+                        .and(note.id.eq(noteId)))
                 .execute();
-
-        return queryFactory
-                .select(Projections.bean(LoadNoteRoomForm.class,
-                        noteContent.message,
-                        noteContent.sender.id.as("messageSenderId"),
-                        noteContent.receiver.id.as("messageReceiverId"),
-                        noteContent.createdAt.as("messageCreatedAt"),
-                        noteFile.imageLink,
-                        noteFile.sender.id.as("fileSenderId"),
-                        noteFile.receiver.id.as("fileReceiverId"),
-                        noteFile.createdAt.as("fileCreatedAt")
-                ))
-                .from(noteContent, noteFile)
-                .where(noteFile.noteId.id.eq(roomId)
-                        .or(noteContent.noteId.id.eq(roomId)))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(noteContent.createdAt.desc(), noteFile.createdAt.desc())
-                .fetch();
     }
 
     // Note 테이블에 최근 메세지 반영
     @Override
-    public void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink) {
+    public void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink) {
 
         // 파일을 보냈을 때
         if (!content.equals("")) {
@@ -144,18 +121,18 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .update(note)
                     .set(note.recentContent, content)
                     .set(note.updatedAt, LocalDateTime.now())
-                    .where(note.id.eq(roomId))
+                    .where(note.id.eq(noteId))
                     .execute();
             queryFactory
                     .update(note)
                     .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
-                    .where(note.id.eq(roomId)
+                    .where(note.id.eq(noteId)
                             .and(note.opponentUserId.id.eq(unreadUserId)))
                     .execute();
             queryFactory
                     .update(note)
                     .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
-                    .where(note.id.eq(roomId)
+                    .where(note.id.eq(noteId)
                             .and(note.creatingUserId.id.eq(unreadUserId)))
                     .execute();
             return;
@@ -165,18 +142,18 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .update(note)
                 .set(note.recentContent, imageLink)
                 .set(note.updatedAt, LocalDateTime.now())
-                .where(note.id.eq(roomId))
+                .where(note.id.eq(noteId))
                 .execute();
         queryFactory
                 .update(note)
                 .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
-                .where(note.id.eq(roomId)
+                .where(note.id.eq(noteId)
                         .and(note.opponentUserId.id.eq(unreadUserId)))
                 .execute();
         queryFactory
                 .update(note)
                 .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
-                .where(note.id.eq(roomId)
+                .where(note.id.eq(noteId)
                         .and(note.creatingUserId.id.eq(unreadUserId)))
                 .execute();
     }
