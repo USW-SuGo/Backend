@@ -19,8 +19,8 @@ import java.util.HashMap;
 public class NoteContentController {
 
     /*
-    채팅방 인덱스로, 특정 채팅방 컨텐츠/파일 전송하기
-    (Get) localhost:8080/chatting/?roomId={}&page={}&size={}
+    쪽지방 인덱스로 메세지 전송하기
+    (Get) localhost:8080/note-content/?noteId={}
     */
     private final NoteContentService noteContentService;
 

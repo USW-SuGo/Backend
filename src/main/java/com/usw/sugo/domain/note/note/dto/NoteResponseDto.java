@@ -7,35 +7,26 @@ import java.time.LocalDateTime;
 public class NoteResponseDto {
 
     @Data
-    public static class LoadNoteListCreatingByRequestUserForm {
+    public static class LoadNoteListForm {
         private long roomId;
+        private long requestUserId;
         private long opponentUserId;
         private String opponentUserNickname;
         private String recentContent;
-        private int creatingUserUnreadCount;
+        private int requestUserUnreadCount;
         private LocalDateTime recentChattingDate;
     }
 
     @Data
-    public static class LoadNoteListCreatingByOpponentUserForm {
-        private long roomId;
-        private long creatingUserId;
-        private String creatingUserNickname;
-        private String recentContent;
-        private int opponentUserUnreadCount;
-        private LocalDateTime recentChattingDate;
-    }
-
-    @Data
-    public static class LoadNoteForm {
-        private long id;
-        private long sellerId;
-        private long buyerId;
-        private String sellerNickname;
-        private String buyerNickname;
-        private String title;
-        private String contactPlace;
-        private int price;
+    public static class LoadNoteRoomForm {
+        private String message;
+        private long messageSenderId;
+        private long messageReceiverId;
+        private LocalDateTime messageCreatedAt;
+        private String imageLink;
+        private long fileSenderId;
+        private long fileReceiverId;
+        private LocalDateTime fileCreatedAt;
     }
 
     @Data

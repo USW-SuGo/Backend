@@ -4,10 +4,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.entity.Note;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteFileForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByOpponentUserForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListCreatingByRequestUserForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteMessageForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomForm;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -49,51 +47,58 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
      --> 여러번의 조인보다 컬럼 하나를 추가하는게 더 좋을 수도 있겠다는생각으로 도입하였다.
      */
     @Override
-    public List<Object> loadNoteListByUserId(
-            long requestUserId, long opponentUserId, Pageable pageable) {
+    public List<List<LoadNoteListForm>> loadNoteListByUserId(long requestUserId, Pageable pageable) {
 
+        List<List<LoadNoteListForm>> finalResult = new ArrayList<>();
         // 요청한 유저가 만든 쪽지방 리스트
-        List<LoadNoteListCreatingByRequestUserForm> creatingUserFormList = queryFactory
-                .select(Projections.bean(LoadNoteListCreatingByRequestUserForm.class,
-                        note.id.as("roomId"),
-                        note.opponentUserId.id.as("opponentUserId"),
-                        note.opponentUserId.nickname.as("opponentUserNickname"),
-                        note.recentContent, note.creatingUserUnreadCount,
-                        note.updatedAt.as("recentChattingDate")
-                ))
-                .from(note)
-                .where(note.creatingUserId.id.eq(requestUserId))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
+                queryFactory
+                        .select(Projections.bean(LoadNoteListForm.class,
+                                note.id.as("roomId"),
+                                note.creatingUserId.id.as("requestUserId"),
+                                note.opponentUserId.id.as("opponentUserId"),
+                                note.opponentUserId.nickname.as("opponentUserNickname"),
+                                note.recentContent,
+                                note.creatingUserUnreadCount.as("requestUserUnreadCount"),
+                                note.updatedAt.as("recentChattingDate")
+                        ))
+                        .from(note)
+                        .where(note.creatingUserId.id.eq(requestUserId))
+                        .orderBy(note.updatedAt.desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch();
 
-        // 다른 유저가 만든 쪽지방 리스트에 요청한 유저가 속한경우
-        List<LoadNoteListCreatingByOpponentUserForm> opponentUserFormList = queryFactory
-                .select(Projections.bean(LoadNoteListCreatingByOpponentUserForm.class,
-                        note.id.as("roomId"),
-                        note.creatingUserId.id.as("creatingUserId"),
-                        note.creatingUserId.nickname.as("creatingUserNickname"),
-                        note.recentContent, note.opponentUserUnreadCount,
-                        note.updatedAt.as("recentChattingDate")
-                ))
-                .from(note)
-                .where(note.creatingUserId.id.eq(requestUserId).not()
-                        .and(note.opponentUserId.id.eq(requestUserId)))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        // 요청한 유저가 만들진 않았지만, 개설된 쪽지방
+        List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
+                queryFactory
+                        .select(Projections.bean(LoadNoteListForm.class,
+                                note.id.as("roomId"),
+                                note.opponentUserId.id.as("requestUserId"),
+                                note.creatingUserId.id.as("opponentUserId"),
+                                note.creatingUserId.nickname.as("opponentUserNickname"),
+                                note.recentContent,
+                                note.opponentUserUnreadCount.as("requestUserUnreadCount"),
+                                note.updatedAt.as("recentChattingDate")
+                        ))
+                        .from(note)
+                        .where(note.opponentUserId.id.eq(requestUserId))
+                        .orderBy(note.updatedAt.desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch();
 
-        return new ArrayList<>() {{
-            add(creatingUserFormList);
-            add(opponentUserFormList);
-        }};
+        finalResult.add(loadNoteListResultByNoteCreatingUser);
+        finalResult.add(loadNoteListResultByNoteCreatedUser);
+
+        return finalResult;
     }
 
     /*
     특정 쪽지방에 입장, 채팅 메세지 반환
      */
     @Override
-    public List<LoadNoteMessageForm> loadNoteMessageFormByRoomId(long requestUserId, long roomId, Pageable pageable) {
+    public List<LoadNoteRoomForm> loadNoteRoomAllContentByRoomId(long requestUserId, long roomId, Pageable pageable) {
 
         queryFactory
                 .update(note)
@@ -110,66 +115,30 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .execute();
 
         return queryFactory
-                .select(Projections.bean(LoadNoteMessageForm.class,
-                        noteContent.sender.id.as("senderId"),
-                        noteContent.receiver.id.as("receiverId"),
-                        noteContent.message, noteContent.createdAt
+                .select(Projections.bean(LoadNoteRoomForm.class,
+                        noteContent.message,
+                        noteContent.sender.id.as("messageSenderId"),
+                        noteContent.receiver.id.as("messageReceiverId"),
+                        noteContent.createdAt.as("messageCreatedAt"),
+                        noteFile.imageLink,
+                        noteFile.sender.id.as("fileSenderId"),
+                        noteFile.receiver.id.as("fileReceiverId"),
+                        noteFile.createdAt.as("fileCreatedAt")
                 ))
-                .from(noteContent)
-                .where(noteContent.noteId.eq(
-                        JPAExpressions
-                                .select(note)
-                                .from(note)
-                                .where(note.id.eq(roomId))
-                ))
+                .from(noteContent, noteFile)
+                .where(noteFile.noteId.id.eq(roomId)
+                        .or(noteContent.noteId.id.eq(roomId)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(noteContent.createdAt.desc())
+                .orderBy(noteContent.createdAt.desc(), noteFile.createdAt.desc())
                 .fetch();
     }
 
-    /*
-    특정 쪽지방에 입장, 존재하는 파일 반환
-     */
-    @Override
-    public List<LoadNoteFileForm> loadNoteFileFormByRoomId(long requestUserId, long roomId, Pageable pageable) {
-
-        queryFactory
-                .update(note)
-                .set(note.creatingUserUnreadCount, 0)
-                .where(note.creatingUserId.id.eq(requestUserId)
-                        .and(note.id.eq(roomId)))
-                .execute();
-
-        queryFactory
-                .update(note)
-                .set(note.opponentUserUnreadCount, 0)
-                .where(note.opponentUserId.id.eq(requestUserId)
-                        .and(note.id.eq(roomId)))
-                .execute();
-
-        return queryFactory
-                .select(Projections.bean(LoadNoteFileForm.class,
-                        noteFile.sender.id.as("senderId"),
-                        noteFile.receiver.id.as("receiverId"),
-                        noteFile.imageLink, noteFile.createdAt
-                ))
-                .from(noteFile)
-                .where(noteFile.noteId.eq(
-                        JPAExpressions
-                                .select(note)
-                                .from(note)
-                                .where(note.id.eq(roomId))
-                ))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(noteFile.createdAt.desc())
-                .fetch();
-    }
-
+    // Note 테이블에 최근 메세지 반영
     @Override
     public void updateRecentContent(long unreadUserId, long roomId, String content, String imageLink) {
 
+        // 파일을 보냈을 때
         if (!content.equals("")) {
             queryFactory
                     .update(note)
@@ -179,7 +148,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .execute();
             queryFactory
                     .update(note)
-                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                    .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
                     .where(note.id.eq(roomId)
                             .and(note.opponentUserId.id.eq(unreadUserId)))
                     .execute();
@@ -189,30 +158,32 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .where(note.id.eq(roomId)
                             .and(note.creatingUserId.id.eq(unreadUserId)))
                     .execute();
-        } else {
-            queryFactory
-                    .update(note)
-                    .set(note.recentContent, imageLink)
-                    .set(note.updatedAt, LocalDateTime.now())
-                    .where(note.id.eq(roomId))
-                    .execute();
-            queryFactory
-                    .update(note)
-                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
-                    .where(note.id.eq(roomId)
-                            .and(note.opponentUserId.id.eq(unreadUserId)))
-                    .execute();
-            queryFactory
-                    .update(note)
-                    .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
-                    .where(note.id.eq(roomId)
-                            .and(note.creatingUserId.id.eq(unreadUserId)))
-                    .execute();
+            return;
         }
+
+        queryFactory
+                .update(note)
+                .set(note.recentContent, imageLink)
+                .set(note.updatedAt, LocalDateTime.now())
+                .where(note.id.eq(roomId))
+                .execute();
+        queryFactory
+                .update(note)
+                .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
+                .where(note.id.eq(roomId)
+                        .and(note.opponentUserId.id.eq(unreadUserId)))
+                .execute();
+        queryFactory
+                .update(note)
+                .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
+                .where(note.id.eq(roomId)
+                        .and(note.creatingUserId.id.eq(unreadUserId)))
+                .execute();
     }
 
+
     @Override
-    public void findByNoteRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
+    public void findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
         List<Note> fetch = queryFactory
                 .selectFrom(note)
                 .where(note.creatingUserId.id.eq(noteRequestUserId)

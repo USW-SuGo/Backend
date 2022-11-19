@@ -2,6 +2,7 @@ package com.usw.sugo.domain.note.note.controller;
 
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
@@ -17,9 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,7 +51,7 @@ public class NoteController {
         User opponentUser = userRepository.findById(request.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        noteRepository.findByNoteRequestUserAndTargetUserAndProductPost(
+        noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
                 creatingRequestUserId, opponentUser.getId(), productPost.getId());
 
         Note note = Note.builder()
@@ -88,15 +91,25 @@ public class NoteController {
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        List<Object> daoResult = noteRepository.loadNoteListByUserId(userId, requestUser.getId(), pageable);
+        // QueryDSL 조회 후 2차원 리스트를 분해한다.
+        List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
+        List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
+        List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
 
-        Map<Object, Object> returnResult = new HashMap<>();
-        returnResult.put("LoadNoteListCreatingByRequestUserForm", daoResult.get(0));
-        returnResult.put("LoadNoteListCreatingByOpponentUserForm", daoResult.get(1));
+        // 분해한 2차원 리스트를 임시 보관한다. (DTO 내의 속성인, 최근 채팅 시각을 기준으로 정렬을 해주어야 하기 때문)
+        List<LoadNoteListForm> tempResult = new ArrayList<>();
+        tempResult.addAll(loadNoteListFormRequestUserIsCreatingNote);
+        tempResult.addAll(loadNoteListFormsRequestUserIsCreatedNote);
+        // 분해한 2차원 리스트를 임시 보관한다. (DTO 내의 속성인, 최근 채팅 시각을 기준으로 정렬을 해주어야 하기 때문)
+
+        Stream<LoadNoteListForm> finalResult = tempResult
+                .stream()
+                .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
+                        .reversed());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(returnResult);
+                .body(finalResult);
     }
 
     /*
@@ -112,13 +125,8 @@ public class NoteController {
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("NoteContent", noteRepository.loadNoteMessageFormByRoomId(requestUser.getId(), noteId, pageable));
-        result.put("NoteFile", noteRepository.loadNoteFileFormByRoomId(requestUser.getId(), noteId, pageable));
-
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(result);
+                .body(noteRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable));
     }
 }

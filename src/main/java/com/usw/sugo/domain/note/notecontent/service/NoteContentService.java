@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -31,21 +32,14 @@ public class NoteContentService {
                 .message(sendNoteContentForm.getMessage())
                 .sender(userRepository.findById(sendNoteContentForm.getSenderId())
                         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
-                .sender(userRepository.findById(sendNoteContentForm.getReceiverId())
+                .receiver(userRepository.findById(sendNoteContentForm.getReceiverId())
                         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
+                .createdAt(LocalDateTime.now())
                 .build();
 
         noteContentRepository.save(noteContent);
 
-        long unreadUserId = -1;
-
-        Optional<Note> targetNote = noteRepository.findById(sendNoteContentForm.getNoteId());
-        if (targetNote.get().getCreatingUserId().getId() == sendNoteContentForm.getSenderId()) {
-            unreadUserId = targetNote.get().getOpponentUserId().getId();
-        } else if (targetNote.get().getCreatingUserId().getId() != sendNoteContentForm.getSenderId()) {
-            unreadUserId = targetNote.get().getCreatingUserId().getId();
-        }
-
+        long unreadUserId = sendNoteContentForm.getReceiverId();
         noteRepository.updateRecentContent(unreadUserId, sendNoteContentForm.getNoteId(),
                 sendNoteContentForm.getMessage(), "");
     }
