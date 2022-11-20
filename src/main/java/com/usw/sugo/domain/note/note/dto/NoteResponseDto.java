@@ -31,20 +31,4 @@ public class NoteResponseDto {
         private long fileReceiverId;
         private LocalDateTime fileCreatedAt;
     }
-
-    @Data
-    public static class LoadNoteRoomContentForm extends LoadNoteAllContentForm {
-        private String message;
-        private long messageSenderId;
-        private long messageReceiverId;
-        private LocalDateTime messageCreatedAt;
-    }
-
-    @Data
-    public static class LoadNoteRoomFileForm extends LoadNoteAllContentForm {
-        private String imageLink;
-        private long fileSenderId;
-        private long fileReceiverId;
-        private LocalDateTime fileCreatedAt;
-    }
 }

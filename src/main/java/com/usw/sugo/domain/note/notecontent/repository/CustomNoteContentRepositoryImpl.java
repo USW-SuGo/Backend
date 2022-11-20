@@ -20,9 +20,10 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
 
     private final JPAQueryFactory queryFactory;
 
+    // 쪽지방 메세지, 파일 모두 불러오기
     @Override
     public List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(long requestUserId, long noteId, Pageable pageable) {
-        // 쪽지방 메세지
+        
         return queryFactory
                 .select(Projections.bean(LoadNoteAllContentForm.class,
                         noteContent.id.as("noteContentId"),
@@ -44,5 +45,4 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
                 .limit(pageable.getPageSize())
                 .fetch();
     }
-
 }
