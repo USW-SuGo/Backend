@@ -69,7 +69,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
                 queryFactory
                         .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("roomId"),
+                                note.id.as("noteId"),
                                 note.opponentUserId.id.as("requestUserId"),
                                 note.creatingUserId.id.as("opponentUserId"),
                                 note.creatingUserId.nickname.as("opponentUserNickname"),

@@ -97,7 +97,9 @@ public class NoteController {
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
         // QueryDSL 조회 후 2차원 리스트를 분해한다.
-        List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
+        List<List<LoadNoteListForm>> noteListResult =
+                noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
+
         List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
         List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
 
