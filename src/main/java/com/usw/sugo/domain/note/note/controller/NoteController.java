@@ -2,10 +2,8 @@ package com.usw.sugo.domain.note.note.controller;
 
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomFileForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
@@ -24,7 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
@@ -133,18 +134,15 @@ public class NoteController {
         // 요청유저 유저 읽음처리
         noteRepository.readNoteRoom(requestUser.getId(), noteId);
 
-        List<LoadNoteRoomContentForm> loadNoteRoomContentForms =
+        List<LoadNoteAllContentForm> loadNoteAllContentForms =
                 noteContentRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable);
 
-        List<LoadNoteRoomFileForm> loadNoteRoomFileForms =
-                noteFileRepository.loadNoteRoomAllFileByRoomId(requestUser.getId(), noteId, pageable);
-
-        List<Object> tempResult = new ArrayList<>();
-        tempResult.add(loadNoteRoomContentForms);
-        tempResult.add(loadNoteRoomFileForms);
+        for (LoadNoteAllContentForm loadNoteAllContentForm : loadNoteAllContentForms) {
+            loadNoteAllContentForm.setRequestUserId(requestUser.getId());
+        }
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(tempResult);
+                .body(loadNoteAllContentForms);
     }
 }
