@@ -1,9 +1,11 @@
 package com.usw.sugo.domain.note.note.repository;
 
+import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomNoteRepository {
 
@@ -15,5 +17,5 @@ public interface CustomNoteRepository {
 
     void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink);
 
-    void findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId);
+    Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId);
 }

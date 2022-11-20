@@ -4,8 +4,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -14,6 +12,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.usw.sugo.domain.note.entity.QNote.note;
 
@@ -50,7 +49,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
                 queryFactory
                         .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("noteId"),
+                                note.id.as("noteId"), note.productPost.id.as("productPostId"),
                                 note.creatingUserId.id.as("requestUserId"),
                                 note.opponentUserId.id.as("opponentUserId"),
                                 note.opponentUserId.nickname.as("opponentUserNickname"),
@@ -69,7 +68,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
                 queryFactory
                         .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("noteId"),
+                                note.id.as("noteId"), note.productPost.id.as("productPostId"),
                                 note.opponentUserId.id.as("requestUserId"),
                                 note.creatingUserId.id.as("opponentUserId"),
                                 note.creatingUserId.nickname.as("opponentUserNickname"),
@@ -115,7 +114,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     @Override
     public void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink) {
 
-        // 파일을 보냈을 때
+        // 메세지를 보냈을 때
         if (!content.equals("")) {
             queryFactory
                     .update(note)
@@ -138,6 +137,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
             return;
         }
 
+        // 파일을 보냈을 때
         queryFactory
                 .update(note)
                 .set(note.recentContent, imageLink)
@@ -160,16 +160,12 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
 
 
     @Override
-    public void findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
-        List<Note> fetch = queryFactory
+    public Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
+        return Optional.ofNullable(queryFactory
                 .selectFrom(note)
                 .where(note.creatingUserId.id.eq(noteRequestUserId)
                         .and(note.opponentUserId.id.eq(targetUserId))
                         .and(note.productPost.id.eq(productPostId)))
-                .fetch();
-
-        if (fetch.size() != 0) {
-            throw new CustomException(ErrorCode.NOTE_ALREADY_CREATED);
-        }
+                .fetchOne());
     }
 }

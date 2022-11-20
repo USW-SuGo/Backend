@@ -21,10 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @RestController
@@ -56,8 +53,12 @@ public class NoteController {
         User opponentUser = userRepository.findById(request.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
+        Optional<Note> findingTargetNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
                 creatingRequestUserId, opponentUser.getId(), productPost.getId());
+
+        if (findingTargetNote.isPresent()) {
+            throw new CustomException(ErrorCode.NOTE_ALREADY_CREATED);
+        }
 
         Note note = Note.builder()
                 .productPost(productPost)
@@ -120,8 +121,8 @@ public class NoteController {
     }
 
     /*
-    채팅방 인덱스로, 특정 채팅방 컨텐츠/파일 조회하기
-    (Get) localhost:8080/note/?roomId={}&page={}&size={}
+    채팅방 인덱스로, 특정 쪽지방 컨텐츠/파일 조회하기
+    (Get) localhost:8080/note/?noteId={}&page={}&size={}
     */
     @GetMapping("/")
     public ResponseEntity<Object> loadAllNoteContentByRoomId(

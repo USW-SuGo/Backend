@@ -9,6 +9,7 @@ public class NoteResponseDto {
     @Data
     public static class LoadNoteListForm {
         private long noteId;
+        private long productPostId;
         private long requestUserId;
         private long opponentUserId;
         private String opponentUserNickname;
@@ -20,6 +21,7 @@ public class NoteResponseDto {
     @Data
     public static class LoadNoteAllContentForm {
         private long requestUserId;
+        private long productPostId;
         private long noteContentId;
         private String message;
         private long messageSenderId;
