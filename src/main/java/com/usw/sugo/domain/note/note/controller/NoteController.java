@@ -4,7 +4,6 @@ import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequest;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteRoomFileForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
 import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
