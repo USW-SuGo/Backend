@@ -177,7 +177,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .join(productPost)
                 .on(productPost.id.eq(userLikePost.productPost.id))
                 .where(userLikePost.user.id.eq(userId)
-                        .and(productPost.id.eq(productPostId)))
+                        .and(userLikePost.productPost.id.eq(productPostId)))
                 .stream().count();
 
         if (count == 0) {
