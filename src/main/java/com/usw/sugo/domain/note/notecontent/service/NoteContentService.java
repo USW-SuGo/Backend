@@ -1,6 +1,5 @@
 package com.usw.sugo.domain.note.notecontent.service;
 
-import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.entity.NoteContent;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.dto.NoteContentRequestDto.SendNoteContentForm;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

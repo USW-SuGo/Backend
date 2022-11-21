@@ -4,9 +4,10 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import com.usw.sugo.domain.productpost.productpost.service.CommonProductService;
+import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
@@ -54,7 +55,7 @@ public class ProductPostController {
 
     // 모든 게시물 조회하기
     @GetMapping("/all")
-    public ResponseEntity<List<PostResponseDto.MainPageResponse>> loadMainPage(
+    public ResponseEntity<List<MainPageResponse>> loadMainPage(
             Pageable pageable, @RequestParam String category) {
 
         return ResponseEntity
@@ -62,13 +63,16 @@ public class ProductPostController {
                 .body(productPostRepository.loadMainPagePostList(pageable, category));
     }
 
-
     // 게시글 자세히 보기
     @GetMapping("/")
-    public ResponseEntity<PostResponseDto.DetailPostResponse> loadDetailPost(@RequestParam long productPostId) {
+    public ResponseEntity<PostResponseDto.DetailPostResponse> loadDetailPost(
+            @RequestHeader String authorization, @RequestParam long productPostId) {
+
+        long userId = jwtResolver.jwtResolveToUserId(authorization);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(productPostRepository.loadDetailPostList(productPostId));
+                .body(productPostRepository.loadDetailPostList(productPostId, userId));
     }
 
     /**

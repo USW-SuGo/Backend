@@ -160,7 +160,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     특정 게시물 조회
      */
     @Override
-    public DetailPostResponse loadDetailPostList(long productPostId) {
+    public DetailPostResponse loadDetailPostList(long productPostId, long userId) {
         DetailPostResponse response = queryFactory
                 .select(Projections.bean(DetailPostResponse.class,
                         productPost.id, productPost.user.id.as("writerId"),
@@ -175,9 +175,10 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
 
         try {
             UserLikePost likePost = queryFactory
-                    .select(userLikePost)
-                    .from(userLikePost)
-                    .where(userLikePost.productPost.id.eq(productPostId))
+                    .selectFrom(userLikePost)
+                    .join(productPost)
+                    .on(productPost.id.eq(userLikePost.productPost.id))
+                    .where(userLikePost.user.id.eq(userId))
                     .fetchOne();
         } catch (NullPointerException nullPointerException) {
             response.setUserLikeStatus(false);

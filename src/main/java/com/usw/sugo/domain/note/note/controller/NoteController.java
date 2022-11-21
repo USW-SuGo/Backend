@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.usw.sugo.global.exception.ErrorCode.DO_NOT_CREATE_YOURSELF;
+import static com.usw.sugo.global.exception.ErrorCode.NOTE_ALREADY_CREATED;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note")
@@ -55,7 +58,11 @@ public class NoteController {
                 creatingRequestUserId, opponentUser.getId(), productPost.getId());
 
         if (findingTargetNote.isPresent()) {
-            throw new CustomException(ErrorCode.NOTE_ALREADY_CREATED);
+            throw new CustomException(NOTE_ALREADY_CREATED);
+        }
+
+        if (creatingRequestUser.equals(opponentUser)) {
+            throw new CustomException(DO_NOT_CREATE_YOURSELF);
         }
 
         Note note = Note.builder()

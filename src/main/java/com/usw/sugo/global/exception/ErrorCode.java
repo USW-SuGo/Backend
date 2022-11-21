@@ -18,6 +18,8 @@ public enum ErrorCode {
     PAYLOAD_NOT_VALID(BAD_REQUEST, "인증번호가 일치하지 않습니다."),
     NOTE_NOT_FOUNDED(BAD_REQUEST, "해당 쪽지방을 찾을 수 없습니다."),
     NOTE_ALREADY_CREATED(BAD_REQUEST, "이미 생성된 쪽지방이 존재합니다."),
+    DO_NOT_CREATE_YOURSELF(BAD_REQUEST, "자신에게 쪽지방을 개설할 수 없습니다."),
+    DO_NOT_LIKE_YOURSELF(BAD_REQUEST, "자신의 게시물은 좋아요를 기록할 수 없습니다."),
 
     USER_UNAUTHORIZED(UNAUTHORIZED, "권한이 없습니다."),
     PARAM_VALID_ERROR(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
