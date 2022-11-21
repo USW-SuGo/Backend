@@ -2,7 +2,6 @@ package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.productpost.entity.UserLikePost;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
@@ -173,16 +172,15 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .where(productPost.id.eq(productPostId))
                 .fetchOne();
 
-        try {
-            UserLikePost likePost = queryFactory
-                    .selectFrom(userLikePost)
-                    .join(productPost)
-                    .on(productPost.id.eq(userLikePost.productPost.id))
-                    .where(userLikePost.user.id.eq(userId))
-                    .fetchOne();
-        } catch (NullPointerException nullPointerException) {
-            response.setUserLikeStatus(false);
+        long count = queryFactory
+                .selectFrom(userLikePost)
+                .join(productPost)
+                .on(productPost.id.eq(userLikePost.productPost.id))
+                .where(userLikePost.user.id.eq(userId))
+                .stream().count();
 
+        if (count == 0) {
+            response.setUserLikeStatus(false);
             // Comma 로 구분되어있는 이미지 링크 List 로 캐스팅 시작
             String[] imageList;
             imageList = response.getImageLink().split(",");
