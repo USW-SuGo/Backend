@@ -68,7 +68,7 @@ public class ProductPostController {
     public ResponseEntity<PostResponseDto.DetailPostResponse> loadDetailPost(
             @RequestHeader String authorization, @RequestParam long productPostId) {
 
-        long userId = jwtResolver.jwtResolveToUserId(authorization);
+        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
