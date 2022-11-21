@@ -6,7 +6,6 @@ import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
-import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
 import com.usw.sugo.domain.productpost.entity.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.entity.User;
@@ -32,7 +31,6 @@ public class NoteController {
     private final ProductPostRepository productPostRepository;
     private final NoteRepository noteRepository;
     private final NoteContentRepository noteContentRepository;
-    private final NoteFileRepository noteFileRepository;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
