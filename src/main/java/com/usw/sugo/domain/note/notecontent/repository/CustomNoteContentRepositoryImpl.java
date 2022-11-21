@@ -26,7 +26,7 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
         
         return queryFactory
                 .select(Projections.bean(LoadNoteAllContentForm.class,
-                        noteContent.id.as("noteContentId"), noteContent.noteId.productPost.as("productPostId"),
+                        noteContent.id.as("noteContentId"), noteContent.noteId.productPost.id.as("productPostId"),
                         noteContent.message,
                         noteContent.sender.id.as("messageSenderId"),
                         noteContent.receiver.id.as("messageReceiverId"),
