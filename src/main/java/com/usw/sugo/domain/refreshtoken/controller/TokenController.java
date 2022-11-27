@@ -43,7 +43,7 @@ public class TokenController {
 
             User requestUser = requestRefreshTokenDomain.getUser();
 
-            String accessToken = jwtGenerator.createAccessToken(requestUser);
+            String accessToken = jwtGenerator.generateAccessToken(requestUser);
             String refreshToken = jwtGenerator.updateRefreshToken(requestUser);
 
             Map<String, String> result = new HashMap<>() {{

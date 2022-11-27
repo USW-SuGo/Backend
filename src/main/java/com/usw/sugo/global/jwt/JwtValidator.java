@@ -1,8 +1,9 @@
 package com.usw.sugo.global.jwt;
 
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.security.Key;
 import java.util.NoSuchElementException;
 
 import static com.usw.sugo.global.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
 
 @Component
 public class JwtValidator {
@@ -32,15 +34,12 @@ public class JwtValidator {
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
-        }
-        catch (NoSuchElementException | BadCredentialsException |
-               MalformedJwtException | IllegalArgumentException exception) {
-            throw new CustomException(ErrorCode.JWT_MALFORMED_EXCEPTION);
-        }
-        catch (ExpiredJwtException exception) {
+        } catch (NoSuchElementException | BadCredentialsException |
+                 MalformedJwtException | IllegalArgumentException exception) {
+            throw new CustomException(JWT_MALFORMED_EXCEPTION);
+        } catch (ExpiredJwtException exception) {
             throw new CustomException(JWT_EXPIRED_EXCEPTION);
         }
-
         return true;
     }
 

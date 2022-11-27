@@ -4,11 +4,18 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
+@RequiredArgsConstructor
+@Transactional
 @Component
 public class JwtResolver {
 
@@ -20,12 +27,22 @@ public class JwtResolver {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // AccessToken 에서 Claims 꺼내기
-    public Claims jwtResolve(String token) {
+    // 토큰 공용 해석
+    public Claims commonResolve(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token).getBody();
+    }
+
+    public boolean isNeedToUpdateRefreshToken(String refreshToken) {
+        Date claims = commonResolve(refreshToken).getExpiration();
+        // Jwt Claims LocalDateTime 으로 형변환
+        LocalDateTime localDateTimeClaims = claims.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        // 현재시간 - 7일(초단위) 를 한 피연산자 할당
+        LocalDateTime subDetractedDateTime = LocalDateTime.now().plusSeconds(604800);
+        // 피연산자 보다 이전 이면 True 반환 및 갱신해줘야함
+        return localDateTimeClaims.isBefore(subDetractedDateTime);
     }
 
     // AccessToken 에서 userId 꺼내기

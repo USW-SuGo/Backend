@@ -2,15 +2,14 @@ package com.usw.sugo.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
-import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
-import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;
-import com.usw.sugo.global.security.filter.JwtExceptionFilter;
-import com.usw.sugo.global.security.filter.JwtAuthenticationFilter;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
+import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
+import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;
+import com.usw.sugo.global.security.filter.JwtAuthenticationFilter;
 import com.usw.sugo.global.security.filter.JwtAuthorizationFilter;
+import com.usw.sugo.global.security.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +38,11 @@ public class SecurityConfig {
     private final JwtGenerator jwtGenerator;
     private final JwtResolver jwtResolver;
     private final ObjectMapper mapper;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     String[] whiteListURI = {
             "/user/check-email", "/user/check-loginId",
             "/user/auth", "/user/join",
-            "/user/find-id","/user/find-pw",
+            "/user/find-id", "/user/find-pw",
             "/post/all",
             "/token",
             "/connect", "/message", "/queue/chat/room",
@@ -65,7 +63,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests()
                 .antMatchers(whiteListURI).permitAll()
-                ;
+        ;
         http
                 .authorizeRequests()
                 .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
@@ -99,7 +97,7 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(
                 userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
-                userDetailsService, mapper , jwtGenerator, refreshTokenRepository);
+                userDetailsService, mapper, jwtGenerator);
     }
 
     // 인가 필터

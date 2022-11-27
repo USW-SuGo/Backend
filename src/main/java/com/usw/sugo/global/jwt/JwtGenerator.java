@@ -1,10 +1,12 @@
 package com.usw.sugo.global.jwt;
 
-import com.usw.sugo.domain.user.entity.User;
-import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.domain.refreshtoken.entity.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import io.jsonwebtoken.*;
+import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
+
 public class JwtGenerator {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtResolver jwtResolver;
     private final UserDetailsRepository userRepository;
+    private final JwtResolver jwtResolver;
+    private final JwtValidator jwtValidator;
 
     // 어느시점에 secretKey 값이 등록되는가?
     @Value("${spring.jwt.secret-key}")
@@ -32,14 +38,14 @@ public class JwtGenerator {
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
-//     테스트 환경 JWT 만료기간 1 시작
-//    private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
-//    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
+    //     테스트 환경 JWT 만료기간 1 시작
+    private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
+    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
 //     테스트 환경 JWT 만료기간 1 종료
 
     // 테스트 환경 JWT 만료기간 2 시작
-    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
-    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
+//    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
+//    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
     // 테스트 환경 JWT 만료기간 2 종료
 
     private Key getSigningKey() {
@@ -48,18 +54,17 @@ public class JwtGenerator {
     }
 
     //AccessToken 생성
-    public String createAccessToken(User user) {
+    public String generateAccessToken(User user) {
         Date now = new Date();
         Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
-        //페이로드에 남길 정보들 (Id, loginId, role, restricted)
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", user.getId());
         claims.put("loginId", user.getLoginId());
         claims.put("nickname", user.getNickname());
         claims.put("email", user.getEmail());
-        claims.put("status", user.getStatus().toString());
+        claims.put("status", user.getStatus());
 
         // Bearer Access Token 생성
         return "Bearer " + Jwts.builder()
@@ -70,30 +75,28 @@ public class JwtGenerator {
                 .compact();
     }
 
-    // 필터 내에서 AccessToken 생성
-    public String createAccessTokenInFilter(Long id, String loginId, String nickname, String email, String status) {
-        Date now = new Date();
-        Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+    public String generateRefreshToken(User user) {
 
-        //페이로드에 남길 정보들 (Id, loginId, role, restricted)
-        Claims claims = Jwts.claims();
-        claims.setSubject("USW-SUGO-BY-KDH");
-        claims.put("id", id);
-        claims.put("loginId", loginId);
-        claims.put("nickname", nickname);
-        claims.put("email", email);
-        claims.put("status", status);
+        // DB에 존재하는 리프레시 토큰 꺼내 담기
+        Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(user.getId());
 
-        // Bearer Access Token 생성
-        return "Bearer " + Jwts.builder()
-                .setHeaderParam("type", "JWT")
-                .setClaims(claims)
-                .setExpiration(accessTokenExpireIn)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+        // 리프레시 토큰이 DB에 있는 상황
+        if (findRefreshTokenByUserId.isPresent()) {
+            String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get().getPayload();
+
+            // 리프레시 토큰이 DB에 있고, 만료되지 않았으며, 갱신은 필요로 할 때
+            if (jwtValidator.validateToken(refreshToken) && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+                return updateRefreshToken(user);
+            }
+            // 리프레시 토큰이 DB에 있고, 만료되지 않았으며 갱신을 필요로 하지 않을 때
+            else if (jwtValidator.validateToken(refreshToken) && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+                return refreshToken;
+            }
+        }
+        return createRefreshToken(user);
     }
 
-    // RefreshToken 신규 생성
+    // RefreshToken 신규 생성 후 DB에 저장
     @Transactional
     public String createRefreshToken(User user) {
         Date now = new Date();
@@ -121,38 +124,7 @@ public class JwtGenerator {
         return "Bearer " + stringRefreshToken;
     }
 
-    // RefreshToken 신규 생성
-    @Transactional
-    public String createRefreshTokenInFilter(Long id) {
-        Date now = new Date();
-        Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
-
-        //페이로드에 남길 정보들 (Id, loginId, role, restricted)
-        Claims claims = Jwts.claims();
-        claims.setSubject("USW-SUGO-BY-KDH");
-
-        // Access Token 생성
-        String stringRefreshToken = Jwts.builder()
-                .setHeaderParam("type", "JWT")
-                .setClaims(claims)
-                .setExpiration(refreshTokenExpireIn)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
-
-        User user = userRepository.findById(id).get();
-
-        RefreshToken entityFormRefreshToken = RefreshToken.builder()
-                .user(user)
-                .payload(stringRefreshToken)
-                .build();
-
-        refreshTokenRepository.save(entityFormRefreshToken);
-
-        return "Bearer " + stringRefreshToken;
-    }
-
-    // RefershToken 갱신
-    @Transactional
+    // RefreshToken 업데이트 후 DB에 갱신
     public String updateRefreshToken(User user) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
@@ -161,15 +133,15 @@ public class JwtGenerator {
         claims.setSubject("USW-SUGO-BY-KDH");
 
         // RefreshToken Token 생성
-        String stringRefreshToken = Jwts.builder()
+        String updatedRefreshToken = Jwts.builder()
                 .setHeaderParam("type", "JWT")
                 .setClaims(claims)
                 .setExpiration(refreshTokenExpireIn)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
 
-        refreshTokenRepository.refreshPayload(user.getId(), stringRefreshToken);
+        refreshTokenRepository.refreshPayload(user.getId(), updatedRefreshToken);
 
-        return "Bearer " + stringRefreshToken;
+        return "Bearer " + updatedRefreshToken;
     }
 }

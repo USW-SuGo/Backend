@@ -5,7 +5,6 @@ import com.nimbusds.jose.util.StandardCharset;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
-import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
@@ -20,11 +19,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StreamUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /*
 로그인이 성공하면 Security Context 내부에 인증 객체를 등록해주는 필터
@@ -32,13 +33,11 @@ import java.util.Map;
 public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilter {
 
     private final UserDetailsRepository userDetailsRepository;
-    private final CustomAuthenticationManager customAuthenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
     public static final String HTTP_METHOD = "POST";
     private final ObjectMapper mapper;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher("/user/login", HTTP_METHOD);
@@ -48,17 +47,13 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             CustomAuthenticationManager customAuthenticationManager,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             UserDetailsService userDetailsService,
-            ObjectMapper mapper, JwtGenerator jwtGenerator,
-            RefreshTokenRepository refreshTokenRepository) {
+            ObjectMapper mapper, JwtGenerator jwtGenerator) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, customAuthenticationManager);
-
         this.userDetailsRepository = userDetailsRepository;
-        this.customAuthenticationManager = customAuthenticationManager;
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.mapper = mapper;
         this.jwtGenerator = jwtGenerator;
-        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
@@ -69,16 +64,15 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
-        LoginRequest loginRequest = mapper.readValue(StreamUtils.copyToString(request.getInputStream(),
-                StandardCharset.UTF_8), LoginRequest.class);
+        LoginRequest loginRequest = mapper.readValue(
+                StreamUtils.copyToString(request.getInputStream(), StandardCharset.UTF_8), LoginRequest.class);
 
         String requestLoginId = loginRequest.getLoginId();
         String requestPassword = loginRequest.getPassword();
 
         try {
             UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestLoginId);
-        }
-        catch (CustomException exception) {
+        } catch (CustomException exception) {
             JSONObject responseJson = new JSONObject();
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -91,7 +85,6 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
                 throw new RuntimeException(e);
             }
         }
-
 
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(requestLoginId);
 
@@ -118,45 +111,33 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         if (email == null || requestPassword == null) throw new AuthenticationServiceException("DATA IS MISS");
 
+        // 비밀번호가 일치할 때
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
-            // 리프레시 토큰을 한 번도 발급받지 않은 유저일 때 -> 리프레시 토큰 신규 발급
-            if (refreshTokenRepository.findByUserId(userId).isEmpty()) {
-                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, loginId, nickname, email, status);
-                String refreshToken = jwtGenerator.createRefreshTokenInFilter(userId);
+            Optional<User> requestUser = userDetailsRepository.findById(userId);
 
-                Map<String, String> result = new HashMap<>();
-                result.put("AccessToken", accessToken);
-                result.put("RefreshToken", refreshToken);
-                response.setHeader("Authorization", result.toString());
-                response.flushBuffer();
-            }
-            // 리프레시 토큰을 발급받은 적이 있는 유저일 때 -> 리프래시 토큰은 갱신한다.
-            else {
-                User user = userDetailsRepository.findByEmail(email).get();
+            String accessToken = jwtGenerator.generateAccessToken(requestUser.get());
+            String refreshToken = jwtGenerator.generateRefreshToken(requestUser.get());
 
-                String accessToken = jwtGenerator.createAccessTokenInFilter(userId, loginId, nickname, email, status);
-                String refreshToken = jwtGenerator.updateRefreshToken(user);
-
-                Map<String, String> result = new HashMap<>();
-                result.put("AccessToken", accessToken);
-                result.put("RefreshToken", refreshToken);
-
-                response.setHeader("Authorization", result.toString());
-                response.flushBuffer();
-            }
+            Map<String, String> result = new HashMap<>();
+            result.put("AccessToken", accessToken);
+            result.put("RefreshToken", refreshToken);
+            response.setHeader("Authorization", result.toString());
+            response.flushBuffer();
+            return null;
         }
-        else {
-            JSONObject responseJson = new JSONObject();
-            response.setContentType("application/json;charset=UTF-8");
-            try {
-                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
-                responseJson.put("Message", "비밀번호가 일치하지 않습니다.");
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().print(responseJson);
+
+        // 비밀번호가 일치하지 않을 때
+        JSONObject responseJson = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+            responseJson.put("Message", "비밀번호가 일치하지 않습니다.");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().print(responseJson);
+
         return null;
     }
 }
