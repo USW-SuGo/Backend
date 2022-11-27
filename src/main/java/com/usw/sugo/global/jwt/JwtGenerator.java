@@ -3,7 +3,6 @@ package com.usw.sugo.global.jwt;
 import com.usw.sugo.domain.refreshtoken.entity.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
 import com.usw.sugo.domain.user.entity.User;
-import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,26 +26,23 @@ import java.util.Optional;
 public class JwtGenerator {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserDetailsRepository userRepository;
     private final JwtResolver jwtResolver;
     private final JwtValidator jwtValidator;
 
     // 어느시점에 secretKey 값이 등록되는가?
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
-
+    // 배포 환경 JWT 만료 기간
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
-    //     테스트 환경 JWT 만료기간 1 시작
-    private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
-    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
-//     테스트 환경 JWT 만료기간 1 종료
+    // 테스트 환경 JWT 만료기간
+//    private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
+//    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
 
-    // 테스트 환경 JWT 만료기간 2 시작
-//    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
-//    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
-    // 테스트 환경 JWT 만료기간 2 종료
+    // 테스트 환경 JWT 만료기간 2
+    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
+    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
@@ -76,7 +72,6 @@ public class JwtGenerator {
     }
 
     public String generateRefreshToken(User user) {
-
         // DB에 존재하는 리프레시 토큰 꺼내 담기
         Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(user.getId());
 
@@ -93,6 +88,7 @@ public class JwtGenerator {
                 return refreshToken;
             }
         }
+        // 리프레시 토큰이 DB에 없는 상황에는 신규 생성
         return createRefreshToken(user);
     }
 

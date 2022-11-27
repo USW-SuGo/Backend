@@ -25,7 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
+import static com.usw.sugo.global.exception.ErrorCode.USER_NOT_EXIST;
 
 /*
 로그인이 성공하면 Security Context 내부에 인증 객체를 등록해주는 필터
@@ -113,10 +114,11 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         // 비밀번호가 일치할 때
         if (bCryptPasswordEncoder.matches(requestPassword, userDetailsImpl.getPassword())) {
-            Optional<User> requestUser = userDetailsRepository.findById(userId);
+            User requestUser = userDetailsRepository.findById(userId)
+                    .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
-            String accessToken = jwtGenerator.generateAccessToken(requestUser.get());
-            String refreshToken = jwtGenerator.generateRefreshToken(requestUser.get());
+            String accessToken = jwtGenerator.generateAccessToken(requestUser);
+            String refreshToken = jwtGenerator.generateRefreshToken(requestUser);
 
             Map<String, String> result = new HashMap<>();
             result.put("AccessToken", accessToken);
