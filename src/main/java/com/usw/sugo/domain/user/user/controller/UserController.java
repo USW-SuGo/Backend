@@ -95,8 +95,7 @@ public class UserController {
     public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(
             @Valid @RequestBody FindPasswordRequest findPasswordRequest) {
 
-        User requestUser = userRepository.findByEmail(
-                        findPasswordRequest.getEmail())
+        User requestUser = userRepository.findByEmail(findPasswordRequest.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
         String newPassword = userService.initPassword(requestUser.getId());

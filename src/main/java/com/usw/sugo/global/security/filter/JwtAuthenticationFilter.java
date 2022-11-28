@@ -5,14 +5,10 @@ import com.usw.sugo.global.exception.ErrorCode;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtResolver jwtResolver;
     private final JwtValidator jwtValidator;
 
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -52,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String[] whiteListURI = {
                 "/user/check-email", "/user/check-loginId",
                 "/user/auth", "/user/join",
-                "/user/find-id","/user/find-pw",
+                "/user/find-id", "/user/find-pw",
                 "/post/all",
                 "/token",
         };
