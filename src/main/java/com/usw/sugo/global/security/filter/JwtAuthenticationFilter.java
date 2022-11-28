@@ -27,8 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import static com.usw.sugo.global.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
-import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.*;
 
 /*
 매 요청마다 JWT 가 유효한지 검증하고, 유효할 시 해당 유저에 Security Context 를 인가 해주는 필터
@@ -44,7 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/check-loginId",
@@ -52,25 +55,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/user/find-id","/user/find-pw",
                 "/post/all",
                 "/token",
-                "/connect", "/message", "/queue/chat/room",
-                "/chat/**", "/chat/room", "/app", "/connect/**",
-                "/default/**"
         };
-
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {
                 filterChain.doFilter(request, response);
                 return;
             }
         }
-        // 헤더가 필요없는 요청 필터링 - 종료
+        // AccessToken이 필요없는 요청 필터링 - 종료
 
         // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
         if (request.getHeader("Authorization") == null) {
-            filterChain.doFilter(request, response);
-            return;
+            throw new CustomException(REQUIRE_TOKEN);
+            // filterChain.doFilter(request, response);
+            // return;
         }
-        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
+        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
 
         // 토큰 해석 시 유효하지 않으면 에러를 터뜨린다.
         String token = request.getHeader("Authorization").substring(7);
@@ -85,6 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String loginId = jwtResolver.jwtResolveToUserLoginId(token);
 
+        // AccessToken 에 담긴 정보가 DB 에 존재하는 유저일 때
         try {
             UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
         } catch (CustomException | NoSuchElementException e) {
@@ -98,14 +99,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print(responseJson);
+            response.flushBuffer();
             return;
         }
 
         UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
 
         // JWT 를 바탕으로 인증 객체 생성
-        Authentication authToken =
-                new UsernamePasswordAuthenticationToken(requestUserDetails.getUsername(), requestUserDetails.getPassword());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(
+                requestUserDetails.getUsername(), requestUserDetails.getPassword());
+
         // Authorities 부여
         Authentication auth = authenticationManager.authenticate(authToken);
 

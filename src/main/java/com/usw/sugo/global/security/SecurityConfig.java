@@ -45,9 +45,6 @@ public class SecurityConfig {
             "/user/find-id", "/user/find-pw",
             "/post/all",
             "/token",
-            "/connect", "/message", "/queue/chat/room",
-            "/chat/**", "/chat/room", "/app", "/connect/**",
-            "/default/**"
     };
 
     @Bean

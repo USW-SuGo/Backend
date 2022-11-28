@@ -41,17 +41,19 @@ public class NoteController {
      쪽지 방 만들기
      */
     @PostMapping
-    public ResponseEntity<Object> createRoom(@RequestHeader String authorization, @RequestBody CreateNoteRequest request) {
+    public ResponseEntity<Object> createRoom(
+            @RequestHeader String authorization,
+            @RequestBody CreateNoteRequest createNoteRequest) {
 
         long creatingRequestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
-        ProductPost productPost = productPostRepository.findById(request.getProductPostId())
+        ProductPost productPost = productPostRepository.findById(createNoteRequest.getProductPostId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_BAD_REQUEST));
 
         User creatingRequestUser = userRepository.findById(creatingRequestUserId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        User opponentUser = userRepository.findById(request.getOpponentUserId())
+        User opponentUser = userRepository.findById(createNoteRequest.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
         Optional<Note> findingTargetNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
@@ -131,7 +133,9 @@ public class NoteController {
     */
     @GetMapping("/")
     public ResponseEntity<Object> loadAllNoteContentByRoomId(
-            @RequestHeader String authorization, @RequestParam Long noteId, Pageable pageable) {
+            @RequestHeader String authorization,
+            @RequestParam Long noteId,
+            Pageable pageable) {
 
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 

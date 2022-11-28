@@ -1,16 +1,16 @@
 package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.user.entity.User;
-import com.usw.sugo.domain.user.entity.UserEmailAuth;
+import com.usw.sugo.domain.productpost.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.domain.user.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.user.emailauth.service.UserEmailAuthService;
+import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPageResponse;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.OtherUserPageResponse;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.user.service.UserService;
-import com.usw.sugo.domain.productpost.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtResolver;
@@ -91,19 +91,15 @@ public class UserController {
         }});
     }
 
-    /**
-     * 비밀번호 초기화 메일 전송
-     *
-     * @param authorization
-     * @param findPasswordRequest
-     * @return
-     */
     @PostMapping("/find-pw")
-    public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(@RequestHeader String authorization,
-                                                                  @Valid @RequestBody FindPasswordRequest findPasswordRequest) {
+    public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(
+            @Valid @RequestBody FindPasswordRequest findPasswordRequest) {
 
-        String newPassword = userService.initPassword(
-                jwtResolver.jwtResolveToUserId(authorization.substring(7)));
+        User requestUser = userRepository.findByEmail(
+                        findPasswordRequest.getEmail())
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+
+        String newPassword = userService.initPassword(requestUser.getId());
 
         sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequest.getEmail(), newPassword);
 

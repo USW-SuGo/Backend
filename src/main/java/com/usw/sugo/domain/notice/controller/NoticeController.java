@@ -1,9 +1,9 @@
 package com.usw.sugo.domain.notice.controller;
 
-import com.usw.sugo.domain.notice.entity.Notice;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeDeleteRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticePostRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeUpdateRequest;
+import com.usw.sugo.domain.notice.entity.Notice;
 import com.usw.sugo.domain.notice.repository.NoticeRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,6 +28,7 @@ public class NoticeController {
 
     /**
      * 공지사항 모두 조회하기 (페이징)
+     *
      * @param pageable
      * @return
      */
@@ -39,6 +41,7 @@ public class NoticeController {
 
     /**
      * 특정 글의 공지사항 조회하기
+     *
      * @param noticeId
      * @return
      */
@@ -56,8 +59,9 @@ public class NoticeController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<HashMap<String, Boolean>> writeNotice(@RequestHeader String authorization,
-                                              @RequestBody NoticePostRequest noticePostRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> writeNotice(
+            @RequestHeader String authorization,
+            @RequestBody NoticePostRequest noticePostRequest) {
 
         // 관리자 권한이 아니면 에러
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
@@ -75,7 +79,9 @@ public class NoticeController {
 
         return ResponseEntity
                 .ok()
-                .body(new HashMap<>(){{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     /**
@@ -85,8 +91,9 @@ public class NoticeController {
      * @return
      */
     @PutMapping
-    public ResponseEntity<HashMap<String, Boolean>> updateNotice(@RequestHeader String authorization,
-                                                                @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
+    public ResponseEntity<HashMap<String, Boolean>> updateNotice(
+            @RequestHeader String authorization,
+            @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
 
         // 관리자 권한이 아니면 에러
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
@@ -100,7 +107,9 @@ public class NoticeController {
 
         return ResponseEntity
                 .ok()
-                .body(new HashMap<>(){{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     /**
@@ -110,8 +119,9 @@ public class NoticeController {
      * @return
      */
     @DeleteMapping
-    public ResponseEntity<HashMap<String, Boolean>> deleteNotice(@RequestHeader String authorization,
-                                              @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
+    public ResponseEntity<Map<String, Boolean>> deleteNotice(
+            @RequestHeader String authorization,
+            @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
 
         // 관리자 권한이 아니면 에러
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
@@ -121,6 +131,8 @@ public class NoticeController {
 
         return ResponseEntity
                 .ok()
-                .body(new HashMap<>(){{put("Success", true);}});
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 }
