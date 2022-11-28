@@ -188,7 +188,7 @@ public class UserController {
 
     // 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<HashMap<String, Boolean>> editPassword(
+    public ResponseEntity<Map<String, Boolean>> editPassword(
             @RequestHeader String authorization, @Valid @RequestBody EditPasswordRequest editPasswordRequest) {
 
         // 이전 비밀번호와 같은 내용으로 변경하려 할 때
@@ -210,7 +210,7 @@ public class UserController {
 
     // 회원탈퇴
     @DeleteMapping
-    public ResponseEntity<HashMap<String, Boolean>> deleteUser(
+    public ResponseEntity<Map<String, Boolean>> deleteUser(
             @RequestHeader String authorization, @Valid @RequestBody QuitRequest quitRequest) {
 
         Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
@@ -230,6 +230,16 @@ public class UserController {
                 .body(new HashMap<>() {{
                     put("Success", true);
                 }});
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Long>> getMyIndex(@RequestHeader String authorization) {
+        return ResponseEntity
+                .status(OK)
+                .body(new HashMap<>() {{
+                    put("userId", jwtResolver.jwtResolveToUserId(authorization.substring(7)));
+                }});
+
     }
 
     // 마이 페이지

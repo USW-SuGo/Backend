@@ -55,7 +55,7 @@ public class JwtResolver {
         return Long.valueOf(String.valueOf(claims));
     }
 
-    // AccessToken 에서 userId 꺼내기
+    // AccessToken 에서 userEmail 꺼내기
     public String jwtResolveToUserEmail(String token) {
         Object claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
