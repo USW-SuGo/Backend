@@ -79,12 +79,15 @@ public class JwtGenerator {
         if (findRefreshTokenByUserId.isPresent()) {
             String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get().getPayload();
 
+            if (jwtValidator.refreshTokenIsExpired(refreshToken)) {
+                return updateRefreshToken(user);
+            }
             // 리프레시 토큰이 DB에 있고, 만료되지 않았으며, 갱신은 필요로 할 때
-            if (jwtValidator.validateToken(refreshToken) && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+            else if (!jwtValidator.refreshTokenIsExpired(refreshToken) && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return updateRefreshToken(user);
             }
             // 리프레시 토큰이 DB에 있고, 만료되지 않았으며 갱신을 필요로 하지 않을 때
-            else if (jwtValidator.validateToken(refreshToken) && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+            else if (!jwtValidator.refreshTokenIsExpired(refreshToken) && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return "Bearer " + refreshToken;
             }
         }

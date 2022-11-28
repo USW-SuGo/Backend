@@ -43,9 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // 헤더가 필요없는 요청 필터링 - 시작
+        // AccessToken이 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
-                "/user/check-email", "/user/check-loginId",
+                "/user/check-email", "/user/check-loginId", "/user/login",
                 "/user/auth", "/user/join",
                 "/user/find-id", "/user/find-pw",
                 "/post/all",
@@ -69,13 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰 해석 시 유효하지 않으면 에러를 터뜨린다.
         String token = request.getHeader("Authorization").substring(7);
-        if (!jwtValidator.validateToken(token)) {
-            filterChain.doFilter(request, response);
-            throw new CustomException(JWT_MALFORMED_EXCEPTION);
-        } else if (!jwtValidator.validateExpired(token)) {
-            filterChain.doFilter(request, response);
-            throw new CustomException(JWT_EXPIRED_EXCEPTION);
-        }
+        jwtValidator.validateToken(token);
 
         // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String loginId = jwtResolver.jwtResolveToUserLoginId(token);

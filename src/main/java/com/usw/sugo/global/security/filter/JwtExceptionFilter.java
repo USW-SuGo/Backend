@@ -5,10 +5,11 @@ import com.usw.sugo.global.jwt.JwtValidator;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.json.JSONException;  //요걸로 대체
-import org.json.JSONObject;  //요걸로 대체
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 
 @RequiredArgsConstructor
@@ -29,9 +32,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
-                "/user/check-email", "/user/check-loginId",
+                "/user/check-email", "/user/check-loginId", "/user/login",
                 "/user/auth", "/user/join",
-                "/user/find-id","/user/find-pw",
+                "/user/find-id", "/user/find-pw",
                 "/post/all",
                 "/token"
         };
@@ -59,7 +62,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setStatus(SC_BAD_REQUEST);
             response.getWriter().print(responseJson);
             return;
         }
@@ -69,12 +72,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             String token = request.getHeader("Authorization").substring(7);
             jwtValidator.validateToken(token);
-        }
-        catch (BadCredentialsException | SignatureException | NullPointerException ex) {
+        } catch (BadCredentialsException | SignatureException | NullPointerException ex) {
             try {
-                responseJson.put("code", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("code", SC_BAD_REQUEST);
                 responseJson.put("message", "토큰이 손상되었습니다.");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setStatus(SC_BAD_REQUEST);
                 response.getWriter().print(responseJson);
                 return;
             } catch (JSONException e) {
@@ -82,13 +84,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             }
         } catch (CustomException | ExpiredJwtException exception) {
             try {
-                responseJson.put("code", HttpServletResponse.SC_FORBIDDEN);
+                responseJson.put("code", SC_FORBIDDEN);
                 responseJson.put("message", "토큰이 만료되었습니다.");
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setStatus(SC_FORBIDDEN);
                 response.getWriter().print(responseJson);
                 return;
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
         }
