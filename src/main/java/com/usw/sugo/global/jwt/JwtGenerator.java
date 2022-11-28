@@ -85,10 +85,10 @@ public class JwtGenerator {
             }
             // 리프레시 토큰이 DB에 있고, 만료되지 않았으며 갱신을 필요로 하지 않을 때
             else if (jwtValidator.validateToken(refreshToken) && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
-                return refreshToken;
+                return "Bearer" + refreshToken;
             }
         }
-        // 리프레시 토큰이 DB에 없는 상황에는 신규 생성
+        // 리프레시 토큰이 DB에 없는 상황에는 신규 생성 (Bearer 포함)
         return createRefreshToken(user);
     }
 

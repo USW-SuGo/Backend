@@ -97,7 +97,7 @@ public class SecurityConfig {
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(
                 userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
-                userDetailsService, mapper, jwtGenerator);
+                userDetailsService, mapper, jwtGenerator, jwtValidator);
     }
 
     // 인가 필터

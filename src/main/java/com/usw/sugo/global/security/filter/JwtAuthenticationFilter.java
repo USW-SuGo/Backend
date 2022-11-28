@@ -6,6 +6,7 @@ import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
+
+import static com.usw.sugo.global.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
+import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
 
 /*
 매 요청마다 JWT 가 유효한지 검증하고, 유효할 시 해당 유저에 Security Context 를 인가 해주는 필터
@@ -68,14 +72,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
 
+        // 토큰 해석 시 유효하지 않으면 에러를 터뜨린다.
         String token = request.getHeader("Authorization").substring(7);
-
-        try {
-            jwtValidator.validateToken(token);
-        } catch (BadCredentialsException | SignatureException | CustomException | ExpiredJwtException ex) {
+        if (!jwtValidator.validateToken(token)) {
             filterChain.doFilter(request, response);
-            return;
+            throw new CustomException(JWT_MALFORMED_EXCEPTION);
+        } else if (!jwtValidator.validateExpired(token)) {
+            filterChain.doFilter(request, response);
+            throw new CustomException(JWT_EXPIRED_EXCEPTION);
         }
+
         // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String loginId = jwtResolver.jwtResolveToUserLoginId(token);
 

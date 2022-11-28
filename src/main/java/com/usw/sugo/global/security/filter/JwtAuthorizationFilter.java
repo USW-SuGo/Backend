@@ -7,6 +7,7 @@ import com.usw.sugo.domain.user.user.dto.UserRequestDto.LoginRequest;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
+import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
 import com.usw.sugo.global.security.authentication.UserDetailsImpl;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
+    private final JwtValidator jwtValidator;
     public static final String HTTP_METHOD = "POST";
     private final ObjectMapper mapper;
 
@@ -48,13 +50,14 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             CustomAuthenticationManager customAuthenticationManager,
             BCryptPasswordEncoder bCryptPasswordEncoder,
             UserDetailsService userDetailsService,
-            ObjectMapper mapper, JwtGenerator jwtGenerator) {
+            ObjectMapper mapper, JwtGenerator jwtGenerator, JwtValidator jwtValidator) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, customAuthenticationManager);
         this.userDetailsRepository = userDetailsRepository;
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.mapper = mapper;
         this.jwtGenerator = jwtGenerator;
+        this.jwtValidator = jwtValidator;
     }
 
     @Override
