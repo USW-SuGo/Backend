@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/user/auth", "/user/join",
                 "/user/find-id", "/user/find-pw",
                 "/post/all",
-                "/token",
+                "/token"
         };
         for (String whiteList : whiteListURI) {
             if (request.getRequestURI().equals(whiteList)) {

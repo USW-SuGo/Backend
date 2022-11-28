@@ -24,7 +24,8 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     private final JwtValidator jwtValidator;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
@@ -32,10 +33,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 "/user/auth", "/user/join",
                 "/user/find-id","/user/find-pw",
                 "/post/all",
-                "/token",
-                "/connect", "/message", "/queue/chat/room",
-                "/chat/**", "/chat/room", "/app", "/connect/**",
-                "/default/**"
+                "/token"
         };
 
         for (String whiteList : whiteListURI) {

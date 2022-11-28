@@ -66,7 +66,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
                 .and()
-                .addFilterAfter(jwtAuthenticationFilter(), OncePerRequestFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http
