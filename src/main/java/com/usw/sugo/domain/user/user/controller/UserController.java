@@ -232,7 +232,7 @@ public class UserController {
                 }});
     }
 
-    @GetMapping
+    @GetMapping("/identifier")
     public ResponseEntity<Map<String, Long>> getMyIndex(@RequestHeader String authorization) {
         return ResponseEntity
                 .status(OK)
