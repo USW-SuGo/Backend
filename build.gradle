@@ -21,9 +21,7 @@ repositories {
 
 dependencies {
 
-	// LOG
-	implementation 'ch.qos.logback:logback-classic:1.4.5'
-	implementation 'ch.qos.logback:logback-core:1.4.5'
+	compile 'org.slf4j:slf4j-simple:1.7.30'
 
 	// Spring Base
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -35,7 +33,7 @@ dependencies {
 
 	// Mail Service
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.315'
+	implementation 'com.amazonaws:aws-java-sdk-ses:1.12.347'
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -73,19 +71,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-	//외부 브로커를 사용하기 위해
-//	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-reactor-netty', version: '2.4.6'
-
 	//jackson2json에서 LocalDateTime을 handling 하기 위해
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.4'
 
 	// RabbitMQ
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
-	
-
-//	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
