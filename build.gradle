@@ -21,6 +21,9 @@ repositories {
 
 dependencies {
 
+	// LOG
+	implementation 'ch.qos.logback:logback-classic:1.4.5'
+	implementation 'ch.qos.logback:logback-core:1.4.5'
 
 	// Spring Base
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
