@@ -108,4 +108,12 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .where(user.id.eq(buyerId))
                 .execute();
     }
+
+    @Override
+    public void deleteUserNotEmailAuth(long userId) {
+        queryFactory
+                .delete(user)
+                .where(user.id.eq(userId))
+                .execute();
+    }
 }

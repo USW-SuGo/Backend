@@ -68,7 +68,7 @@ public class UserEmailAuthService {
         return userEmailAuthRepository.loadNotAuthenticatedUserEmailAuth();
     }
 
-    // 1시간 내로 인증을 수행하지 않으면 제거
+    // 1시간 내로 인증을 수행하지 않으면 이메일 테이블 제거 -> 유저 테이블 제거
     @Scheduled(cron = "0 * * * * *")
     public void deleteNotAuthenticatedUserAndToken() {
         List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();

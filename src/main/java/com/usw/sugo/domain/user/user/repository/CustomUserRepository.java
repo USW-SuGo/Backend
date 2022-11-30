@@ -24,4 +24,6 @@ public interface CustomUserRepository {
 
     void plusCountTradeAttempt(long sellerId, long buyerId);
 
+    void deleteUserNotEmailAuth(long userId);
+
 }

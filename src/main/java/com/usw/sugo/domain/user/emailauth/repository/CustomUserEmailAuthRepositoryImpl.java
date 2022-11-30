@@ -32,14 +32,15 @@ public class CustomUserEmailAuthRepositoryImpl implements CustomUserEmailAuthRep
     public void deleteNotProceedEmailAuthBeforeTenMinutes(List<UserEmailAuth> notAuthenticatedUserEmailAuth) {
 
         for (UserEmailAuth notAuth : notAuthenticatedUserEmailAuth) {
+            long deleteTargetUserIndex = notAuth.getUser().getId();
             queryFactory
                     .delete(userEmailAuth)
-                    .where(userEmailAuth.id.eq(notAuth.getId()))
+                    .where(userEmailAuth.id.eq(deleteTargetUserIndex))
                     .execute();
 
             queryFactory
                     .delete(user)
-                    .where(user.id.eq(notAuth.getUser().getId()))
+                    .where(user.id.eq(deleteTargetUserIndex))
                     .execute();
         }
     }
