@@ -1,7 +1,10 @@
 package com.usw.sugo.domain.user.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.user.entity.QUser;
 import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.user.dto.QUserResponseDto_UserPageResponse;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -19,6 +22,18 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     private final JPAQueryFactory queryFactory;
     private final BCryptPasswordEncoder encoder;
+
+    @Override
+    public UserPageResponse loadUserPage(User requestUser) {
+        UserPageResponse userPageResponse = queryFactory
+                .select(new QUserResponseDto_UserPageResponse(
+                        user.id.as("userId"), user.email, user.nickname, user.mannerGrade,
+                        user.countMannerEvaluation, user.countTradeAttempt))
+                .from(user)
+                .where(user.id.eq(requestUser.getId()))
+                .fetchOne();
+        return userPageResponse;
+    }
 
     @Override
     public void modifyingStatusToAvailable(Long id) {
@@ -59,8 +74,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public void setRecentMannerGradeDate(BigDecimal grade, long targetUserId, long evaluatingUserId) {
-
-        // 매너평가 덧셈 및 카운트 증가
         queryFactory
                 .update(user)
                 .set(user.mannerGrade, (user.mannerGrade.add(grade)).divide(user.countMannerEvaluation))
@@ -68,7 +81,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .where(user.id.eq(targetUserId))
                 .execute();
 
-        // 하루에 한 번만 평가할 수 있도록 쿨타임 시작
         queryFactory
                 .update(user)
                 .set(user.recentEvaluationManner, LocalDateTime.now())

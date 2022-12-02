@@ -2,7 +2,7 @@ package com.usw.sugo.global.aws.ses;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
-import com.usw.sugo.global.aws.ses.mailfrom.EmailForm;
+import com.usw.sugo.global.aws.ses.mailform.EmailForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

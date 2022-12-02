@@ -133,16 +133,15 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
 
         // 비밀번호가 일치하지 않을 때
         JSONObject responseJson = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
         try {
             responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
             responseJson.put("Message", "비밀번호가 일치하지 않습니다.");
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+        response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.getWriter().print(responseJson);
-
         return null;
     }
 }

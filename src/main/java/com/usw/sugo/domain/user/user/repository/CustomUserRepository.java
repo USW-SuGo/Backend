@@ -1,12 +1,15 @@
 package com.usw.sugo.domain.user.user.repository;
 
 import com.usw.sugo.domain.user.entity.User;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponse;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 
 @Repository
 public interface CustomUserRepository {
+
+    UserPageResponse loadUserPage(User user);
 
     void modifyingStatusToAvailable(Long id);
 

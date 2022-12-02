@@ -20,7 +20,7 @@ public interface CustomProductPostRepository {
 
     DetailPostResponse loadDetailPostList(long productPostId, long userId);
 
-    List<MyPosting> loadUserPageList(User user, Pageable pageable);
+    List<MyPosting> loadUserWritingPostingList(User user, Pageable pageable);
 
     void refreshUpdateAt(long productPostId);
 

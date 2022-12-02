@@ -37,25 +37,17 @@ public class NoteController {
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
-    /*
-     쪽지 방 만들기
-     */
     @PostMapping
     public ResponseEntity<Object> createRoom(
-            @RequestHeader String authorization,
-            @RequestBody CreateNoteRequest createNoteRequest) {
+            @RequestHeader String authorization, @RequestBody CreateNoteRequest createNoteRequest) {
 
         long creatingRequestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-
         ProductPost productPost = productPostRepository.findById(createNoteRequest.getProductPostId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_BAD_REQUEST));
-
         User creatingRequestUser = userRepository.findById(creatingRequestUserId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
-
         User opponentUser = userRepository.findById(createNoteRequest.getOpponentUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
-
         Optional<Note> findingTargetNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
                 creatingRequestUserId, opponentUser.getId(), productPost.getId());
 
@@ -91,10 +83,6 @@ public class NoteController {
                 }});
     }
 
-    /*
-    유저 인덱스로, 채팅방 목록 불러오기
-    채팅방 인덱스, 상호 유저간의 인덱스, 상호 유저간의 닉네임, 최근 채팅시간, 최근 채팅 메세지
-    */
     @GetMapping("/list")
     public ResponseEntity<Object> loadAllNoteListByUserId(
             @RequestHeader String authorization, Pageable pageable) {
@@ -104,18 +92,15 @@ public class NoteController {
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
-        // QueryDSL 조회 후 2차원 리스트를 분해한다.
         List<List<LoadNoteListForm>> noteListResult =
                 noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
 
         List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
         List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
 
-        // 분해한 2차원 리스트를 임시 보관한다. (DTO 내의 속성인, 최근 채팅 시각을 기준으로 정렬을 해주어야 하기 때문)
         List<LoadNoteListForm> tempResult = new ArrayList<>();
         tempResult.addAll(loadNoteListFormRequestUserIsCreatingNote);
         tempResult.addAll(loadNoteListFormsRequestUserIsCreatedNote);
-        // 분해한 2차원 리스트를 임시 보관한다. (DTO 내의 속성인, 최근 채팅 시각을 기준으로 정렬을 해주어야 하기 때문)
 
         Stream<LoadNoteListForm> finalResult = tempResult
                 .stream()
@@ -127,24 +112,14 @@ public class NoteController {
                 .body(finalResult);
     }
 
-    /*
-    채팅방 인덱스로, 특정 쪽지방 컨텐츠/파일 조회하기
-    (Get) localhost:8080/note/?noteId={}&page={}&size={}
-    */
     @GetMapping("/")
     public ResponseEntity<Object> loadAllNoteContentByRoomId(
-            @RequestHeader String authorization,
-            @RequestParam Long noteId,
-            Pageable pageable) {
+            @RequestHeader String authorization, @RequestParam Long noteId, Pageable pageable) {
 
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-
         User requestUser = userRepository.findById(userId).orElseThrow(()
                 -> new CustomException(ErrorCode.USER_NOT_EXIST));
-
-        // 요청유저 유저 읽음처리
         noteRepository.readNoteRoom(requestUser.getId(), noteId);
-
         List<LoadNoteAllContentForm> loadNoteAllContentForms =
                 noteContentRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable);
 

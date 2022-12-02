@@ -43,7 +43,7 @@ public class UserService {
 
     @Transactional
     public void validateLoginIdDuplicated(String loginId) {
-        if (userRepository.findByLoginId(loginId).isPresent()){
+        if (userRepository.findByLoginId(loginId).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
         }
     }

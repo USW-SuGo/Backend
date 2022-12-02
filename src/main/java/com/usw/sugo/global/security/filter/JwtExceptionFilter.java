@@ -30,7 +30,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 헤더가 필요없는 요청 필터링 - 시작
         String[] whiteListURI = {
                 "/user/check-email", "/user/check-loginId", "/user/login",
                 "/user/auth", "/user/join",
@@ -45,12 +44,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        // 헤더가 필요없는 요청 필터링 - 종료
 
         JSONObject responseJson = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
 
-        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
         if (request.getHeader("Authorization") == null) {
             try {
                 responseJson.put("code", new CustomException(JWT_MALFORMED_EXCEPTION).getErrorCode().toString());
@@ -66,9 +63,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             response.getWriter().print(responseJson);
             return;
         }
-        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 종료
 
-        // 토큰 검증 - 시작
         try {
             String token = request.getHeader("Authorization").substring(7);
             jwtValidator.validateToken(token);

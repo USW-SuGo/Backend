@@ -1,6 +1,5 @@
 package com.usw.sugo.global.security.authentication;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,8 +21,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         grantedAuths.add(new SimpleGrantedAuthority("ROLE_AVAILABLE"));
         Authentication customAuthentication = new UsernamePasswordAuthenticationToken(
                 authentication.getPrincipal(), authentication.getCredentials(), grantedAuths);
-
-        // System.out.println("customAuthentication = " + customAuthentication);
 
         return customAuthentication;
     }

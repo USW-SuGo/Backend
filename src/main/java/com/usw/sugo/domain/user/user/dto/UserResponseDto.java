@@ -1,9 +1,7 @@
 package com.usw.sugo.domain.user.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,10 +26,7 @@ public class UserResponseDto {
     }
 
     @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MyPageResponse {
+    public static class UserPageResponse {
         private long userId;
         private String email;
         private String nickname;
@@ -40,25 +35,23 @@ public class UserResponseDto {
         private long countTradeAttempt;
         private List<MyPosting> myPosting;
         private List<LikePosting> likePosting;
-    }
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OtherUserPageResponse {
-        private long userId;
-        private String email;
-        private String nickname;
-        private BigDecimal mannerGrade;
-        private long countMannerEvaluation;
-        private long countTradeAttempt;
-        private List<MyPosting> myPosting;
+        @QueryProjection
+        public UserPageResponse(
+                long userId, String email, String nickname, BigDecimal mannerGrade,
+                long countMannerEvaluation, long countTradeAttempt) {
+            this.userId = userId;
+            this.email = email;
+            this.nickname = nickname;
+            this.mannerGrade = mannerGrade;
+            this.countMannerEvaluation = countMannerEvaluation;
+            this.countTradeAttempt = countTradeAttempt;
+        }
     }
 
     @Data
     public static class MyPosting {
-        private long id;
+        private long productPostId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
@@ -66,6 +59,20 @@ public class UserResponseDto {
         private int price;
         private String category;
         private boolean status;
+
+        @QueryProjection
+        public MyPosting(
+                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                int price, String category, boolean status) {
+            this.productPostId = productPostId;
+            this.imageLink = imageLink;
+            this.contactPlace = contactPlace;
+            this.updatedAt = updatedAt;
+            this.title = title;
+            this.price = price;
+            this.category = category;
+            this.status = status;
+        }
     }
 
     @Data
@@ -78,5 +85,19 @@ public class UserResponseDto {
         private int price;
         private String category;
         private boolean status;
+
+        @QueryProjection
+        public LikePosting(
+                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                int price, String category, boolean status) {
+            this.productPostId = productPostId;
+            this.imageLink = imageLink;
+            this.contactPlace = contactPlace;
+            this.updatedAt = updatedAt;
+            this.title = title;
+            this.price = price;
+            this.category = category;
+            this.status = status;
+        }
     }
 }

@@ -1,9 +1,9 @@
 package com.usw.sugo.domain.note.note.repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.entity.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.dto.QNoteResponseDto_LoadNoteListForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -24,7 +24,6 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     private final JPAQueryFactory queryFactory;
 
 
-    // 한달 동안 쪽지가 이루어지지 않으면 자동 삭제
     @Override
     public void deleteBeforeWeek() {
         queryFactory
@@ -43,20 +42,13 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
      */
     @Override
     public List<List<LoadNoteListForm>> loadNoteListByUserId(long requestUserId, Pageable pageable) {
-
         List<List<LoadNoteListForm>> finalResult = new ArrayList<>();
-        // 요청한 유저가 만든 쪽지방 리스트
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
                 queryFactory
-                        .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("noteId"), note.productPost.id.as("productPostId"),
-                                note.creatingUserId.id.as("requestUserId"),
-                                note.opponentUserId.id.as("opponentUserId"),
-                                note.opponentUserId.nickname.as("opponentUserNickname"),
-                                note.recentContent,
-                                note.creatingUserUnreadCount.as("requestUserUnreadCount"),
-                                note.updatedAt.as("recentChattingDate")
-                        ))
+                        .select(new QNoteResponseDto_LoadNoteListForm(
+                                note.id, note.productPost.id, note.creatingUserId.id, note.opponentUserId.id,
+                                note.opponentUserNickname, note.recentContent, note.creatingUserUnreadCount,
+                                note.updatedAt))
                         .from(note)
                         .where(note.creatingUserId.id.eq(requestUserId))
                         .orderBy(note.updatedAt.desc())
@@ -64,28 +56,20 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                         .limit(pageable.getPageSize())
                         .fetch();
 
-        // 요청한 유저가 만들진 않았지만, 개설된 쪽지방
         List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
                 queryFactory
-                        .select(Projections.bean(LoadNoteListForm.class,
-                                note.id.as("noteId"), note.productPost.id.as("productPostId"),
-                                note.opponentUserId.id.as("requestUserId"),
-                                note.creatingUserId.id.as("opponentUserId"),
-                                note.creatingUserId.nickname.as("opponentUserNickname"),
-                                note.recentContent,
-                                note.opponentUserUnreadCount.as("requestUserUnreadCount"),
-                                note.updatedAt.as("recentChattingDate")
-                        ))
+                        .select(new QNoteResponseDto_LoadNoteListForm(
+                                note.id, note.productPost.id, note.creatingUserId.id, note.opponentUserId.id,
+                                note.opponentUserNickname, note.recentContent, note.creatingUserUnreadCount,
+                                note.updatedAt))
                         .from(note)
                         .where(note.opponentUserId.id.eq(requestUserId))
                         .orderBy(note.updatedAt.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch();
-
         finalResult.add(loadNoteListResultByNoteCreatingUser);
         finalResult.add(loadNoteListResultByNoteCreatedUser);
-
         return finalResult;
     }
 
@@ -113,7 +97,6 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     // Note 테이블에 최근 메세지 반영
     @Override
     public void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink) {
-
         // 메세지를 보냈을 때
         if (!content.equals("")) {
             queryFactory
@@ -136,7 +119,6 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .execute();
             return;
         }
-
         // 파일을 보냈을 때
         queryFactory
                 .update(note)
@@ -160,7 +142,8 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
 
 
     @Override
-    public Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId) {
+    public Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(
+            long noteRequestUserId, long targetUserId, long productPostId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(note)
                 .where(note.creatingUserId.id.eq(noteRequestUserId)

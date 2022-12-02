@@ -1,6 +1,5 @@
 package com.usw.sugo.global.util.basetime;
 
-import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,6 +22,6 @@ public abstract class BaseTimeEntity {
     private LocalDateTime updatedAt;
 
     private void setUpdatedAt(LocalDateTime updatedAt) {
-         this.updatedAt = updatedAt;
+        this.updatedAt = updatedAt;
     }
 }

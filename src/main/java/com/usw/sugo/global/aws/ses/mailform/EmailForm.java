@@ -1,4 +1,4 @@
-package com.usw.sugo.global.aws.ses.mailfrom;
+package com.usw.sugo.global.aws.ses.mailform;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
