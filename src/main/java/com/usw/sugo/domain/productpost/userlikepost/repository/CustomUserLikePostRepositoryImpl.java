@@ -3,6 +3,7 @@ package com.usw.sugo.domain.productpost.userlikepost.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.productpost.entity.UserLikePost;
+import com.usw.sugo.domain.user.user.dto.QUserResponseDto_LikePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.LikePosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -45,14 +46,15 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
     @Override
     public List<LikePosting> loadMyLikePosting(long userId) {
         return queryFactory
-                .select(Projections.bean(LikePosting.class,
+                .select(new QUserResponseDto_LikePosting(
                         userLikePost.productPost.id.as("productPostId"),
                         userLikePost.productPostFile.imageLink,
                         userLikePost.productPost.contactPlace,
                         userLikePost.productPost.updatedAt,
                         userLikePost.productPost.title,
                         userLikePost.productPost.price,
-                        userLikePost.productPost.category
+                        userLikePost.productPost.category,
+                        userLikePost.productPost.status
                         ))
                 .from(userLikePost)
                 .where(userLikePost.user.id.eq(userId))

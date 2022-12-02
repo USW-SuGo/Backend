@@ -105,7 +105,6 @@ public class UserController {
         }});
     }
 
-    // 인증번호 입력 성공 여부 반환
     @PostMapping("/auth")
     public ResponseEntity<Map<String, Boolean>> ConfirmEmail(@RequestBody AuthEmailPayload authEmailPayload) {
         String payload = authEmailPayload.getPayload();
@@ -186,8 +185,8 @@ public class UserController {
     // 다른 유저의 페이지
     @GetMapping("/")
     public ResponseEntity<UserPageResponse> otherUserPage(@RequestParam long userId, Pageable pageable) {
-        userService.isUserExistByUserId(userId);
-        User targetUser = userRepository.findById(userId).get();
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
         UserPageResponse targetUserPageResponse = userRepository.loadUserPage(targetUser);
         targetUserPageResponse.setMyPosting(productPostRepository.loadUserWritingPostingList(targetUser, pageable));
         return ResponseEntity
