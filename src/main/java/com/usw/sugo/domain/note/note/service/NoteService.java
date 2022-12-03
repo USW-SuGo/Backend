@@ -1,6 +1,7 @@
 package com.usw.sugo.domain.note.note.service;
 
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,8 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
 
-    /*
-    최근 쪽지가 한달이 지난 채팅방 삭제
-    */
-//    @Scheduled(cron = "0 * * * * *")
-//    public void autoDeleteChattingRoom() {
-//        noteRepository.deleteBeforeWeek();
-//    }
+    public void deleteNote(User requestUser) {
+        noteRepository.deleteByCreatingUser(requestUser);
+        noteRepository.deleteByOpponentUser(requestUser);
+    }
 }

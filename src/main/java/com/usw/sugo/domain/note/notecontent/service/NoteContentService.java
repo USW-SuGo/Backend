@@ -4,6 +4,7 @@ import com.usw.sugo.domain.note.entity.NoteContent;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.dto.NoteContentRequestDto.SendNoteContentForm;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
+import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ErrorCode;
@@ -23,7 +24,6 @@ public class NoteContentService {
     private final NoteContentRepository noteContentRepository;
 
     public void sendContent(SendNoteContentForm sendNoteContentForm) {
-
         NoteContent noteContent = NoteContent.builder()
                 .noteId(noteRepository.findById(sendNoteContentForm.getNoteId())
                         .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUNDED)))
@@ -40,5 +40,10 @@ public class NoteContentService {
         long unreadUserId = sendNoteContentForm.getReceiverId();
         noteRepository.updateRecentContent(unreadUserId, sendNoteContentForm.getNoteId(),
                 sendNoteContentForm.getMessage(), "");
+    }
+
+    public void deleteContent(User requestUser) {
+        noteContentRepository.deleteBySender(requestUser);
+        noteContentRepository.deleteByReceiver(requestUser);
     }
 }

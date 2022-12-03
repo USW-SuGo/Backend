@@ -18,15 +18,10 @@ import java.util.HashMap;
 @RequestMapping("/note-content")
 public class NoteContentController {
 
-    /*
-    쪽지방 인덱스로 메세지 전송하기
-    (Get) localhost:8080/note-content/?noteId={}
-    */
     private final NoteContentService noteContentService;
 
     @PostMapping("/")
     public ResponseEntity<Object> sendNoteContent(@RequestBody @Valid SendNoteContentForm sendNoteContentForm) {
-
         noteContentService.sendContent(sendNoteContentForm);
 
         return ResponseEntity

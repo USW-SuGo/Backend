@@ -17,21 +17,16 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.usw.sugo.global.exception.ErrorCode.POST_NOT_FOUND;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/notice")
+
 public class NoticeController {
-
-
     private final NoticeRepository noticeRepository;
     private final JwtResolver jwtResolver;
 
-    /**
-     * 공지사항 모두 조회하기 (페이징)
-     *
-     * @param pageable
-     * @return
-     */
     @GetMapping
     public ResponseEntity<Object> loadAllNoticeByPaging(Pageable pageable) {
         return ResponseEntity
@@ -39,31 +34,16 @@ public class NoticeController {
                 .body(noticeRepository.loadAllNotice(pageable));
     }
 
-    /**
-     * 특정 글의 공지사항 조회하기
-     *
-     * @param noticeId
-     * @return
-     */
     @GetMapping("/")
     public ResponseEntity<Object> loadNotice(@RequestParam Long noticeId) {
         return ResponseEntity
                 .ok()
-                .body(noticeRepository.findById(noticeId).get());
+                .body(noticeRepository.findById(noticeId).orElseThrow(() -> new CustomException(POST_NOT_FOUND)));
     }
 
-    /**
-     * 공지사항 작성하기
-     *
-     * @param authorization
-     * @return
-     */
     @PostMapping
     public ResponseEntity<HashMap<String, Boolean>> writeNotice(
-            @RequestHeader String authorization,
-            @RequestBody NoticePostRequest noticePostRequest) {
-
-        // 관리자 권한이 아니면 에러
+            @RequestHeader String authorization, @RequestBody NoticePostRequest noticePostRequest) {
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
@@ -74,7 +54,6 @@ public class NoticeController {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-
         noticeRepository.save(newNotice);
 
         return ResponseEntity
@@ -84,18 +63,9 @@ public class NoticeController {
                 }});
     }
 
-    /**
-     * 공지사항 수정하기
-     *
-     * @param authorization
-     * @return
-     */
     @PutMapping
     public ResponseEntity<HashMap<String, Boolean>> updateNotice(
-            @RequestHeader String authorization,
-            @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
-
-        // 관리자 권한이 아니면 에러
+            @RequestHeader String authorization, @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
@@ -112,21 +82,14 @@ public class NoticeController {
                 }});
     }
 
-    /**
-     * 공지사항 삭제하기
-     *
-     * @param authorization
-     * @return
-     */
     @DeleteMapping
     public ResponseEntity<Map<String, Boolean>> deleteNotice(
-            @RequestHeader String authorization,
-            @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
+            @RequestHeader String authorization, @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
 
-        // 관리자 권한이 아니면 에러
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
             throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
+
         noticeRepository.deleteById(noticeDeleteRequest.getId());
 
         return ResponseEntity

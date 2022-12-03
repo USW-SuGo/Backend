@@ -57,26 +57,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        // AccessToken이 필요없는 요청 필터링 - 종료
 
-        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
         if (request.getHeader("Authorization") == null) {
             throw new CustomException(REQUIRE_TOKEN);
-            // filterChain.doFilter(request, response);
-            // return;
         }
-        // 헤더가 필요한 요청에 대하여 헤더가 비어있을 때 - 시작
 
-        // 토큰 해석 시 유효하지 않으면 에러를 터뜨린다.
         String token = request.getHeader("Authorization").substring(7);
         jwtValidator.validateToken(token);
 
-        // 해당 AccessToken Payload 유효하다면 인가 및 인증객체 저장
         String loginId = jwtResolver.jwtResolveToUserLoginId(token);
 
         // AccessToken 에 담긴 정보가 DB 에 존재하는 유저일 때
         try {
             UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
+            System.out.println("LoginId 조회 1");
         } catch (CustomException | NoSuchElementException e) {
             JSONObject responseJson = new JSONObject();
             try {
@@ -93,6 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         UserDetails requestUserDetails = userDetailsService.loadUserByUsername(loginId);
+        System.out.println("LoginId 조회 2");
 
         // JWT 를 바탕으로 인증 객체 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(

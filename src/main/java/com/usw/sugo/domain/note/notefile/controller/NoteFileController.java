@@ -26,7 +26,6 @@ public class NoteFileController {
     @PostMapping("/")
     public ResponseEntity<Object> sendNoteContent(
             @RequestBody @Valid SendNoteFileForm sendNoteFileForm, MultipartFile[] multipartList) throws IOException {
-
         noteFileService.sendFile(sendNoteFileForm, multipartList);
 
         return ResponseEntity

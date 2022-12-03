@@ -37,13 +37,6 @@ public class ProductPostController {
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
 
-    /**
-     * 게시글 검색하기
-     *
-     * @param
-     * @param value
-     * @return
-     */
     @GetMapping("/search")
     public ResponseEntity<List<PostResponseDto.SearchResultResponse>> searchPost(
             @RequestParam String value, @RequestParam String category) {
@@ -75,13 +68,6 @@ public class ProductPostController {
                 .body(productPostRepository.loadDetailPostList(productPostId, userId));
     }
 
-    /**
-     * 게시글 작성하기 API
-     *
-     * @param authorization
-     * @param postingRequest
-     * @return 게시글 작성 성공여부
-     */
     @PostMapping
     public ResponseEntity<Map<String, Boolean>> postContent(
             @RequestHeader String authorization, PostingRequest postingRequest,
@@ -96,18 +82,11 @@ public class ProductPostController {
                 }});
     }
 
-    /*
-    게시글/이미지 수정
-     */
     @PutMapping
     public ResponseEntity<Object> putProductPostAndImage(
             @RequestBody MultipartFile[] multipartFileList, PutContentRequest putContentRequest) throws IOException {
-
-        // 게시글 테이블에 수정 내용 적용
         productPostRepository.editPostContent(putContentRequest);
-        // S3 에 수정된 파일 적용 및 저장된 링크 추출
         String updatedImageLink = commonProductService.updateS3Content(putContentRequest, multipartFileList);
-        // S3 에 수정된 파일링크를 게시글 파일 테이블에 적용
         productPostFileRepository.editPostFile(updatedImageLink, putContentRequest);
 
         return ResponseEntity
@@ -117,16 +96,10 @@ public class ProductPostController {
                 }});
     }
 
-    /*
-    게시글 삭제
-     */
     @DeleteMapping
     public ResponseEntity<Object> deleteProductPostAndImage(
             @RequestBody PostRequestDto.DeleteContentRequest deleteContentRequest) {
-
-        // S3 버킷 내용 삭제
         commonProductService.deleteS3Content(deleteContentRequest.getProductPostId());
-        // DB 에서 삭제
         productPostRepository.deleteById(deleteContentRequest.getProductPostId());
 
         return ResponseEntity

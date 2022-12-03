@@ -29,11 +29,11 @@ public class Note {
 
     @JoinColumn(name = "creating_user_id")
     @OneToOne
-    private User creatingUserId;
+    private User creatingUser;
 
     @JoinColumn(name = "opponent_user_id")
     @OneToOne
-    private User opponentUserId;
+    private User opponentUser;
 
     @Column
     private String creatingUserNickname;

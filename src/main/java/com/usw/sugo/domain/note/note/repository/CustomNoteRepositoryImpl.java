@@ -32,25 +32,17 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .execute();
     }
 
-    /*
-    채팅방 목록 불러오기 (가장 최근 채팅이 무엇인지 내려주는게 엄청 어려움. + 가장 최근 보낸 시각을 뽑아오기도 어려워함)
-
-    --> 쿼리로 해결한 것이 아니라, 테이블에 최근 메세징 컬럼을 추가하여 가장 최근에 추가한 내용을 조회할 수 있도록함
-    --> 매 메세지를 보낼 때 마다 해당 테이블의 컬럼값을 수정해야한다는 단점이 있다.
-     --> 하지만 채팅방 목록을 불로올 때마다 수행하게 될
-     --> 여러번의 조인보다 컬럼 하나를 추가하는게 더 좋을 수도 있겠다는생각으로 도입하였다.
-     */
     @Override
     public List<List<LoadNoteListForm>> loadNoteListByUserId(long requestUserId, Pageable pageable) {
         List<List<LoadNoteListForm>> finalResult = new ArrayList<>();
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
                 queryFactory
                         .select(new QNoteResponseDto_LoadNoteListForm(
-                                note.id, note.productPost.id, note.creatingUserId.id, note.opponentUserId.id,
+                                note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
                                 note.opponentUserNickname, note.recentContent, note.creatingUserUnreadCount,
                                 note.updatedAt))
                         .from(note)
-                        .where(note.creatingUserId.id.eq(requestUserId))
+                        .where(note.creatingUser.id.eq(requestUserId))
                         .orderBy(note.updatedAt.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -59,11 +51,11 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
                 queryFactory
                         .select(new QNoteResponseDto_LoadNoteListForm(
-                                note.id, note.productPost.id, note.creatingUserId.id, note.opponentUserId.id,
+                                note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
                                 note.opponentUserNickname, note.recentContent, note.creatingUserUnreadCount,
                                 note.updatedAt))
                         .from(note)
-                        .where(note.opponentUserId.id.eq(requestUserId))
+                        .where(note.opponentUser.id.eq(requestUserId))
                         .orderBy(note.updatedAt.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -82,14 +74,14 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
         queryFactory
                 .update(note)
                 .set(note.creatingUserUnreadCount, 0)
-                .where(note.creatingUserId.id.eq(requestUserId)
+                .where(note.creatingUser.id.eq(requestUserId)
                         .and(note.id.eq(noteId)))
                 .execute();
 
         queryFactory
                 .update(note)
                 .set(note.opponentUserUnreadCount, 0)
-                .where(note.opponentUserId.id.eq(requestUserId)
+                .where(note.opponentUser.id.eq(requestUserId)
                         .and(note.id.eq(noteId)))
                 .execute();
     }
@@ -109,13 +101,13 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     .update(note)
                     .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
                     .where(note.id.eq(noteId)
-                            .and(note.opponentUserId.id.eq(unreadUserId)))
+                            .and(note.opponentUser.id.eq(unreadUserId)))
                     .execute();
             queryFactory
                     .update(note)
                     .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
                     .where(note.id.eq(noteId)
-                            .and(note.creatingUserId.id.eq(unreadUserId)))
+                            .and(note.creatingUser.id.eq(unreadUserId)))
                     .execute();
             return;
         }
@@ -130,13 +122,13 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .update(note)
                 .set(note.opponentUserUnreadCount, note.opponentUserUnreadCount.add(1))
                 .where(note.id.eq(noteId)
-                        .and(note.opponentUserId.id.eq(unreadUserId)))
+                        .and(note.opponentUser.id.eq(unreadUserId)))
                 .execute();
         queryFactory
                 .update(note)
                 .set(note.creatingUserUnreadCount, note.creatingUserUnreadCount.add(1))
                 .where(note.id.eq(noteId)
-                        .and(note.creatingUserId.id.eq(unreadUserId)))
+                        .and(note.creatingUser.id.eq(unreadUserId)))
                 .execute();
     }
 
@@ -146,8 +138,8 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
             long noteRequestUserId, long targetUserId, long productPostId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(note)
-                .where(note.creatingUserId.id.eq(noteRequestUserId)
-                        .and(note.opponentUserId.id.eq(targetUserId))
+                .where(note.creatingUser.id.eq(noteRequestUserId)
+                        .and(note.opponentUser.id.eq(targetUserId))
                         .and(note.productPost.id.eq(productPostId)))
                 .fetchOne());
     }

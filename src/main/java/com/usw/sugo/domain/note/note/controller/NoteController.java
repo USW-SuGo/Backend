@@ -61,10 +61,10 @@ public class NoteController {
 
         Note note = Note.builder()
                 .productPost(productPost)
-                .creatingUserId(creatingRequestUser)
+                .creatingUser(creatingRequestUser)
                 .creatingUserNickname(creatingRequestUser.getNickname())
                 .creatingUserUnreadCount(0)
-                .opponentUserId(opponentUser)
+                .opponentUser(opponentUser)
                 .opponentUserNickname(opponentUser.getNickname())
                 .opponentUserUnreadCount(0)
                 .createdAt(LocalDateTime.now())

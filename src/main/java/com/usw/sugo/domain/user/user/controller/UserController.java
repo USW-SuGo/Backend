@@ -1,5 +1,8 @@
 package com.usw.sugo.domain.user.user.controller;
 
+import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
+import com.usw.sugo.domain.note.notefile.service.NoteFileService;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.domain.user.emailauth.repository.UserEmailAuthRepository;
@@ -33,6 +36,9 @@ public class UserController {
 
     private final JwtResolver jwtResolver;
     private final UserService userService;
+    private final NoteRepository noteRepository;
+    private final NoteContentService noteContentService;
+    private final NoteFileService noteFileService;
     private final NicknameGenerator nicknameGenerator;
     private final UserRepository userRepository;
     private final UserLikePostRepository userLikePostRepository;
@@ -143,15 +149,21 @@ public class UserController {
                 }});
     }
 
-    // 회원탈퇴
     @DeleteMapping
     public ResponseEntity<Map<String, Boolean>> deleteUser(
             @RequestHeader String authorization, @Valid @RequestBody QuitRequest quitRequest) {
-        Long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+        long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
         userService.isUserExistByLoginId(quitRequest.getLoginId());
+
         if (!userService.matchingPassword(requestUserId, quitRequest.getPassword()))
             throw new CustomException(PASSWORD_NOT_CORRECT);
+
+        User requestUser = userRepository.findById(requestUserId)
+                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
+
+        noteFileService.deleteNoteFile(requestUser);
         userRepository.deleteById(requestUserId);
+
         return ResponseEntity
                 .status(OK)
                 .body(new HashMap<>() {{
@@ -182,7 +194,6 @@ public class UserController {
                 .body(userPageResponse);
     }
 
-    // 다른 유저의 페이지
     @GetMapping("/")
     public ResponseEntity<UserPageResponse> otherUserPage(@RequestParam long userId, Pageable pageable) {
         User targetUser = userRepository.findById(userId)
