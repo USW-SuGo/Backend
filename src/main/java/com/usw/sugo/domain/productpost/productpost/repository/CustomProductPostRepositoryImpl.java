@@ -6,6 +6,9 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContent
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_DetailPostResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_MainPageResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.service.CategoryValidator;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.dto.QUserResponseDto_MyPosting;
@@ -42,7 +45,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         List<SearchResultResponse> response = new ArrayList<>();
         if (inputCategory.equals("")) {
             response = queryFactory
-                    .select(Projections.bean(SearchResultResponse.class,
+                    .select(new QPostResponseDto_SearchResultResponse(
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
@@ -55,7 +58,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .fetch();
         } else if (CategoryValidator.validateCategory(inputCategory)) {
             response = queryFactory
-                    .select(Projections.bean(SearchResultResponse.class,
+                    .select(new QPostResponseDto_SearchResultResponse(
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
@@ -101,7 +104,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         List<MainPageResponse> response = new ArrayList<>();
         if (inputCategory.equals("")) {
             response = queryFactory
-                    .select(Projections.bean(MainPageResponse.class,
+                    .select(new QPostResponseDto_MainPageResponse(
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
@@ -115,7 +118,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .fetch();
         } else if (CategoryValidator.validateCategory(inputCategory)) {
             response = queryFactory
-                    .select(Projections.bean(MainPageResponse.class,
+                    .select(new QPostResponseDto_MainPageResponse(
                             productPost.id,
                             productPostFile.imageLink,
                             productPost.contactPlace, productPost.updatedAt,
@@ -145,10 +148,9 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     @Override
     public DetailPostResponse loadDetailPostList(long productPostId, long userId) {
         DetailPostResponse response = queryFactory
-                .select(Projections.bean(DetailPostResponse.class,
-                        productPost.id, productPost.user.id.as("writerId"),
-                        productPostFile.imageLink,
-                        productPost.contactPlace, productPost.updatedAt,
+                .select(new QPostResponseDto_DetailPostResponse(
+                        productPost.id.as("productPostId"), productPost.user.id.as("writerId"),
+                        productPostFile.imageLink, productPost.contactPlace, productPost.updatedAt,
                         productPost.title, productPost.content, productPost.price,
                         productPost.user.nickname, productPost.category, productPost.status))
                 .from(productPost)

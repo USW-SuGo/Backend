@@ -4,6 +4,7 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpost.service.CommonProductService;
@@ -58,7 +59,7 @@ public class ProductPostController {
 
     // 게시글 자세히 보기
     @GetMapping("/")
-    public ResponseEntity<PostResponseDto.DetailPostResponse> loadDetailPost(
+    public ResponseEntity<DetailPostResponse> loadDetailPost(
             @RequestHeader String authorization, @RequestParam long productPostId) {
 
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));

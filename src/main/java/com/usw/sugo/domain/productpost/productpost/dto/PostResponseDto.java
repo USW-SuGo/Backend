@@ -83,8 +83,7 @@ public class PostResponseDto {
         @QueryProjection
         public DetailPostResponse(
                 long productPostId, long writerId, String imageLink, String contactPlace, LocalDateTime updatedAt,
-                String title, String content, int price, String nickname, String category, boolean status,
-                boolean userLikeStatus) {
+                String title, String content, int price, String nickname, String category, boolean status) {
             this.productPostId = productPostId;
             this.writerId = writerId;
             this.imageLink = imageLink;
@@ -96,7 +95,6 @@ public class PostResponseDto {
             this.nickname = nickname;
             this.category = category;
             this.status = status;
-            this.userLikeStatus = userLikeStatus;
         }
     }
 }
