@@ -7,7 +7,7 @@ import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +26,12 @@ public class NoteContentService {
     public void sendContent(SendNoteContentForm sendNoteContentForm) {
         NoteContent noteContent = NoteContent.builder()
                 .noteId(noteRepository.findById(sendNoteContentForm.getNoteId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUNDED)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.NOTE_NOT_FOUNDED)))
                 .message(sendNoteContentForm.getMessage())
                 .sender(userRepository.findById(sendNoteContentForm.getSenderId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
                 .receiver(userRepository.findById(sendNoteContentForm.getReceiverId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
                 .createdAt(LocalDateTime.now())
                 .build();
 

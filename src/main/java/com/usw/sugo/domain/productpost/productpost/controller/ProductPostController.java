@@ -12,7 +12,7 @@ import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFil
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -120,7 +120,7 @@ public class ProductPostController {
                 jwtResolver.jwtResolveToUserId(authorization.substring(7))).get();
 
         if (!requestUser.getRecentUpPost().isBefore(LocalDateTime.now().minusDays(1))) {
-            throw new CustomException(ErrorCode.ALREADY_UP_POSTING);
+            throw new CustomException(ExceptionType.ALREADY_UP_POSTING);
         }
 
         productPostRepository.refreshUpdateAt(upPostingRequest.getProductPostId());

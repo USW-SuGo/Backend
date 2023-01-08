@@ -5,7 +5,7 @@ import com.usw.sugo.domain.user.entity.UserEmailAuth;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class UserEmailAuthService {
     // 인증번호 전송을 위한 랜덤 인증번호 생성 및 DB에 저장
     public String createEmailAuthPayload(Long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
 
         StringBuilder payload = new StringBuilder();
 

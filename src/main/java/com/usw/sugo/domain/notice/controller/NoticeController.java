@@ -6,7 +6,7 @@ import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeUpdateRequest;
 import com.usw.sugo.domain.notice.entity.Notice;
 import com.usw.sugo.domain.notice.repository.NoticeRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ErrorCode.POST_NOT_FOUND;
+import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,7 +45,7 @@ public class NoticeController {
     public ResponseEntity<HashMap<String, Boolean>> writeNotice(
             @RequestHeader String authorization, @RequestBody NoticePostRequest noticePostRequest) {
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
+            throw new CustomException(ExceptionType.USER_UNAUTHORIZED);
         }
 
         Notice newNotice = Notice.builder()
@@ -67,7 +67,7 @@ public class NoticeController {
     public ResponseEntity<HashMap<String, Boolean>> updateNotice(
             @RequestHeader String authorization, @RequestBody NoticeUpdateRequest noticeUpdateRequest) {
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
+            throw new CustomException(ExceptionType.USER_UNAUTHORIZED);
         }
 
         noticeRepository.editNotice(
@@ -87,7 +87,7 @@ public class NoticeController {
             @RequestHeader String authorization, @RequestBody NoticeDeleteRequest noticeDeleteRequest) {
 
         if (!jwtResolver.jwtResolveToUserStatus(authorization.substring(7)).equals("ADMIN")) {
-            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
+            throw new CustomException(ExceptionType.USER_UNAUTHORIZED);
         }
 
         noticeRepository.deleteById(noticeDeleteRequest.getId());

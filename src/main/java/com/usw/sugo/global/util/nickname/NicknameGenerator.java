@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.usw.sugo.global.exception.ErrorCode.INVALID_DEPARTMENT;
+import static com.usw.sugo.global.exception.ExceptionType.INVALID_DEPARTMENT;
 
 @Service
 @RequiredArgsConstructor

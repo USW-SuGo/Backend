@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.NoSuchElementException;
 
-import static com.usw.sugo.global.exception.ErrorCode.JWT_EXPIRED_EXCEPTION;
-import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.JWT_EXPIRED_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTION;
 
 @Component
 public class JwtValidator {

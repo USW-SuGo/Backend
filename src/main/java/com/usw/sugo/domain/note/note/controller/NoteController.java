@@ -11,7 +11,7 @@ import com.usw.sugo.domain.productpost.productpost.repository.ProductPostReposit
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.usw.sugo.global.exception.ErrorCode.DO_NOT_CREATE_YOURSELF;
-import static com.usw.sugo.global.exception.ErrorCode.NOTE_ALREADY_CREATED;
+import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF;
+import static com.usw.sugo.global.exception.ExceptionType.NOTE_ALREADY_CREATED;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,11 +43,11 @@ public class NoteController {
 
         long creatingRequestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
         ProductPost productPost = productPostRepository.findById(createNoteRequest.getProductPostId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_BAD_REQUEST));
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_BAD_REQUEST));
         User creatingRequestUser = userRepository.findById(creatingRequestUserId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
         User opponentUser = userRepository.findById(createNoteRequest.getOpponentUserId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
         Optional<Note> findingTargetNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
                 creatingRequestUserId, opponentUser.getId(), productPost.getId());
 
@@ -90,7 +90,7 @@ public class NoteController {
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
 
         User requestUser = userRepository.findById(userId).orElseThrow(()
-                -> new CustomException(ErrorCode.USER_NOT_EXIST));
+                -> new CustomException(ExceptionType.USER_NOT_EXIST));
 
         List<List<LoadNoteListForm>> noteListResult =
                 noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
@@ -118,7 +118,7 @@ public class NoteController {
 
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
         User requestUser = userRepository.findById(userId).orElseThrow(()
-                -> new CustomException(ErrorCode.USER_NOT_EXIST));
+                -> new CustomException(ExceptionType.USER_NOT_EXIST));
         noteRepository.readNoteRoom(requestUser.getId(), noteId);
         List<LoadNoteAllContentForm> loadNoteAllContentForms =
                 noteContentRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable);

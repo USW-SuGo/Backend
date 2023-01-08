@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTION;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
@@ -50,7 +50,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         if (request.getHeader("Authorization") == null) {
             try {
-                responseJson.put("code", new CustomException(JWT_MALFORMED_EXCEPTION).getErrorCode().toString());
+                responseJson.put("code", new CustomException(JWT_MALFORMED_EXCEPTION).getExceptionType().toString());
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

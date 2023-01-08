@@ -16,41 +16,41 @@ import org.springframework.web.client.HttpServerErrorException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<ExceptionInformation> handleException(Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String code = "NO_CATCH_ERROR";
         String className = e.getClass().getName();
         String message = e.getMessage();
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
                 .message(message)
                 .status(status.value())
                 .error(status.getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, status);
+        return new ResponseEntity<>(exceptionInformation, status);
     }
 
     @ExceptionHandler(value = {BaseException.class})
-    public ResponseEntity<ErrorResponse> handleBaseException(BaseException e) {
+    public ResponseEntity<ExceptionInformation> handleBaseException(BaseException e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = e.getErrorCode();
+        ExceptionType exceptionType = e.getExceptionType();
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(errorCode.getMessage())
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .message(exceptionType.getMessage())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
-    public ResponseEntity<ErrorResponse> handleBindValidationException(Exception e) {
+    public ResponseEntity<ExceptionInformation> handleBindValidationException(Exception e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = ErrorCode.PARAM_VALID_ERROR;
+        ExceptionType exceptionType = ExceptionType.PARAM_VALID_ERROR;
         String message = "";
 
         if (e instanceof MethodArgumentNotValidException) {
@@ -59,74 +59,74 @@ public class GlobalExceptionHandler {
             message = ((BindException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage();
         }
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
                 .message(message)
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<ExceptionInformation> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+        ExceptionType exceptionType = ExceptionType.METHOD_NOT_ALLOWED;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
                 .message(e.getMessage())
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
 
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    public ResponseEntity<ErrorResponse> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ExceptionInformation> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = ErrorCode.USER_BAD_REQUEST;
+        ExceptionType exceptionType = ExceptionType.USER_BAD_REQUEST;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(errorCode.getMessage())
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .message(exceptionType.getMessage())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {HttpServerErrorException.InternalServerError.class})
-    public ResponseEntity<ErrorResponse> InternalServerError(HttpServerErrorException.InternalServerError e) {
+    public ResponseEntity<ExceptionInformation> InternalServerError(HttpServerErrorException.InternalServerError e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = ErrorCode.SERVER_ERROR;
+        ExceptionType exceptionType = ExceptionType.SERVER_ERROR;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(errorCode.getMessage())
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .message(exceptionType.getMessage())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> IllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<ExceptionInformation> IllegalArgumentException(IllegalArgumentException e) {
         String className = e.getClass().getName();
-        ErrorCode errorCode = ErrorCode.USER_BAD_REQUEST;
+        ExceptionType exceptionType = ExceptionType.USER_BAD_REQUEST;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        ExceptionInformation exceptionInformation = ExceptionInformation.builder()
                 .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(errorCode.getMessage())
-                .status(errorCode.getStatus().value())
-                .error(errorCode.getStatus().getReasonPhrase())
+                .message(exceptionType.getMessage())
+                .status(exceptionType.getStatus().value())
+                .error(exceptionType.getStatus().getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+        return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 }

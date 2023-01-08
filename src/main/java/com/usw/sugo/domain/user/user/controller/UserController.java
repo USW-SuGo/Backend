@@ -26,7 +26,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ErrorCode.*;
+import static com.usw.sugo.global.exception.ExceptionType.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController

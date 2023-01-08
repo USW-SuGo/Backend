@@ -12,7 +12,7 @@ import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -68,11 +68,11 @@ public class NoteFileService {
         }
         NoteFile noteFile = NoteFile.builder()
                 .noteId(noteRepository.findById(sendNoteFileForm.getNoteId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUNDED)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.NOTE_NOT_FOUNDED)))
                 .sender(userRepository.findById(sendNoteFileForm.getSenderId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
                 .receiver(userRepository.findById(sendNoteFileForm.getReceiverId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
                 .imageLink(uploadedInS3ImageLink.toString())
                 .build();
 

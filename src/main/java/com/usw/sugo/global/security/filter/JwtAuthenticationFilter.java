@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security.filter;
 
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-import static com.usw.sugo.global.exception.ErrorCode.*;
+import static com.usw.sugo.global.exception.ExceptionType.*;
 
 /*
 매 요청마다 JWT 가 유효한지 검증하고, 유효할 시 해당 유저에 Security Context 를 인가 해주는 필터
@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             JSONObject responseJson = new JSONObject();
             try {
                 responseJson.put("code", HttpServletResponse.SC_BAD_REQUEST);
-                responseJson.put("message", ErrorCode.USER_NOT_EXIST.toString());
+                responseJson.put("message", ExceptionType.USER_NOT_EXIST.toString());
             } catch (JSONException ex) {
                 throw new RuntimeException(ex);
             }

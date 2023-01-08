@@ -12,7 +12,7 @@ import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFil
 import com.usw.sugo.domain.user.entity.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,14 +38,14 @@ public class CommonProductService {
     private final ProductPostRepository productPostRepository;
     private final ProductPostFileRepository productPostFileRepository;
     private final AmazonS3Client amazonS3Client;
-
+    
     // S3 버킷 객체 생성
     @Transactional
     public StringBuilder savePosting(
             String authorization, PostRequestDto.PostingRequest postingRequest, MultipartFile[] multipartFileList) throws IOException {
 
         User requestUser = userRepository.findById(jwtResolver.jwtResolveToUserId(authorization.substring(7)))
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
 
         ProductPost productPost = ProductPost.builder()
                 .user(requestUser)
@@ -108,11 +108,11 @@ public class CommonProductService {
     @Transactional
     public void deleteS3Content(long productPostId) {
         ProductPost deleteTargetProductPost = productPostRepository.findById(productPostId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
         ProductPostFile deleteTargetProductPostFile = productPostFileRepository
                 .findByProductPost(deleteTargetProductPost)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
         String[] deletedTargetObject = deleteTargetProductPostFile
                 .getImageLink()
@@ -128,11 +128,11 @@ public class CommonProductService {
     public String updateS3Content(PostRequestDto.PutContentRequest putContentRequest, MultipartFile[] multipartFileList) throws IOException {
 
         ProductPost updateTargetProductPost = productPostRepository.findById(putContentRequest.getProductPostId())
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
         ProductPostFile deleteTargetProductPostFile = productPostFileRepository
                 .findByProductPost(updateTargetProductPost)
-                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionType.POST_NOT_FOUND));
 
         String[] deletedTargetObject = deleteTargetProductPostFile
                 .getImageLink()

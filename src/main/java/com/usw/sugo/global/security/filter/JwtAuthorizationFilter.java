@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ErrorCode.USER_NOT_EXIST;
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 
 /*
 로그인이 성공하면 Security Context 내부에 인증 객체를 등록해주는 필터
@@ -81,7 +81,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             try {
-                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("ExceptionType", HttpServletResponse.SC_BAD_REQUEST);
                 responseJson.put("Message", "존재하지 않는 사용자입니다.");
                 response.getWriter().print(responseJson);
                 return null;
@@ -103,7 +103,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
             JSONObject responseJson = new JSONObject();
             response.setContentType("application/json;charset=UTF-8");
             try {
-                responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+                responseJson.put("ExceptionType", HttpServletResponse.SC_BAD_REQUEST);
                 responseJson.put("Message", "이메일 인증을 받지 않은 사용자입니다. 웹메일에 이메일 인증 링크를 확인해주세요.");
             } catch (JSONException e) {
                 throw new RuntimeException(e);
@@ -134,7 +134,7 @@ public class JwtAuthorizationFilter extends AbstractAuthenticationProcessingFilt
         // 비밀번호가 일치하지 않을 때
         JSONObject responseJson = new JSONObject();
         try {
-            responseJson.put("ErrorCode", HttpServletResponse.SC_BAD_REQUEST);
+            responseJson.put("ExceptionType", HttpServletResponse.SC_BAD_REQUEST);
             responseJson.put("Message", "비밀번호가 일치하지 않습니다.");
         } catch (JSONException e) {
             throw new RuntimeException(e);

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ErrorResponse {
+public class ExceptionInformation {
 
     private String exception;
 

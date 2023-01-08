@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ErrorCode.DO_NOT_LIKE_YOURSELF;
-import static com.usw.sugo.global.exception.ErrorCode.POST_NOT_FOUND;
+import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
+import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController

@@ -8,7 +8,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
+public enum ExceptionType {
     USER_BAD_REQUEST(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
     CATEGORY_NOT_FOUND(BAD_REQUEST, "해당 카테고리 이름을 찾을 수 없습니다."),
     EMAIL_NOT_VALIDATED(BAD_REQUEST, "이메일 형식이 올바르지 않습니다. 교내 웹 메일 주소만 입력할 수 있습니다."),

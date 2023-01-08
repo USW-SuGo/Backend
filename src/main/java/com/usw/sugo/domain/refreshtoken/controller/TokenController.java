@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ErrorCode.JWT_MALFORMED_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTION;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor

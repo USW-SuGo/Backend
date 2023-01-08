@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.productpost.productpost.service;
 
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ErrorCode;
+import com.usw.sugo.global.exception.ExceptionType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +12,6 @@ public class CategoryValidator {
             return true;
         }
 
-        throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
+        throw new CustomException(ExceptionType.CATEGORY_NOT_FOUND);
     }
 }

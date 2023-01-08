@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static com.usw.sugo.global.exception.ErrorCode.*;
+import static com.usw.sugo.global.exception.ExceptionType.*;
 
 @Service
 @Transactional

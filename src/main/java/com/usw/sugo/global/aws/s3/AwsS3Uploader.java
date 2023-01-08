@@ -29,9 +29,8 @@ public class AwsS3Uploader {
     public String bucket;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-        File uploadFile = convert(multipartFile)        // 파일 생성
+        File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File convert fail"));
-
         return upload(uploadFile, dirName);
     }
 
