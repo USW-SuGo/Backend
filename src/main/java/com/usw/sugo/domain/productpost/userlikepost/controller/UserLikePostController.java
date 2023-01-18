@@ -22,7 +22,6 @@ import java.util.Map;
 
 import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,20 +30,12 @@ public class UserLikePostController {
 
     private final UserRepository userRepository;
     private final ProductPostRepository productPostRepository;
-
     private final ProductPostFileRepository productPostFileRepository;
     private final UserLikePostService userLikePostService;
     private final UserLikePostRepository userLikePostRepository;
-
     private final JwtResolver jwtResolver;
 
-    /**
-     * 게시글 좋아요 하기
-     *
-     * @param authorization
-     * @param likePostRequest
-     * @return
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Boolean>> likePost(
             @RequestHeader String authorization,
@@ -63,10 +54,8 @@ public class UserLikePostController {
             throw new CustomException(DO_NOT_LIKE_YOURSELF);
         }
 
-
         // 좋아요를 하지 않은 게시글이면 좋아요 추가
         if (!userLikePostService.isAlreadyLike(requestUser.getId(), productPost.getId())) {
-
             UserLikePost userLikePost = UserLikePost.builder()
                     .user(requestUser)
                     .productPost(productPost)
@@ -76,7 +65,7 @@ public class UserLikePostController {
             userLikePostRepository.save(userLikePost);
 
             return ResponseEntity
-                    .status(OK)
+                    .ok()
                     .body(new HashMap<>() {{
                         put("Like", true);
                     }});
@@ -88,7 +77,7 @@ public class UserLikePostController {
         }
 
         return ResponseEntity
-                .status(OK)
+                .ok()
                 .body(new HashMap<>() {{
                     put("Like", false);
                 }});

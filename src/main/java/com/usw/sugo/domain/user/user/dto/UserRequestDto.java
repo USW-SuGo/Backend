@@ -3,9 +3,12 @@ package com.usw.sugo.domain.user.user.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
+// NotBlank는 String 타입에서만 가능
+// Integer, Long 은 Notnull가능
 public class UserRequestDto {
 
     // 이메일 중복확인 DTO
@@ -72,9 +75,9 @@ public class UserRequestDto {
     // 비밀번호 수정 DTO
     @Data
     public static class EditPasswordRequest {
-        @NotNull @NotBlank
+        @NotNull @NotEmpty
         private long id;
-        @NotNull @NotBlank
+        @NotNull @NotEmpty
         private String password;
     }
 
@@ -91,7 +94,7 @@ public class UserRequestDto {
 
     @Data
     public static class MannerEvaluationRequest {
-        @NotNull @NotBlank
+        @NotNull @NotEmpty
         private long targetUserId;
         @NotNull @NotBlank
         private BigDecimal grade;
