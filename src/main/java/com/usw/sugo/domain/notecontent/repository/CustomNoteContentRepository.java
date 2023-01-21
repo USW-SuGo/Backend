@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CustomNoteContentRepository {
 
-    List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(long requestUserId, long noteId, Pageable pageable);
+    List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(long noteId, Pageable pageable);
 }

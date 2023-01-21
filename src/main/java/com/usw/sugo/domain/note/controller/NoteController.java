@@ -1,17 +1,13 @@
 package com.usw.sugo.domain.note.controller;
 
-import com.usw.sugo.domain.note.Note;
-import com.usw.sugo.domain.note.dto.NoteRequestDto.CreateNoteRequest;
-import com.usw.sugo.domain.note.dto.NoteResponseDto.LoadNoteAllContentForm;
+import com.usw.sugo.domain.note.dto.NoteRequestDto.CreateNoteRequestForm;
 import com.usw.sugo.domain.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.repository.NoteRepository;
-import com.usw.sugo.domain.notecontent.repository.NoteContentRepository;
+import com.usw.sugo.domain.note.service.NoteService;
+import com.usw.sugo.domain.notecontent.controller.NoteContentControllerValidator;
 import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.repository.UserRepository;
-import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
+import com.usw.sugo.global.baseresponseform.BaseResponseForm;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,78 +15,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Stream;
-
-import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF;
-import static com.usw.sugo.global.exception.ExceptionType.NOTE_ALREADY_CREATED;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note")
 public class NoteController {
-
-    private final ProductPostRepository productPostRepository;
     private final NoteRepository noteRepository;
-    private final NoteContentRepository noteContentRepository;
-    private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
+    private final NoteContentControllerValidator noteContentControllerValidator;
+    private final NoteService noteService;
 
     @PostMapping
     public ResponseEntity<Object> createRoom(
-            @RequestHeader String authorization, @RequestBody CreateNoteRequest createNoteRequest) {
-
+            @RequestHeader String authorization,
+            @RequestBody CreateNoteRequestForm createNoteRequestForm) {
         long creatingRequestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        ProductPost productPost = productPostRepository.findById(createNoteRequest.getProductPostId())
-                .orElseThrow(() -> new CustomException(ExceptionType.USER_BAD_REQUEST));
-        User creatingRequestUser = userRepository.findById(creatingRequestUserId)
-                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
-        User opponentUser = userRepository.findById(createNoteRequest.getOpponentUserId())
-                .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST));
-        Optional<Note> findingTargetNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
-                creatingRequestUserId, opponentUser.getId(), productPost.getId());
+        ProductPost productPost = noteContentControllerValidator.validateProductPost(createNoteRequestForm.getProductPostId());
+        User creatingRequestUser = noteContentControllerValidator.validateUser(creatingRequestUserId);
+        User opponentUser = noteContentControllerValidator.validateUser(createNoteRequestForm.getOpponentUserId());
 
-        if (findingTargetNote.isPresent()) {
-            throw new CustomException(NOTE_ALREADY_CREATED);
-        }
-
-        if (creatingRequestUser.equals(opponentUser)) {
-            throw new CustomException(DO_NOT_CREATE_YOURSELF);
-        }
-
-        Note note = Note.builder()
-                .productPost(productPost)
-                .creatingUser(creatingRequestUser)
-                .creatingUserNickname(creatingRequestUser.getNickname())
-                .creatingUserUnreadCount(0)
-                .opponentUser(opponentUser)
-                .opponentUserNickname(opponentUser.getNickname())
-                .opponentUserUnreadCount(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        noteRepository.save(note);
-
-        // 거래 시도 횟수 + 1
-        userRepository.plusCountTradeAttempt(creatingRequestUser.getId(), opponentUser.getId());
+        noteContentControllerValidator.validateCreatingNoteRoom(creatingRequestUserId, opponentUser.getId(), productPost.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new HashMap<String, Long>() {{
-                    put("noteId", note.getId());
+                    put("noteId", noteService.makeNote(productPost, creatingRequestUser, opponentUser));
                 }});
     }
 
     @GetMapping("/list")
     public ResponseEntity<Object> loadAllNoteListByUserId(
-            @RequestHeader String authorization, Pageable pageable) {
+            @RequestHeader String authorization,
+            Pageable pageable) {
 
-        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-
-        User requestUser = userRepository.findById(userId).orElseThrow(()
-                -> new CustomException(ExceptionType.USER_NOT_EXIST));
+        User requestUser = validateAndExtractUser(authorization);
 
         List<List<LoadNoteListForm>> noteListResult =
                 noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
@@ -107,28 +70,25 @@ public class NoteController {
                 .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
                         .reversed());
 
+        BaseResponseForm baseResponseForm = new BaseResponseForm();
+                .code(new HashMap<>() {{
+                    put();
+                }})
+                .message(new HashMap<>() {{
+                    put("message", "SUCCESS");
+                }})
+                .data(new HashMap<>() {{
+                    put("data", finalResult);
+                }})
+                .build();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(finalResult);
+                .body(baseResponseForm);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<Object> loadAllNoteContentByRoomId(
-            @RequestHeader String authorization, @RequestParam Long noteId, Pageable pageable) {
-
+    private User validateAndExtractUser(String authorization) {
         long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        User requestUser = userRepository.findById(userId).orElseThrow(()
-                -> new CustomException(ExceptionType.USER_NOT_EXIST));
-        noteRepository.readNoteRoom(requestUser.getId(), noteId);
-        List<LoadNoteAllContentForm> loadNoteAllContentForms =
-                noteContentRepository.loadNoteRoomAllContentByRoomId(requestUser.getId(), noteId, pageable);
-
-        for (LoadNoteAllContentForm loadNoteAllContentForm : loadNoteAllContentForms) {
-            loadNoteAllContentForm.setRequestUserId(requestUser.getId());
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(loadNoteAllContentForms);
+        return noteContentControllerValidator.validateUser(userId);
     }
 }

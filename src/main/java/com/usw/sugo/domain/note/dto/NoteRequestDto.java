@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 public class NoteRequestDto {
 
     @Data
-    public static class CreateNoteRequest {
+    public static class CreateNoteRequestForm {
         @NotNull
         @NotBlank
         private long opponentUserId;

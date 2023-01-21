@@ -1,13 +1,16 @@
 package com.usw.sugo.domain.note.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 public class NoteResponseDto {
 
-    @Data
+    @Getter
+    @Builder
     public static class LoadNoteListForm {
         private long noteId;
         private long productPostId;
@@ -34,7 +37,9 @@ public class NoteResponseDto {
         }
     }
 
-    @Data
+    @Getter
+    @Builder
+    @AllArgsConstructor
     public static class LoadNoteAllContentForm {
         private long requestUserId;
         private long productPostId;
@@ -65,6 +70,10 @@ public class NoteResponseDto {
             this.fileSenderId = fileSenderId;
             this.fileReceiverId = fileReceiverId;
             this.fileCreatedAt = fileCreatedAt;
+        }
+
+        public void setRequestUserId(long requestUserId) {
+            this.requestUserId = requestUserId;
         }
     }
 }

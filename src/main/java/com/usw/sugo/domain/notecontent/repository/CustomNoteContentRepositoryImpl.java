@@ -21,7 +21,7 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(long requestUserId, long noteId, Pageable pageable) {
+    public List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(long noteId, Pageable pageable) {
         return queryFactory
                 .select(new QNoteResponseDto_LoadNoteAllContentForm(
                         noteContent.noteId.productPost.id, noteContent.id, noteContent.message,
