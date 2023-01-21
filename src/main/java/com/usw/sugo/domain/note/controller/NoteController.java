@@ -29,18 +29,25 @@ public class NoteController {
             @RequestHeader String authorization,
             @RequestBody CreateNoteRequestForm createNoteRequestForm) {
 
-        ProductPost productPost = noteControllerValidator.validateProductPost(createNoteRequestForm.getProductPostId());
+        ProductPost productPost = noteControllerValidator
+                .validateProductPost(createNoteRequestForm.getProductPostId());
         User creatingRequestUser = validateAndExtractUser(authorization);
-        User opponentUser = noteControllerValidator.validateUser(createNoteRequestForm.getOpponentUserId());
+        User opponentUser = noteControllerValidator
+                .validateUser(createNoteRequestForm.getOpponentUserId());
 
         noteControllerValidator.validateCreatingNoteRoom(
                 creatingRequestUser.getId(), opponentUser.getId(), productPost.getId());
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new HashMap<String, Long>() {{
+        BaseResponseForm baseResponseForm = new BaseResponseForm().build(
+                BaseResponseCode.SUCCESS.getCode(),
+                BaseResponseMessage.SUCCESS.getMessage(),
+                new HashMap<>() {{
                     put("noteId", noteService.makeNote(productPost, creatingRequestUser, opponentUser));
                 }});
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(baseResponseForm);
     }
 
     @GetMapping("/list")
@@ -50,10 +57,10 @@ public class NoteController {
 
         User requestUser = validateAndExtractUser(authorization);
 
-        BaseResponseForm baseResponseForm = new BaseResponseForm()
-                .build(BaseResponseCode.SUCCESS.getCode(),
-                        BaseResponseMessage.SUCCESS.getMessage(),
-                        noteService.loadNoteList(requestUser, pageable));
+        BaseResponseForm baseResponseForm = new BaseResponseForm().build(
+                BaseResponseCode.SUCCESS.getCode(),
+                BaseResponseMessage.SUCCESS.getMessage(),
+                noteService.loadNoteList(requestUser, pageable));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
