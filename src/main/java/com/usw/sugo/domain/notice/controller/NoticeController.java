@@ -3,7 +3,7 @@ package com.usw.sugo.domain.notice.controller;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeDeleteRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticePostRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeUpdateRequest;
-import com.usw.sugo.domain.notice.entity.Notice;
+import com.usw.sugo.domain.notice.Notice;
 import com.usw.sugo.domain.notice.repository.NoticeRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ExceptionType;

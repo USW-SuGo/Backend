@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.notice.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.notice.entity.Notice;
+import com.usw.sugo.domain.notice.Notice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;

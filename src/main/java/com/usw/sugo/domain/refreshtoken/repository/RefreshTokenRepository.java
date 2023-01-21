@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.refreshtoken.repository;
 
-import com.usw.sugo.domain.refreshtoken.entity.RefreshToken;
+import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

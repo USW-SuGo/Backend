@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
