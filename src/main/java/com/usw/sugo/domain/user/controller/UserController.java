@@ -4,6 +4,7 @@ import com.usw.sugo.domain.notefile.service.NoteFileService;
 import com.usw.sugo.domain.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.dto.UserRequestDto;
 import com.usw.sugo.domain.user.dto.UserResponseDto;
+import com.usw.sugo.domain.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.domain.emailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.emailauth.service.UserEmailAuthService;
@@ -108,7 +109,7 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Boolean>> ConfirmEmail(@RequestBody UserRequestDto.AuthEmailPayload authEmailPayload) {
+    public ResponseEntity<Map<String, Boolean>> confirmEmail(@RequestBody UserRequestDto.AuthEmailPayload authEmailPayload) {
         String payload = authEmailPayload.getPayload();
         UserEmailAuth requestUserEmailAuth = userEmailAuthRepository
                 .findByUserId(authEmailPayload.getUserId())
@@ -178,26 +179,27 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserResponseDto.UserPageResponseForm> loadMyPage(@RequestHeader String authorization, Pageable pageable) {
+    public ResponseEntity<UserPageResponseForm> loadMyPage(@RequestHeader String authorization, Pageable pageable) {
         long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
         User requestUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        UserResponseDto.UserPageResponseForm userPageResponseForm1 = userRepository.loadUserPage(requestUser).builder()
+
+        UserPageResponseForm userPageResponseForm1 = userRepository.loadUserPage(requestUser).builder()
                 .myPosting(productPostRepository.loadUserWritingPostingList(requestUser, pageable))
                 .likePosting(userLikePostRepository.loadMyLikePosting(requestUser.getId()))
                 .build();
 
-        UserResponseDto.UserPageResponseForm userPageResponseForm = userRepository.loadUserPage(requestUser);
+        UserPageResponseForm userPageResponseForm = userRepository.loadUserPage(requestUser);
         return ResponseEntity
                 .status(OK)
                 .body(userPageResponseForm);
     }
 
     @GetMapping("/")
-    public ResponseEntity<UserResponseDto.UserPageResponseForm> otherUserPage(@RequestParam long userId, Pageable pageable) {
+    public ResponseEntity<UserPageResponseForm> otherUserPage(@RequestParam long userId, Pageable pageable) {
         User targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        UserResponseDto.UserPageResponseForm targetUserPageResponseForm = userRepository.loadUserPage(targetUser).builder()
+        UserPageResponseForm targetUserPageResponseForm = userRepository.loadUserPage(targetUser).builder()
                 .myPosting(productPostRepository.loadUserWritingPostingList(targetUser, pageable))
                 .build();
         return ResponseEntity

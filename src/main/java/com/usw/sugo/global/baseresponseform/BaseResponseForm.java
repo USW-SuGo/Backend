@@ -1,14 +1,25 @@
 package com.usw.sugo.global.baseresponseform;
 
-import lombok.Builder;
-import lombok.Data;
+/*
+{
+  "code": "200",
+  "message": "SUCCESS",
+  "data": {
+    "resultCode": "SUCCESS",
+    "resultMessage": "115"
+  }
+}
+ */
 
-import java.util.Map;
-
-@Data
-@Builder
 public class BaseResponseForm {
-    Map<Object, Object> code;
-    Map<Object, Object> message;
-    Map<Object, Object> data;
+    private String code;
+    private String message;
+    private Object data;
+
+    public BaseResponseForm build(String code, String message, Object data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+        return this;
+    }
 }
