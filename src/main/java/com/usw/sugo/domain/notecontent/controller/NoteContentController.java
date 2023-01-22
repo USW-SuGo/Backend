@@ -32,11 +32,8 @@ public class NoteContentController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new BaseResponseForm().build(
-                        BaseResponseCode.SUCCESS.getCode(),
-                        BaseResponseMessage.SUCCESS.getMessage(),
-                        noteContentService.loadAllContentByNoteId(
-                                validateAndExtractUser(authorization), noteId, pageable)));
+                .body(noteContentService
+                        .loadAllContentByNoteId(validateAndExtractUser(authorization), noteId, pageable));
     }
 
     @PostMapping("/")

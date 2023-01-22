@@ -4,9 +4,6 @@ import com.usw.sugo.domain.note.dto.NoteRequestDto.CreateNoteRequestForm;
 import com.usw.sugo.domain.note.service.NoteService;
 import com.usw.sugo.domain.productpost.ProductPost;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.global.baseresponseform.BaseResponseCode;
-import com.usw.sugo.global.baseresponseform.BaseResponseForm;
-import com.usw.sugo.global.baseresponseform.BaseResponseMessage;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -29,25 +26,21 @@ public class NoteController {
             @RequestHeader String authorization,
             @RequestBody CreateNoteRequestForm createNoteRequestForm) {
 
-        ProductPost productPost = noteControllerValidator
-                .validateProductPost(createNoteRequestForm.getProductPostId());
         User creatingRequestUser = validateAndExtractUser(authorization);
         User opponentUser = noteControllerValidator
                 .validateUser(createNoteRequestForm.getOpponentUserId());
 
+        ProductPost productPost = noteControllerValidator
+                .validateProductPost(createNoteRequestForm.getProductPostId());
+
         noteControllerValidator.validateCreatingNoteRoom(
                 creatingRequestUser.getId(), opponentUser.getId(), productPost.getId());
 
-        BaseResponseForm baseResponseForm = new BaseResponseForm().build(
-                BaseResponseCode.SUCCESS.getCode(),
-                BaseResponseMessage.SUCCESS.getMessage(),
-                new HashMap<>() {{
-                    put("noteId", noteService.makeNote(productPost, creatingRequestUser, opponentUser));
-                }});
-
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(baseResponseForm);
+                .body(new HashMap<>() {{
+                    put("noteId", noteService.makeNote(productPost, creatingRequestUser, opponentUser));
+                }});
     }
 
     @GetMapping("/list")
@@ -57,14 +50,9 @@ public class NoteController {
 
         User requestUser = validateAndExtractUser(authorization);
 
-        BaseResponseForm baseResponseForm = new BaseResponseForm().build(
-                BaseResponseCode.SUCCESS.getCode(),
-                BaseResponseMessage.SUCCESS.getMessage(),
-                noteService.loadNoteList(requestUser, pageable));
-
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(baseResponseForm);
+                .body(noteService.loadNoteList(requestUser, pageable));
     }
 
     private User validateAndExtractUser(String authorization) {
