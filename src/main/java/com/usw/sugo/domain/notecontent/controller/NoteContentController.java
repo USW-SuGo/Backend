@@ -2,9 +2,6 @@ package com.usw.sugo.domain.notecontent.controller;
 
 import com.usw.sugo.domain.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.global.baseresponseform.BaseResponseCode;
-import com.usw.sugo.global.baseresponseform.BaseResponseForm;
-import com.usw.sugo.global.baseresponseform.BaseResponseMessage;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
 import static com.usw.sugo.domain.notecontent.dto.NoteContentRequestDto.SendNoteContentForm;
 
@@ -45,10 +43,9 @@ public class NoteContentController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new BaseResponseForm().build(
-                        BaseResponseCode.SUCCESS.getCode(),
-                        BaseResponseMessage.SUCCESS.getMessage(),
-                        null));
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
     }
 
     private User validateAndExtractUser(String authorization) {
