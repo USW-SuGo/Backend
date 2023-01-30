@@ -5,14 +5,13 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.note.Note;
-import com.usw.sugo.domain.notefile.NoteFile;
 import com.usw.sugo.domain.note.repository.NoteRepository;
-import com.usw.sugo.domain.notefile.repository.NoteFileRepository;
+import com.usw.sugo.domain.notefile.NoteFile;
 import com.usw.sugo.domain.notefile.dto.NoteFileRequestDto;
+import com.usw.sugo.domain.notefile.repository.NoteFileRepository;
 import com.usw.sugo.domain.user.User;
 import com.usw.sugo.domain.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class NoteFileService {
     private final NoteFileRepository noteFileRepository;
     private final UserRepository userRepository;
     private final AmazonS3Client amazonS3Client;
+    private final String NOTE_RESOURCES_PATH = "/note-resources";
 
     public void sendFile(NoteFileRequestDto.SendNoteFileForm sendNoteFileForm, MultipartFile[] multipartFiles) throws IOException {
         List<String> imagePathList = new ArrayList<>();
@@ -46,13 +49,15 @@ public class NoteFileService {
             objectMetaData.setContentType(multipartFile.getContentType());
             objectMetaData.setContentLength(size);
             amazonS3Client.putObject(
-                    new PutObjectRequest(bucketName + "/note-resources",
+                    new PutObjectRequest(bucketName + NOTE_RESOURCES_PATH,
                             originalName, multipartFile.getInputStream(), objectMetaData)
                             .withCannedAcl(CannedAccessControlList.PublicRead));
 
-            String imagePath = amazonS3Client.getUrl(bucketName + "/note-resources", originalName).toString();
+            String imagePath = amazonS3Client.getUrl(
+                    bucketName + NOTE_RESOURCES_PATH, originalName).toString();
             imagePathList.add(imagePath);
         }
+
         StringBuilder uploadedInS3ImageLink = new StringBuilder();
 
         if (imagePathList.size() == 1) {
@@ -68,11 +73,11 @@ public class NoteFileService {
         }
         NoteFile noteFile = NoteFile.builder()
                 .noteId(noteRepository.findById(sendNoteFileForm.getNoteId())
-                        .orElseThrow(() -> new CustomException(ExceptionType.NOTE_NOT_FOUNDED)))
+                        .orElseThrow(() -> new CustomException(NOTE_NOT_FOUNDED)))
                 .sender(userRepository.findById(sendNoteFileForm.getSenderId())
-                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(USER_NOT_EXIST)))
                 .receiver(userRepository.findById(sendNoteFileForm.getReceiverId())
-                        .orElseThrow(() -> new CustomException(ExceptionType.USER_NOT_EXIST)))
+                        .orElseThrow(() -> new CustomException(USER_NOT_EXIST)))
                 .imageLink(uploadedInS3ImageLink.toString())
                 .build();
 
