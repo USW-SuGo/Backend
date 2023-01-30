@@ -4,8 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-/src/main/resources/application.yml
-/src/main/resources/aws.yml
+*yml
 
 ### STS ###
 .apt_generated
