@@ -23,7 +23,7 @@ public enum ExceptionType {
     PARAM_VALID_ERROR(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "올바른 메서드 요청이 아닙니다." ),
     SERVER_ERROR(INTERNAL_SERVER_ERROR, "서버 내부 에러입니다. 관리자에게 문의하세요." ),
-    DUPLICATED_EMAIL(BAD_REQUEST, "이미 인증메일이 발송된 이메일 입니다. 메일 수신함을 확인해주세요."),
+    DUPLICATED_EMAIL(BAD_REQUEST, "이미 존재하는 이메일 입니다."),
     DUPLICATED_LOGINID(BAD_REQUEST, "이미 존재하는 아이디 입니다."),
     IS_SAME_PASSWORD(BAD_REQUEST, "변경할 비밀번호가 이전과 같습니다."),
     INVALID_DEPARTMENT(BAD_REQUEST, "존재하지 않는 학과입니다."),
