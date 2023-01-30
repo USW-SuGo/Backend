@@ -1,4 +1,4 @@
-package com.usw.sugo.global.security.authentication;
+package com.usw.sugo.global.security.authentication.details;
 
 import com.usw.sugo.domain.user.User;
 import lombok.Data;
@@ -43,7 +43,7 @@ public final class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return loginId;
     }
 
     @Override

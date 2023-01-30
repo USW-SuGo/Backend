@@ -1,4 +1,4 @@
-package com.usw.sugo.global.security.authentication;
+package com.usw.sugo.global.security.authentication.authmanager;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,13 +15,13 @@ public class CustomAuthenticationManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                authentication.getPrincipal(), authentication.getCredentials());
 
         ArrayList<GrantedAuthority> grantedAuths = new ArrayList<>();
-
         grantedAuths.add(new SimpleGrantedAuthority("ROLE_AVAILABLE"));
-        Authentication customAuthentication = new UsernamePasswordAuthenticationToken(
-                authentication.getPrincipal(), authentication.getCredentials(), grantedAuths);
 
-        return customAuthentication;
+        return new UsernamePasswordAuthenticationToken(
+                authenticationToken.getPrincipal(), authenticationToken.getCredentials(), grantedAuths);
     }
 }

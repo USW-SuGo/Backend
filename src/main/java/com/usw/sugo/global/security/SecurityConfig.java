@@ -3,14 +3,12 @@ package com.usw.sugo.global.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.jwt.JwtGenerator;
-import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.global.security.authentication.CustomAuthenticationManager;
-import com.usw.sugo.global.security.authentication.CustomAuthenticationProvider;
-import com.usw.sugo.global.security.filter.JwtAuthenticationFilter;
-import com.usw.sugo.global.security.filter.JwtAuthorizationFilter;
+import com.usw.sugo.global.security.filter.AuthorizationFilter;
 import com.usw.sugo.global.security.filter.JwtExceptionFilter;
+import com.usw.sugo.global.security.filter.LoginFilter;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -20,30 +18,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-
+    private final AuthenticationManager customAuthenticationManager;
     private final UserDetailsRepository userDetailsRepository;
-    private final CustomAuthenticationManager customAuthenticationManager;
     private final UserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtValidator jwtValidator;
     private final JwtGenerator jwtGenerator;
-    private final JwtResolver jwtResolver;
     private final ObjectMapper mapper;
 
-    String[] whiteListURI = {
-            "/user/check-email", "/user/check-loginId",
-            "/user/auth", "/user/join",
-            "/user/find-id", "/user/find-pw",
-            "/post/all",
-            "/token",
-    };
+    private final List<String> whiteListURI = List.of(
+            "/user/check-email", "/user/check-loginId", "/user/auth", "/user/join", "/user/login",
+            "/user/find-id", "/user/find-pw", "/post/all", "/token");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,59 +52,40 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http
                 .authorizeRequests()
-                .antMatchers(whiteListURI).permitAll()
+                .antMatchers(whiteListURI.toString()).permitAll()
         ;
         http
-                .authorizeRequests()
-                .anyRequest().access("hasRole('ROLE_AVAILABLE') or hasRole('ROLE_ADMIN')")
-                .and()
-                .addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        http
-                .addFilterAfter(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
-        ;
-
+                .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
+                .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    // AuthenticationManager
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public CustomAuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider();
     }
 
     public JwtExceptionFilter jwtExceptionFilter() {
         return new JwtExceptionFilter(jwtValidator);
     }
 
-    // 인증 필터
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(
-                userDetailsRepository, customAuthenticationManager, bCryptPasswordEncoder(),
-                userDetailsService, mapper, jwtGenerator, jwtValidator);
+    // 인증 필터 :--> 로그인 필터
+    public LoginFilter loginFilter() throws Exception {
+        return new LoginFilter(customAuthenticationManager, userDetailsRepository, userDetailsService, bCryptPasswordEncoder(),
+                jwtGenerator, mapper);
     }
 
-    // 인가 필터
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(
-                userDetailsService, customAuthenticationManager, jwtResolver, jwtValidator);
+    // 인가 필터 :--> JWT 필터
+    public AuthorizationFilter authorizationFilter() {
+        return new AuthorizationFilter();
     }
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedMethods("*");
-            }
-        };
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter();
     }
 
     @Bean

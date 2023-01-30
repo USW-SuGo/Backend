@@ -56,12 +56,12 @@ public class UserService {
     }
 
     @Transactional
-    public User softJoin(UserRequestDto.DetailJoinRequest detailJoinRequest) {
+    public User softJoin(UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
 
         User newSoftUser = User.builder()
-                .email(detailJoinRequest.getEmail())
-                .loginId(detailJoinRequest.getLoginId())
-                .password(detailJoinRequest.getPassword())
+                .email(detailJoinRequestForm.getEmail())
+                .loginId(detailJoinRequestForm.getLoginId())
+                .password(detailJoinRequestForm.getPassword())
                 .recentUpPost(LocalDateTime.now().minusDays(1))
                 .recentEvaluationManner(LocalDateTime.now().minusDays(1))
                 .countMannerEvaluation(0)

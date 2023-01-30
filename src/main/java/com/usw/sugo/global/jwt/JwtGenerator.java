@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -142,5 +144,12 @@ public class JwtGenerator {
         refreshTokenRepository.refreshPayload(user.getId(), updatedRefreshToken);
 
         return "Bearer " + updatedRefreshToken;
+    }
+
+    public Map<String, String> wrapTokenPair(String accessToken, String refreshToken) {
+        return new HashMap<>() {{
+            put("AccessToken", ("Bearer " + accessToken));
+            put("RefreshToken", ("Bearer " + refreshToken));
+        }};
     }
 }

@@ -13,90 +13,110 @@ public class UserRequestDto {
 
     // 이메일 중복확인 DTO
     @Data
-    public static class IsEmailExistRequest {
-        @NotNull @NotBlank
+    public static class IsEmailExistRequestForm {
+        @NotNull
+        @NotBlank
         private String email;
     }
 
     // 아이디 중복확인 DTO
     @Data
-    public static class IsLoginIdExistRequest {
-        @NotNull @NotBlank
+    public static class IsLoginIdExistRequestForm {
+        @NotNull
+        @NotBlank
         private String loginId;
     }
 
     // 회원가입 DTO
     @Data
-    public static class DetailJoinRequest {
-        @NotNull @NotBlank
+    public static class DetailJoinRequestForm {
+        @NotNull
+        @NotBlank
         private String email;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String loginId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String password;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String department;
     }
 
     // 인증번호 DTO
     @Data
-    public static class AuthEmailPayload {
-        @NotNull @NotBlank
+    public static class AuthEmailPayloadForm {
+        @NotNull
+        @NotBlank
         private long userId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String payload;
     }
 
     // 로그인 아이디 찾기 DTO
     @Data
-    public static class FindLoginIdRequest {
-        @NotNull @NotBlank
+    public static class FindLoginIdRequestForm {
+        @NotNull
+        @NotBlank
         private String email;
     }
 
     // 비밀번호 찾기 DTO
     @Data
-    public static class FindPasswordRequest {
-        @NotNull @NotBlank
+    public static class FindPasswordRequestForm {
+        @NotNull
+        @NotBlank
         private String loginId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String email;
     }
 
     // 로그인 요청 DTO
     @Data
-    public static class LoginRequest {
-        @NotNull @NotBlank
+    public static class LoginRequestForm {
+        @NotNull
+        @NotBlank
         private String loginId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String password;
     }
 
     // 비밀번호 수정 DTO
     @Data
-    public static class EditPasswordRequest {
-        @NotNull @NotEmpty
+    public static class EditPasswordRequestForm {
+        @NotNull
+        @NotEmpty
         private long id;
-        @NotNull @NotEmpty
+        @NotNull
+        @NotEmpty
         private String password;
     }
 
     // 회원탈퇴 요청 DTO
     @Data
-    public static class QuitRequest {
-        @NotNull @NotBlank
+    public static class QuitRequestForm {
+        @NotNull
+        @NotBlank
         private String loginId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String email;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private String password;
     }
 
     @Data
-    public static class MannerEvaluationRequest {
-        @NotNull @NotEmpty
+    public static class MannerEvaluationRequestForm {
+        @NotNull
+        @NotEmpty
         private long targetUserId;
-        @NotNull @NotBlank
+        @NotNull
+        @NotBlank
         private BigDecimal grade;
     }
 }

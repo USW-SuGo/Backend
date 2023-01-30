@@ -1,15 +1,15 @@
-package com.usw.sugo.global.security.authentication;
+package com.usw.sugo.global.security.authtoken;
 
-import lombok.Generated;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import java.util.Objects;
 
-public class JwtAuthenticationToken extends AbstractAuthenticationToken {
+@EqualsAndHashCode
+public class AuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
     private Object credentials;
 
-    public JwtAuthenticationToken(Object principal, Object credentials) {
+    public AuthenticationToken(Object principal, Object credentials) {
         super(null);
         this.principal = principal;
         this.credentials = credentials;
@@ -39,21 +39,5 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
                     "Cannot set this token to trusted - use constructor which takes a GrantedAuthority list instead");
         }
         super.setAuthenticated(true);
-    }
-
-    @Generated
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof JwtAuthenticationToken)) return false;
-        if (!super.equals(o)) return false;
-        JwtAuthenticationToken that = (JwtAuthenticationToken) o;
-        return Objects.equals(principal, that.principal);
-    }
-
-    @Generated
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), principal);
     }
 }

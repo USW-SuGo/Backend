@@ -3,7 +3,6 @@ package com.usw.sugo.domain.user.controller;
 import com.usw.sugo.domain.notefile.service.NoteFileService;
 import com.usw.sugo.domain.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.dto.UserRequestDto;
-import com.usw.sugo.domain.user.dto.UserResponseDto;
 import com.usw.sugo.domain.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.domain.emailauth.repository.UserEmailAuthRepository;
@@ -46,8 +45,8 @@ public class UserController {
 
     @PostMapping("/check-loginId")
     public ResponseEntity<Map<String, Boolean>> checkLoginId(
-            @Valid @RequestBody UserRequestDto.IsLoginIdExistRequest isLoginIdExistRequest) {
-        userService.validateLoginIdDuplicated(isLoginIdExistRequest.getLoginId());
+            @Valid @RequestBody UserRequestDto.IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
+        userService.validateLoginIdDuplicated(isLoginIdExistRequestForm.getLoginId());
         return ResponseEntity
                 .status(OK)
                 .body(new HashMap<>() {{
@@ -57,9 +56,9 @@ public class UserController {
 
     @PostMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(
-            @Valid @RequestBody UserRequestDto.IsEmailExistRequest isEmailExistRequest) {
-        userService.validateSuwonAcKrEmail(isEmailExistRequest.getEmail());
-        userService.validateEmailDuplicated(isEmailExistRequest.getEmail());
+            @Valid @RequestBody UserRequestDto.IsEmailExistRequestForm isEmailExistRequestForm) {
+        userService.validateSuwonAcKrEmail(isEmailExistRequestForm.getEmail());
+        userService.validateEmailDuplicated(isEmailExistRequestForm.getEmail());
         return ResponseEntity
                 .status(OK)
                 .body(new HashMap<>() {{
@@ -68,11 +67,11 @@ public class UserController {
     }
 
     @PostMapping("/find-id")
-    public ResponseEntity<Map<String, Boolean>> findId(@Valid @RequestBody UserRequestDto.FindLoginIdRequest findLoginIdRequest) {
+    public ResponseEntity<Map<String, Boolean>> findId(@Valid @RequestBody UserRequestDto.FindLoginIdRequestForm findLoginIdRequestForm) {
         User requestUser = userRepository.findByEmail(
-                        findLoginIdRequest.getEmail())
+                        findLoginIdRequestForm.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequest.getEmail(), requestUser.getLoginId());
+        sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequestForm.getEmail(), requestUser.getLoginId());
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
         }});
@@ -80,11 +79,11 @@ public class UserController {
 
     @PostMapping("/find-pw")
     public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(
-            @Valid @RequestBody UserRequestDto.FindPasswordRequest findPasswordRequest) {
-        User requestUser = userRepository.findByEmail(findPasswordRequest.getEmail())
+            @Valid @RequestBody UserRequestDto.FindPasswordRequestForm findPasswordRequestForm) {
+        User requestUser = userRepository.findByEmail(findPasswordRequestForm.getEmail())
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
         String newPassword = userService.initPassword(requestUser.getId());
-        sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequest.getEmail(), newPassword);
+        sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequestForm.getEmail(), newPassword);
         return ResponseEntity.status(OK).body(new HashMap<>() {{
             put("Success", true);
         }});
@@ -92,14 +91,14 @@ public class UserController {
 
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> detailJoin(
-            @Valid @RequestBody UserRequestDto.DetailJoinRequest detailJoinRequest) {
-        userService.validateLoginIdDuplicated(detailJoinRequest.getLoginId());
-        userService.validateSuwonAcKrEmail(detailJoinRequest.getEmail());
-        userService.validateEmailDuplicated(detailJoinRequest.getEmail());
-        User requestUser = userService.softJoin(detailJoinRequest);
+            @Valid @RequestBody UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
+        userService.validateLoginIdDuplicated(detailJoinRequestForm.getLoginId());
+        userService.validateSuwonAcKrEmail(detailJoinRequestForm.getEmail());
+        userService.validateEmailDuplicated(detailJoinRequestForm.getEmail());
+        User requestUser = userService.softJoin(detailJoinRequestForm);
         userRepository.editNickname(
                 requestUser.getId(),
-                nicknameGenerator.generateNickname(detailJoinRequest.getDepartment()));
+                nicknameGenerator.generateNickname(detailJoinRequestForm.getDepartment()));
         String authPayload = userEmailAuthService.createEmailAuthPayload(requestUser.getId());
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
         return ResponseEntity.status(OK).body(new HashMap<>() {{
@@ -109,10 +108,10 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Boolean>> confirmEmail(@RequestBody UserRequestDto.AuthEmailPayload authEmailPayload) {
-        String payload = authEmailPayload.getPayload();
+    public ResponseEntity<Map<String, Boolean>> confirmEmail(@RequestBody UserRequestDto.AuthEmailPayloadForm authEmailPayloadForm) {
+        String payload = authEmailPayloadForm.getPayload();
         UserEmailAuth requestUserEmailAuth = userEmailAuthRepository
-                .findByUserId(authEmailPayload.getUserId())
+                .findByUserId(authEmailPayloadForm.getUserId())
                 .orElseThrow(() -> new CustomException(USER_NOT_SEND_AUTH_EMAIL));
 
         if (requestUserEmailAuth.getPayload().equals(payload)) {
@@ -131,13 +130,13 @@ public class UserController {
     // 비밀번호 수정
     @PutMapping("/password")
     public ResponseEntity<Map<String, Boolean>> editPassword(
-            @Valid @RequestBody UserRequestDto.EditPasswordRequest editPasswordRequest) {
-        if (userService.matchingPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword())) {
+            @Valid @RequestBody UserRequestDto.EditPasswordRequestForm editPasswordRequestForm) {
+        if (userService.matchingPassword(editPasswordRequestForm.getId(), editPasswordRequestForm.getPassword())) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
 
-        userRepository.editPassword(editPasswordRequest.getId(), editPasswordRequest.getPassword());
-        userRepository.setModifiedDate(editPasswordRequest.getId());
+        userRepository.editPassword(editPasswordRequestForm.getId(), editPasswordRequestForm.getPassword());
+        userRepository.setModifiedDate(editPasswordRequestForm.getId());
 
         return ResponseEntity
                 .status(OK)
@@ -148,11 +147,11 @@ public class UserController {
 
     @DeleteMapping
     public ResponseEntity<Map<String, Boolean>> deleteUser(
-            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.QuitRequest quitRequest) {
+            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.QuitRequestForm quitRequestForm) {
         long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        userService.isUserExistByLoginId(quitRequest.getLoginId());
+        userService.isUserExistByLoginId(quitRequestForm.getLoginId());
 
-        if (!userService.matchingPassword(requestUserId, quitRequest.getPassword()))
+        if (!userService.matchingPassword(requestUserId, quitRequestForm.getPassword()))
             throw new CustomException(PASSWORD_NOT_CORRECT);
 
         User requestUser = userRepository.findById(requestUserId)
@@ -209,16 +208,16 @@ public class UserController {
 
     @PostMapping("/manner")
     public ResponseEntity<?> evaluateManner(
-            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.MannerEvaluationRequest mannerEvaluationRequest) {
+            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.MannerEvaluationRequestForm mannerEvaluationRequestForm) {
         long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
         userService.isUserExistByUserId(requestUserId);
-        userService.isUserExistByUserId(mannerEvaluationRequest.getTargetUserId());
+        userService.isUserExistByUserId(mannerEvaluationRequestForm.getTargetUserId());
         User requestUser = userRepository.findById(requestUserId)
                 .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
 
         if (userService.isBeforeDay(requestUser.getRecentEvaluationManner())) {
             userRepository.setRecentMannerGradeDate(
-                    mannerEvaluationRequest.getGrade(), mannerEvaluationRequest.getTargetUserId(), requestUserId);
+                    mannerEvaluationRequestForm.getGrade(), mannerEvaluationRequestForm.getTargetUserId(), requestUserId);
         } else {
             throw new CustomException(ALREADY_EVALUATION);
         }
