@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security.filter;
 
 import com.usw.sugo.global.exception.CustomException;
-import org.springframework.security.core.AuthenticationException;
+import org.json.JSONObject;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -25,21 +25,42 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (validateURI(request)) {
-            validateHeader(request);
+        if (!validateRequestUriIncludedWhiteList(request)) {
+            if (!validateRequestHeaderIncludedToken(request, response)) {
+                return;
+            }
         }
         filterChain.doFilter(request, response);
     }
 
-    private boolean validateURI(HttpServletRequest request) {
-        return !whiteListURI.contains(request.getRequestURI());
+    private boolean validateRequestUriIncludedWhiteList(HttpServletRequest request) {
+        return whiteListURI.contains(request.getRequestURI());
     }
 
-    private boolean validateHeader(HttpServletRequest request) {
+    private boolean validateRequestHeaderIncludedToken(HttpServletRequest request, HttpServletResponse response) {
         if (request.getHeader("Authorization") == null ||
-                !request.getHeader("Authorization").substring(7).equals("Bearer ")) {
-            throw new CustomException(REQUIRE_TOKEN);
+                !request.getHeader("Authorization").startsWith("Bearer ")) {
+            setExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
         }
         return true;
+    }
+
+    private void setExceptionResponseForm(HttpServletResponse response, CustomException customException) {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(400);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("Exception", customException.getExceptionType());
+        jsonResponse.put("Message", customException.getMessage());
+
+        try {
+            response.getWriter().print(jsonResponse);
+        } catch (IOException e) {
+            throw new InternalError(e);
+        }
+    }
+
+    private void setSuccessResponseForm(HttpServletResponse response) {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(200);
     }
 }
