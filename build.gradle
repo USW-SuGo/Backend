@@ -1,3 +1,9 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
@@ -20,9 +26,6 @@ repositories {
 }
 
 dependencies {
-
-	compile 'org.slf4j:slf4j-simple:1.7.30'
-
 	// Spring Base
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -59,24 +62,15 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// MongoDB
-//	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-//	implementation  'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+	// Querydsl
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-	//querydsl 추가
-	implementation "com.querydsl:querydsl-jpa:5.0.0"
-	implementation "com.querydsl:querydsl-apt:5.0.0"
-	// --------------------------------------------------------------------------------- //
-	// Chatting - WebSocket / STOMP / RabbitMQ / MVC
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	//jackson2json에서 LocalDateTime을 handling 하기 위해
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.4'
-
-	// RabbitMQ
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -92,23 +86,27 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-// Querydsl Setting Start
+// Querydsl 추가 설정.
 def querydslDir = "$buildDir/generated/querydsl"
-
+// JPA 사용 여부와 사용할 경로를 설정
 querydsl {
 	jpa = true
 	querydslSourcesDir = querydslDir
 }
+// build 시 사용할 sourceSet 추가
 sourceSets {
 	main.java.srcDir querydslDir
 }
+// querydsl 컴파일시 사용할 옵션 설정
 compileQuerydsl{
 	options.annotationProcessorPath = configurations.querydsl
 }
+// querydsl 이 compileClassPath 를 상속하도록 설정
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
 	querydsl.extendsFrom compileClasspath
 }
-// Querydsl Setting End
+
+def void id(String s) {}
