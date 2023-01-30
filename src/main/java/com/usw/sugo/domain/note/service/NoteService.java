@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,8 +33,6 @@ public class NoteService {
                 .opponentUser(opponentUser)
                 .opponentUserNickname(opponentUser.getNickname())
                 .opponentUserUnreadCount(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         noteRepository.save(note);
