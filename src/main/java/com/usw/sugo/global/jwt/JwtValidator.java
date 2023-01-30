@@ -28,7 +28,7 @@ public class JwtValidator {
     }
 
     // Jwt 유효성 검사
-    public boolean validateToken(String token) throws ExpiredJwtException {
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
@@ -49,7 +49,12 @@ public class JwtValidator {
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(refreshToken);
-        } catch (ExpiredJwtException exception) {
+        }
+        catch (NoSuchElementException | BadCredentialsException |
+               MalformedJwtException | IllegalArgumentException exception) {
+            throw new CustomException(JWT_MALFORMED_EXCEPTION);
+        }
+        catch (ExpiredJwtException exception) {
             return true;
         }
         return false;

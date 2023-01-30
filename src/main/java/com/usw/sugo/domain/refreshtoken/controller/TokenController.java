@@ -45,14 +45,9 @@ public class TokenController {
 
             String accessToken = jwtGenerator.generateAccessToken(requestUser);
             String refreshToken = jwtGenerator.updateRefreshToken(requestUser);
-
-            Map<String, String> result = new HashMap<>() {{
-                put("AccessToken", accessToken);
-                put("RefreshToken", refreshToken);
-            }};
+            Map<String, String> result = jwtGenerator.wrapTokenPair(accessToken, refreshToken);
 
             HttpHeaders response = new HttpHeaders();
-
             response.set("Authorization", result.toString());
 
             return ResponseEntity.status(OK)

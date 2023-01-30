@@ -148,8 +148,8 @@ public class JwtGenerator {
 
     public Map<String, String> wrapTokenPair(String accessToken, String refreshToken) {
         return new HashMap<>() {{
-            put("AccessToken", ("Bearer " + accessToken));
-            put("RefreshToken", ("Bearer " + refreshToken));
+            put("AccessToken", (accessToken));
+            put("RefreshToken", (refreshToken));
         }};
     }
 }

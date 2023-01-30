@@ -1,4 +1,4 @@
-package com.usw.sugo.global.security.authentication.authmanager;
+package com.usw.sugo.global.security.authentication.manager;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
