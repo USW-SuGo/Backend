@@ -2,22 +2,20 @@ package com.usw.sugo.domain.note;
 
 import com.usw.sugo.domain.productpost.ProductPost;
 import com.usw.sugo.domain.user.User;
+import com.usw.sugo.global.util.basetime.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Note {
+public class Note extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +47,4 @@ public class Note {
 
     @Column
     private int opponentUserUnreadCount;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }
