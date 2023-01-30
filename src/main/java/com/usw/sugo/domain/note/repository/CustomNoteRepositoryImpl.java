@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.usw.sugo.domain.note.entity.QNote.note;
+import static com.usw.sugo.domain.note.QNote.note;
 
 @Repository
 @Transactional

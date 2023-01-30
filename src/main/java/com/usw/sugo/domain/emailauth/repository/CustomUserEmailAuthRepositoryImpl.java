@@ -9,8 +9,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.usw.sugo.domain.user.entity.QUser.user;
-import static com.usw.sugo.domain.user.entity.QUserEmailAuth.userEmailAuth;
+import static com.usw.sugo.domain.emailauth.QUserEmailAuth.userEmailAuth;
+import static com.usw.sugo.domain.user.QUser.user;
 
 @Repository
 @Transactional

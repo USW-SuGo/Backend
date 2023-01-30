@@ -7,12 +7,12 @@ import com.usw.sugo.domain.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.dto.PostResponseDto.SearchResultResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_SearchResultResponse;
+import com.usw.sugo.domain.productpost.dto.QPostResponseDto_DetailPostResponse;
+import com.usw.sugo.domain.productpost.dto.QPostResponseDto_MainPageResponse;
+import com.usw.sugo.domain.productpost.dto.QPostResponseDto_SearchResultResponse;
 import com.usw.sugo.domain.productpost.service.CategoryValidator;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.user.dto.QUserResponseDto_MyPosting;
+import com.usw.sugo.domain.user.dto.QUserResponseDto_MyPosting;
 import com.usw.sugo.domain.user.dto.UserResponseDto.MyPosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.usw.sugo.domain.productpost.entity.QProductPost.productPost;
-import static com.usw.sugo.domain.productpost.entity.QProductPostFile.productPostFile;
-import static com.usw.sugo.domain.productpost.entity.QUserLikePost.userLikePost;
+import static com.usw.sugo.domain.productpost.QProductPost.productPost;
+import static com.usw.sugo.domain.productpostfile.QProductPostFile.productPostFile;
+import static com.usw.sugo.domain.userlikepost.QUserLikePost.userLikePost;
 
 @Transactional
 @Repository
@@ -45,8 +45,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     @Override
     public List<SearchResultResponse> searchPost(String value, String category) {
         List<SearchResultResponse> response = new ArrayList<>();
-
-        System.out.println("test1");
 
         List<SearchResultResponse> fetch = queryFactory
                 .select(new QPostResponseDto_SearchResultResponse(
@@ -101,8 +99,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         for (int i = 0; i < listSize; i++) {
             if (response.get(i).getImageLink() == null) {
                 response.get(i).setImageLink("");
-            }
-            else if (response.get(i).getImageLink() != null) {
+            } else if (response.get(i).getImageLink() != null) {
                 imageList = response.get(i).getImageLink().split(",");
                 response.get(i).setImageLink(Arrays.toString(imageList));
             }

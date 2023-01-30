@@ -1,16 +1,16 @@
 package com.usw.sugo.domain.userlikepost.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.userlikepost.UserLikePost;
-import com.usw.sugo.domain.user.user.dto.QUserResponseDto_LikePosting;
+import com.usw.sugo.domain.user.dto.QUserResponseDto_LikePosting;
 import com.usw.sugo.domain.user.dto.UserResponseDto.LikePosting;
+import com.usw.sugo.domain.userlikepost.UserLikePost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static com.usw.sugo.domain.productpost.entity.QUserLikePost.userLikePost;
+import static com.usw.sugo.domain.userlikepost.QUserLikePost.userLikePost;
 
 @Repository
 @RequiredArgsConstructor
@@ -54,7 +54,7 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
                         userLikePost.productPost.price,
                         userLikePost.productPost.category,
                         userLikePost.productPost.status
-                        ))
+                ))
                 .from(userLikePost)
                 .where(userLikePost.user.id.eq(userId))
                 .fetch();

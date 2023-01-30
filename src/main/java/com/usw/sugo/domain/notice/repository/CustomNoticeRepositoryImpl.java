@@ -10,7 +10,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.usw.sugo.domain.notice.entity.QNotice.notice;
+import static com.usw.sugo.domain.notice.QNotice.notice;
 
 @Repository
 @RequiredArgsConstructor

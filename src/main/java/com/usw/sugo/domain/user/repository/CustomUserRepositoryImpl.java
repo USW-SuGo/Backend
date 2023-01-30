@@ -1,9 +1,9 @@
 package com.usw.sugo.domain.user.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.user.dto.UserResponseDto;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.user.dto.QUserResponseDto_UserPageResponseForm;
+import com.usw.sugo.domain.user.dto.QUserResponseDto_UserPageResponseForm;
+import com.usw.sugo.domain.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static com.usw.sugo.domain.user.entity.QUser.user;
+import static com.usw.sugo.domain.user.QUser.user;
 
 @Transactional
 @Repository

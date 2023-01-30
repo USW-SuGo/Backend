@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.List;
 
-import static com.usw.sugo.domain.note.entity.QNoteContent.noteContent;
-import static com.usw.sugo.domain.note.entity.QNoteFile.noteFile;
+import static com.usw.sugo.domain.notecontent.QNoteContent.noteContent;
+import static com.usw.sugo.domain.notefile.QNoteFile.noteFile;
 
 @Repository
 @RequiredArgsConstructor

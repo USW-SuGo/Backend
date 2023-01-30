@@ -5,10 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-
 import java.time.LocalDateTime;
 
-import static com.usw.sugo.domain.refreshtoken.entity.QRefreshToken.refreshToken;
+import static com.usw.sugo.domain.refreshtoken.QRefreshToken.refreshToken;
 
 @Repository
 @Transactional

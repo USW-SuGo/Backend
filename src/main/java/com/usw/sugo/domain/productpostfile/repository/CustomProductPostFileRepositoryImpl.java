@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-import static com.usw.sugo.domain.productpost.entity.QProductPostFile.productPostFile;
+import static com.usw.sugo.domain.productpostfile.QProductPostFile.productPostFile;
+
 
 @Transactional
 @Repository
@@ -17,8 +18,7 @@ public class CustomProductPostFileRepositoryImpl implements CustomProductPostFil
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public void editPostFile(
-            String updatedImageLink, PostRequestDto.PutContentRequest putContentRequest) {
+    public void editPostFile(String updatedImageLink, PostRequestDto.PutContentRequest putContentRequest) {
         queryFactory
                 .update(productPostFile)
                 .set(productPostFile.imageLink, updatedImageLink)

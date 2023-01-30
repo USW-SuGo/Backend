@@ -15,7 +15,7 @@ public class NicknameGenerator {
 
     private final NicknameNumberGenerator nicknameNumberGenerator;
 
-    public static List<String> departmentList = new ArrayList<>(){{
+    public static List<String> departmentList = new ArrayList<>() {{
         add("국어국문학");
         add("사학");
         add("영어영문학");
