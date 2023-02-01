@@ -35,43 +35,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     }
 
     @Override
-    public void modifyingStatusToAvailable(Long id) {
-        queryFactory
-                .update(user)
-                .set(user.status, "AVAILABLE")
-                .where(user.id.eq(id))
-                .execute();
-    }
-
-    @Override
-    public void passwordEncode(User requestUser, Long userId) {
-        queryFactory
-                .update(user)
-                .set(user.password, encoder.encode(requestUser.getPassword()))
-                .where(user.email.eq(requestUser.getEmail()))
-                .execute();
-    }
-
-    @Override
-    public void editPassword(Long id, String password) {
-        queryFactory
-                .update(user)
-                .set(user.password, encoder.encode(password))
-                .where(user.id.eq(id))
-                .execute();
-    }
-
-    // 리팩터링 필요*
-    @Override
-    public void setModifiedDate(Long id) {
-        queryFactory
-                .update(user)
-                .set(user.updatedAt, LocalDateTime.now())
-                .where(user.id.eq(id))
-                .execute();
-    }
-
-    @Override
     public void setRecentMannerGradeDate(BigDecimal grade, long targetUserId, long evaluatingUserId) {
         queryFactory
                 .update(user)
@@ -97,16 +60,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
     }
 
     @Override
-    public void editNickname(long id, String nickname) {
-        queryFactory
-                .update(user)
-                .set(user.nickname, nickname)
-                .set(user.updatedAt, LocalDateTime.now())
-                .where(user.id.eq(id))
-                .execute();
-    }
-
-    @Override
     public void plusCountTradeAttempt(long sellerId, long buyerId) {
         queryFactory
                 .update(user)
@@ -117,14 +70,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 .update(user)
                 .set(user.countTradeAttempt, user.countTradeAttempt.add(1))
                 .where(user.id.eq(buyerId))
-                .execute();
-    }
-
-    @Override
-    public void deleteUserNotEmailAuth(long userId) {
-        queryFactory
-                .delete(user)
-                .where(user.id.eq(userId))
                 .execute();
     }
 }

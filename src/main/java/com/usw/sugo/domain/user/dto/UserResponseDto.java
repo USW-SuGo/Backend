@@ -32,7 +32,6 @@ public class UserResponseDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @Data
     public static class UserPageResponseForm {
         private long userId;
         private String email;
@@ -57,8 +56,8 @@ public class UserResponseDto {
     }
 
     @Getter
-    @Builder
     @Setter
+    @Builder
     public static class MyPosting {
         private long productPostId;
         private String imageLink;

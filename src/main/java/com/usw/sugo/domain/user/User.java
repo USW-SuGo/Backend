@@ -1,7 +1,11 @@
 package com.usw.sugo.domain.user;
 
 import com.usw.sugo.global.util.basetime.BaseTimeEntity;
-import lombok.*;
+import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -49,4 +53,16 @@ public class User extends BaseTimeEntity {
 
     @Column
     private String status;
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void encryptPassword(String password) {
+        this.password = BCryptPasswordFactory.getBCryptPasswordEncoder().encode(password);
+    }
+
+    public void modifyingStatusToAvailable() {
+        this.status = "AVAILABLE";
+    }
 }

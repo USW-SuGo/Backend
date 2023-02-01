@@ -1,30 +1,20 @@
 package com.usw.sugo.domain.user.controller;
 
-import com.usw.sugo.domain.emailauth.UserEmailAuth;
-import com.usw.sugo.domain.emailauth.repository.UserEmailAuthRepository;
-import com.usw.sugo.domain.emailauth.service.UserEmailAuthService;
-import com.usw.sugo.domain.notefile.service.NoteFileService;
-import com.usw.sugo.domain.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.dto.UserRequestDto;
+import com.usw.sugo.domain.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.dto.UserResponseDto.UserPageResponseForm;
-import com.usw.sugo.domain.user.repository.UserRepository;
-import com.usw.sugo.domain.user.service.UserService;
-import com.usw.sugo.domain.userlikepost.repository.UserLikePostRepository;
-import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
-import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.jwt.JwtResolver;
-import com.usw.sugo.global.util.nickname.NicknameGenerator;
+import com.usw.sugo.domain.user.service.UserServiceCluster;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.usw.sugo.global.exception.ExceptionType.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -32,198 +22,133 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/user")
 public class UserController {
 
-    private final JwtResolver jwtResolver;
-    private final UserService userService;
-    private final NoteFileService noteFileService;
-    private final NicknameGenerator nicknameGenerator;
-    private final UserRepository userRepository;
-    private final UserLikePostRepository userLikePostRepository;
-    private final ProductPostRepository productPostRepository;
-    private final SendEmailServiceBySES sendEmailServiceBySES;
-    private final UserEmailAuthRepository userEmailAuthRepository;
-    private final UserEmailAuthService userEmailAuthService;
+    private final UserControllerValidator userControllerValidator;
+    private final UserServiceCluster userServiceCluster;
 
     @PostMapping("/check-loginId")
     public ResponseEntity<Map<String, Boolean>> checkLoginId(
-            @Valid @RequestBody UserRequestDto.IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
-        userService.validateLoginIdDuplicated(isLoginIdExistRequestForm.getLoginId());
+            @Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(new HashMap<>() {{
-                    put("exist", false);
-                }});
+                .body(userServiceCluster.execute(isLoginIdExistRequestForm));
     }
 
     @PostMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(
-            @Valid @RequestBody UserRequestDto.IsEmailExistRequestForm isEmailExistRequestForm) {
-        userService.validateSuwonAcKrEmail(isEmailExistRequestForm.getEmail());
-        userService.validateEmailDuplicated(isEmailExistRequestForm.getEmail());
+            @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(new HashMap<>() {{
-                    put("exist", false);
-                }});
+                .body(userServiceCluster.execute(isEmailExistRequestForm));
     }
 
     @PostMapping("/find-id")
-    public ResponseEntity<Map<String, Boolean>> findId(@Valid @RequestBody UserRequestDto.FindLoginIdRequestForm findLoginIdRequestForm) {
-        User requestUser = userRepository.findByEmail(
-                        findLoginIdRequestForm.getEmail())
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequestForm.getEmail(), requestUser.getLoginId());
-        return ResponseEntity.status(OK).body(new HashMap<>() {{
-            put("Success", true);
-        }});
+    public ResponseEntity<Map<String, Boolean>> findId(
+            @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
+        return ResponseEntity
+                .status(OK)
+                .body(userServiceCluster.execute(
+                        findLoginIdRequestForm,
+                        userControllerValidator.validateUserByEmail(findLoginIdRequestForm.getEmail())));
     }
 
     @PostMapping("/find-pw")
     public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(
-            @Valid @RequestBody UserRequestDto.FindPasswordRequestForm findPasswordRequestForm) {
-        User requestUser = userRepository.findByEmail(findPasswordRequestForm.getEmail())
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        String newPassword = userService.initPassword(requestUser.getId());
-        sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequestForm.getEmail(), newPassword);
-        return ResponseEntity.status(OK).body(new HashMap<>() {{
-            put("Success", true);
-        }});
+            @Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity
+                .status(OK)
+                .body(userServiceCluster.execute(
+                        findPasswordRequestForm,
+                        userControllerValidator.validateUserByEmail(findPasswordRequestForm.getEmail())));
     }
 
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> detailJoin(
-            @Valid @RequestBody UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
-        userService.validateLoginIdDuplicated(detailJoinRequestForm.getLoginId());
-        userService.validateSuwonAcKrEmail(detailJoinRequestForm.getEmail());
-        userService.validateEmailDuplicated(detailJoinRequestForm.getEmail());
-        User requestUser = userService.softJoin(detailJoinRequestForm);
-        userRepository.editNickname(
-                requestUser.getId(),
-                nicknameGenerator.generateNickname(detailJoinRequestForm.getDepartment()));
-        String authPayload = userEmailAuthService.createEmailAuthPayload(requestUser.getId());
-        sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
-        return ResponseEntity.status(OK).body(new HashMap<>() {{
-            put("Success", true);
-            put("id", requestUser.getId());
-        }});
+            @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
+        return ResponseEntity
+                .status(OK)
+                .body(userServiceCluster.execute(detailJoinRequestForm));
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Boolean>> confirmEmail(@RequestBody UserRequestDto.AuthEmailPayloadForm authEmailPayloadForm) {
-        String payload = authEmailPayloadForm.getPayload();
-        UserEmailAuth requestUserEmailAuth = userEmailAuthRepository
-                .findByUserId(authEmailPayloadForm.getUserId())
-                .orElseThrow(() -> new CustomException(USER_NOT_SEND_AUTH_EMAIL));
+    public ResponseEntity<Map<String, Boolean>> confirmEmail(
+            @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
 
-        if (requestUserEmailAuth.getPayload().equals(payload)) {
-            User requestUser = requestUserEmailAuth.getUser();
-            userEmailAuthService.authorizeEmailByPayload(payload);
-            userRepository.passwordEncode(requestUser, requestUser.getId());
-            userRepository.modifyingStatusToAvailable(requestUser.getId());
-            userEmailAuthRepository.deleteByUser(requestUser);
-            return ResponseEntity.status(OK).body(new HashMap<>() {{
-                put("Success", true);
-            }});
-        }
-        throw new CustomException(PAYLOAD_NOT_VALID);
+        userControllerValidator.validateUserEmailAuth(authEmailPayloadForm.getUserId());
+
+        return ResponseEntity
+                .status(OK)
+                .body(userServiceCluster.execute(authEmailPayloadForm));
     }
 
     // 비밀번호 수정
     @PutMapping("/password")
     public ResponseEntity<Map<String, Boolean>> editPassword(
-            @Valid @RequestBody UserRequestDto.EditPasswordRequestForm editPasswordRequestForm) {
-        if (userService.matchingPassword(editPasswordRequestForm.getId(), editPasswordRequestForm.getPassword())) {
-            throw new CustomException(IS_SAME_PASSWORD);
-        }
-
-        userRepository.editPassword(editPasswordRequestForm.getId(), editPasswordRequestForm.getPassword());
-        userRepository.setModifiedDate(editPasswordRequestForm.getId());
-
+            @Valid @RequestBody EditPasswordRequestForm editPasswordRequestForm,
+            @AuthenticationPrincipal User user) {
+        userControllerValidator.validatePasswordForEditPassword(editPasswordRequestForm.getId(),
+                editPasswordRequestForm.getPassword());
         return ResponseEntity
                 .status(OK)
-                .body(new HashMap<>() {{
-                    put("Success", true);
-                }});
+                .body(userServiceCluster.execute(editPasswordRequestForm, user));
     }
 
     @DeleteMapping
     public ResponseEntity<Map<String, Boolean>> deleteUser(
-            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.QuitRequestForm quitRequestForm) {
-        long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        userService.isUserExistByLoginId(quitRequestForm.getLoginId());
+            @RequestHeader String authorization,
+            @Valid @RequestBody QuitRequestForm quitRequestForm,
+            @AuthenticationPrincipal User user) {
 
-        if (!userService.matchingPassword(requestUserId, quitRequestForm.getPassword()))
-            throw new CustomException(PASSWORD_NOT_CORRECT);
-
-        User requestUser = userRepository.findById(requestUserId)
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-        noteFileService.deleteNoteFile(requestUser);
-        userRepository.deleteById(requestUserId);
+        userControllerValidator.validatePasswordForAuthorization(user.getId(), user.getPassword());
 
         return ResponseEntity
                 .status(OK)
-                .body(new HashMap<>() {{
-                    put("Success", true);
-                }});
+                .body(userServiceCluster.execute(quitRequestForm, user));
     }
 
     @GetMapping("/identifier")
-    public ResponseEntity<Map<String, Long>> getMyIndex(@RequestHeader String authorization) {
+    public ResponseEntity<Map<String, Long>> getMyIndex(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user) {
         return ResponseEntity
                 .status(OK)
                 .body(new HashMap<>() {{
-                    put("userId", jwtResolver.jwtResolveToUserId(authorization.substring(7)));
+                    put("userId", user.getId());
                 }});
 
     }
 
     @GetMapping
-    public ResponseEntity<UserPageResponseForm> loadMyPage(@RequestHeader String authorization, Pageable pageable) {
-        long targetUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        User requestUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-        UserPageResponseForm userPageResponseForm1 = userRepository.loadUserPage(requestUser).builder()
-                .myPosting(productPostRepository.loadUserWritingPostingList(requestUser, pageable))
-                .likePosting(userLikePostRepository.loadMyLikePosting(requestUser.getId()))
-                .build();
-
-        UserPageResponseForm userPageResponseForm = userRepository.loadUserPage(requestUser);
+    public ResponseEntity<UserPageResponseForm> loadMyPage(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            Pageable pageable,
+            HttpServletRequest httpServletRequest) {
         return ResponseEntity
                 .status(OK)
-                .body(userPageResponseForm);
+                .body(userServiceCluster.execute(user, pageable, httpServletRequest.getPathInfo()));
     }
 
     @GetMapping("/")
-    public ResponseEntity<UserPageResponseForm> otherUserPage(@RequestParam long userId, Pageable pageable) {
-        User targetUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-        UserPageResponseForm targetUserPageResponseForm = userRepository.loadUserPage(targetUser).builder()
-                .myPosting(productPostRepository.loadUserWritingPostingList(targetUser, pageable))
-                .build();
+    public ResponseEntity<UserPageResponseForm> otherUserPage(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId,
+            Pageable pageable,
+            HttpServletRequest httpServletRequest) {
         return ResponseEntity
                 .status(OK)
-                .body(targetUserPageResponseForm);
+                .body(userServiceCluster.execute(user, pageable, httpServletRequest.getPathInfo()));
     }
 
     @PostMapping("/manner")
     public ResponseEntity<?> evaluateManner(
-            @RequestHeader String authorization, @Valid @RequestBody UserRequestDto.MannerEvaluationRequestForm mannerEvaluationRequestForm) {
-        long requestUserId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        userService.isUserExistByUserId(requestUserId);
-        userService.isUserExistByUserId(mannerEvaluationRequestForm.getTargetUserId());
-        User requestUser = userRepository.findById(requestUserId)
-                .orElseThrow(() -> new CustomException(USER_NOT_EXIST));
-
-        if (userService.isBeforeDay(requestUser.getRecentEvaluationManner())) {
-            userRepository.setRecentMannerGradeDate(
-                    mannerEvaluationRequestForm.getGrade(), mannerEvaluationRequestForm.getTargetUserId(), requestUserId);
-        } else {
-            throw new CustomException(ALREADY_EVALUATION);
-        }
-
-        return ResponseEntity.status(OK).body(new HashMap<String, Boolean>() {{
-            put("Success", true);
-        }});
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
+        userControllerValidator.validateUserById(user.getId());
+        userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
+        return ResponseEntity.status(OK)
+                .body(userServiceCluster.execute(mannerEvaluationRequestForm, user));
     }
 }

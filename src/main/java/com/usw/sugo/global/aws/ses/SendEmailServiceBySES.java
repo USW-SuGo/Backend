@@ -44,8 +44,6 @@ public class SendEmailServiceBySES {
                 .withSource("sugousw@gmail.com")
                 .withDestination(destination)
                 .withMessage(message);
-
-        amazonSimpleEmailService.sendEmail(buildingRequest);
     }
 
     public void sendFindPasswordResult(String receivers, String newPassowrd) {

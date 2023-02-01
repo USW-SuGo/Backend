@@ -1,23 +1,24 @@
 package com.usw.sugo.domain.user.service;
 
-import com.usw.sugo.domain.user.dto.UserRequestDto;
 import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.dto.UserRequestDto;
 import com.usw.sugo.domain.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static com.usw.sugo.global.exception.ExceptionType.*;
+import static com.usw.sugo.global.exception.ExceptionType.EMAIL_NOT_VALIDATED;
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -41,23 +42,16 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public void validateLoginIdDuplicated(String loginId) {
-        if (userRepository.findByLoginId(loginId).isPresent()) {
-            throw new CustomException(DUPLICATED_LOGINID);
-        }
+    public boolean validateLoginIdDuplicated(String loginId) {
+        return userRepository.findByLoginId(loginId).isEmpty();
     }
 
-    @Transactional
-    public void validateEmailDuplicated(String email) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new CustomException(DUPLICATED_EMAIL);
-        }
+    public boolean validateEmailDuplicated(String email) {
+        return userRepository.findByEmail(email).isEmpty();
     }
 
     @Transactional
     public User softJoin(UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
-
         User newSoftUser = User.builder()
                 .email(detailJoinRequestForm.getEmail())
                 .loginId(detailJoinRequestForm.getLoginId())
@@ -84,14 +78,8 @@ public class UserService {
         return bCryptPasswordEncoder.matches(inputPassword, userRepository.findById(id).get().getPassword());
     }
 
-    /**
-     * 비밀번호 랜덤값으로 변경
-     *
-     * @param userId
-     * @return
-     */
     @Transactional
-    public String initPassword(long userId) {
+    public String initPassword(User requestUser) {
         StringBuilder newPassword = new StringBuilder();
         SecureRandom sr = new SecureRandom();
         sr.setSeed(new Date().getTime());
@@ -128,20 +116,15 @@ public class UserService {
             newPassword.append(charAllSet[idx]);
         }
 
-        userRepository.editPassword(userId, newPassword.toString());
+        requestUser.encryptPassword(newPassword.toString());
 
         return newPassword.toString();
     }
 
     @Transactional
     public boolean isBeforeDay(LocalDateTime requestTime) {
-        if (requestTime.isBefore(
-                LocalDateTime.now()
-                        .minusDays(1)) ||
-                requestTime == null)
-            return true;
-
-        return false;
+        return requestTime.isBefore(
+                LocalDateTime.now().minusDays(1)) || requestTime == null;
     }
 
     @Transactional
