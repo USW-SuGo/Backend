@@ -125,6 +125,14 @@ public class UserServiceCluster {
     }
 
     public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
+        UserPageResponseForm userPageResponseForm = UserPageResponseForm.builder()
+                .userId(userId)
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .mannerGrade(user.getMannerGrade())
+                .countMannerEvaluation(user.getCountMannerEvaluation())
+                .countTradeAttempt(user.getCountTradeAttempt())
+                .build();
         if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
                     .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
