@@ -71,12 +71,14 @@ public class UserServiceCluster {
         return successFlag;
     }
 
+    @Transactional
     public Map<String, Boolean> executeFindPassword(FindPasswordRequestForm findPasswordRequestForm, User user) {
         String newPassword = userService.initPassword(user);
         sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequestForm.getEmail(), newPassword);
         return successFlag;
     }
 
+    @Transactional
     public Map<String, Object> executeJoin(DetailJoinRequestForm detailJoinRequestForm) {
         userService.validateLoginIdDuplicated(detailJoinRequestForm.getLoginId());
         userService.validateSuwonAcKrEmail(detailJoinRequestForm.getEmail());
@@ -91,6 +93,7 @@ public class UserServiceCluster {
         }};
     }
 
+    @Transactional
     public Map<String, Boolean> executeAuthEmailPayload(AuthEmailPayloadForm authEmailPayloadForm) {
         String payload = authEmailPayloadForm.getPayload();
         UserEmailAuth requestUserEmailAuth = userEmailAuthRepository.findByUserId(authEmailPayloadForm.getUserId())
@@ -107,12 +110,14 @@ public class UserServiceCluster {
         throw new CustomException(PAYLOAD_NOT_VALID);
     }
 
+    @Transactional
     public Map<String, Boolean> executeEditPassword(EditPasswordRequestForm editPasswordRequestForm, User user) {
         user.encryptPassword(editPasswordRequestForm.getPassword());
         user.encryptPassword(editPasswordRequestForm.getPassword());
         return successFlag;
     }
 
+    @Transactional
     public Map<String, Boolean> executeQuit(QuitRequestForm quitRequestForm, User user) {
         userService.isUserExistByLoginId(quitRequestForm.getLoginId());
         noteFileService.deleteNoteFile(user);
@@ -134,6 +139,7 @@ public class UserServiceCluster {
         throw new CustomException(ExceptionType.USER_NOT_EXIST);
     }
 
+    @Transactional
     public Map<String, Boolean> executeEvaluateManner(MannerEvaluationRequestForm mannerEvaluationRequestForm, User user) {
         if (userService.isBeforeDay(user.getRecentEvaluationManner())) {
             userRepository.setRecentMannerGradeDate(
