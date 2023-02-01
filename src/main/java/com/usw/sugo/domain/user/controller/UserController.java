@@ -30,7 +30,7 @@ public class UserController {
             @Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(isLoginIdExistRequestForm));
+                .body(userServiceCluster.executeIsLoginIdExist(isLoginIdExistRequestForm));
     }
 
     @PostMapping("/check-email")
@@ -38,7 +38,7 @@ public class UserController {
             @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(isEmailExistRequestForm));
+                .body(userServiceCluster.executeIsEmailExist(isEmailExistRequestForm));
     }
 
     @PostMapping("/find-id")
@@ -46,7 +46,7 @@ public class UserController {
             @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(
+                .body(userServiceCluster.executeFindLoginId(
                         findLoginIdRequestForm,
                         userControllerValidator.validateUserByEmail(findLoginIdRequestForm.getEmail())));
     }
@@ -57,7 +57,7 @@ public class UserController {
             @AuthenticationPrincipal User user) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(
+                .body(userServiceCluster.executeFindPassword(
                         findPasswordRequestForm,
                         userControllerValidator.validateUserByEmail(findPasswordRequestForm.getEmail())));
     }
@@ -67,18 +67,16 @@ public class UserController {
             @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(detailJoinRequestForm));
+                .body(userServiceCluster.executeJoin(detailJoinRequestForm));
     }
 
     @PostMapping("/auth")
     public ResponseEntity<Map<String, Boolean>> confirmEmail(
             @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
-
         userControllerValidator.validateUserEmailAuth(authEmailPayloadForm.getUserId());
-
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(authEmailPayloadForm));
+                .body(userServiceCluster.executeAuthEmailPayload(authEmailPayloadForm));
     }
 
     // 비밀번호 수정
@@ -90,7 +88,7 @@ public class UserController {
                 editPasswordRequestForm.getPassword());
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(editPasswordRequestForm, user));
+                .body(userServiceCluster.executeEditPassword(editPasswordRequestForm, user));
     }
 
     @DeleteMapping
@@ -98,12 +96,10 @@ public class UserController {
             @RequestHeader String authorization,
             @Valid @RequestBody QuitRequestForm quitRequestForm,
             @AuthenticationPrincipal User user) {
-
         userControllerValidator.validatePasswordForAuthorization(user.getId(), user.getPassword());
-
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(quitRequestForm, user));
+                .body(userServiceCluster.executeQuit(quitRequestForm, user));
     }
 
     @GetMapping("/identifier")
@@ -126,11 +122,11 @@ public class UserController {
             HttpServletRequest httpServletRequest) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(user, pageable, httpServletRequest.getPathInfo()));
+                .body(userServiceCluster.executeLoadUserPage(user, pageable, null));
     }
 
     @GetMapping("/")
-    public ResponseEntity<UserPageResponseForm> otherUserPage(
+    public ResponseEntity<UserPageResponseForm> loadOtherUserPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @PathVariable Long userId,
@@ -138,7 +134,7 @@ public class UserController {
             HttpServletRequest httpServletRequest) {
         return ResponseEntity
                 .status(OK)
-                .body(userServiceCluster.execute(user, pageable, httpServletRequest.getPathInfo()));
+                .body(userServiceCluster.executeLoadUserPage(user, pageable, httpServletRequest.getPathInfo()));
     }
 
     @PostMapping("/manner")
@@ -149,6 +145,6 @@ public class UserController {
         userControllerValidator.validateUserById(user.getId());
         userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
         return ResponseEntity.status(OK)
-                .body(userServiceCluster.execute(mannerEvaluationRequestForm, user));
+                .body(userServiceCluster.executeEvaluateManner(mannerEvaluationRequestForm, user));
     }
 }

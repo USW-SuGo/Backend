@@ -28,8 +28,6 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceCluster {
-
-
     private final UserService userService;
     private final SendEmailServiceBySES sendEmailServiceBySES;
     private final NicknameGenerator nicknameGenerator;
@@ -53,34 +51,33 @@ public class UserServiceCluster {
         put("Success", false);
     }};
 
-    public Map<String, Boolean> execute(IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
+    public Map<String, Boolean> executeIsLoginIdExist(IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
         if (userService.validateLoginIdDuplicated(isLoginIdExistRequestForm.getLoginId())) {
             return overlapFlag;
         }
         return unOverlapFlag;
     }
 
-    public Map<String, Boolean> execute(IsEmailExistRequestForm isEmailExistRequestForm) {
+    public Map<String, Boolean> executeIsEmailExist(IsEmailExistRequestForm isEmailExistRequestForm) {
         userService.validateSuwonAcKrEmail(isEmailExistRequestForm.getEmail());
         if (userService.validateEmailDuplicated(isEmailExistRequestForm.getEmail())) {
             return overlapFlag;
         }
         return unOverlapFlag;
-
     }
 
-    public Map<String, Boolean> execute(FindLoginIdRequestForm findLoginIdRequestForm, User user) {
+    public Map<String, Boolean> executeFindLoginId(FindLoginIdRequestForm findLoginIdRequestForm, User user) {
         sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequestForm.getEmail(), user.getLoginId());
         return successFlag;
     }
 
-    public Map<String, Boolean> execute(FindPasswordRequestForm findPasswordRequestForm, User user) {
+    public Map<String, Boolean> executeFindPassword(FindPasswordRequestForm findPasswordRequestForm, User user) {
         String newPassword = userService.initPassword(user);
         sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequestForm.getEmail(), newPassword);
         return successFlag;
     }
 
-    public Map<String, Object> execute(DetailJoinRequestForm detailJoinRequestForm) {
+    public Map<String, Object> executeJoin(DetailJoinRequestForm detailJoinRequestForm) {
         userService.validateLoginIdDuplicated(detailJoinRequestForm.getLoginId());
         userService.validateSuwonAcKrEmail(detailJoinRequestForm.getEmail());
         userService.validateEmailDuplicated(detailJoinRequestForm.getEmail());
@@ -94,7 +91,7 @@ public class UserServiceCluster {
         }};
     }
 
-    public Map<String, Boolean> execute(AuthEmailPayloadForm authEmailPayloadForm) {
+    public Map<String, Boolean> executeAuthEmailPayload(AuthEmailPayloadForm authEmailPayloadForm) {
         String payload = authEmailPayloadForm.getPayload();
         UserEmailAuth requestUserEmailAuth = userEmailAuthRepository.findByUserId(authEmailPayloadForm.getUserId())
                 .orElseThrow(() -> new CustomException(USER_NOT_SEND_AUTH_EMAIL));
@@ -110,20 +107,20 @@ public class UserServiceCluster {
         throw new CustomException(PAYLOAD_NOT_VALID);
     }
 
-    public Map<String, Boolean> execute(EditPasswordRequestForm editPasswordRequestForm, User user) {
+    public Map<String, Boolean> executeEditPassword(EditPasswordRequestForm editPasswordRequestForm, User user) {
         user.encryptPassword(editPasswordRequestForm.getPassword());
         user.encryptPassword(editPasswordRequestForm.getPassword());
         return successFlag;
     }
 
-    public Map<String, Boolean> execute(QuitRequestForm quitRequestForm, User user) {
+    public Map<String, Boolean> executeQuit(QuitRequestForm quitRequestForm, User user) {
         userService.isUserExistByLoginId(quitRequestForm.getLoginId());
         noteFileService.deleteNoteFile(user);
         userRepository.deleteById(user.getId());
         return successFlag;
     }
 
-    public UserPageResponseForm execute(User user, Pageable pageable, String pathInfo) {
+    public UserPageResponseForm executeLoadUserPage(User user, Pageable pageable, String pathInfo) {
         if (pathInfo == null) {
             return UserPageResponseForm.builder()
                     .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
@@ -137,7 +134,7 @@ public class UserServiceCluster {
         throw new CustomException(ExceptionType.USER_NOT_EXIST);
     }
 
-    public Map<String, Boolean> execute(MannerEvaluationRequestForm mannerEvaluationRequestForm, User user) {
+    public Map<String, Boolean> executeEvaluateManner(MannerEvaluationRequestForm mannerEvaluationRequestForm, User user) {
         if (userService.isBeforeDay(user.getRecentEvaluationManner())) {
             userRepository.setRecentMannerGradeDate(
                     mannerEvaluationRequestForm.getGrade(), mannerEvaluationRequestForm.getTargetUserId(), user.getId());
