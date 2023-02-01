@@ -12,7 +12,6 @@ import com.usw.sugo.domain.user.repository.UserRepository;
 import com.usw.sugo.domain.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -125,18 +124,17 @@ public class UserServiceCluster {
         return successFlag;
     }
 
-    public UserPageResponseForm executeLoadUserPage(User user, Pageable pageable, String pathInfo) {
-        if (pathInfo == null) {
+    public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
+        if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
                     .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
                     .likePosting(userLikePostRepository.loadMyLikePosting(user.getId()))
                     .build();
-        } else if (pathInfo != null) {
+        } else {
             return UserPageResponseForm.builder()
                     .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
                     .build();
         }
-        throw new CustomException(ExceptionType.USER_NOT_EXIST);
     }
 
     @Transactional

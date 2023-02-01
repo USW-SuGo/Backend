@@ -25,6 +25,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    public User loadUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
+
+    public User loadUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId).orElseThrow();
+    }
+
+    public User loadUserByEmail(String email) {
+        return userRepository.findByLoginId(email).orElseThrow();
+    }
+
     public void validateSuwonAcKrEmail(String email) {
 
         int emailLength = email.length();

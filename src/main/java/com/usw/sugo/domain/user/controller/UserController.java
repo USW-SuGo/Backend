@@ -3,14 +3,15 @@ package com.usw.sugo.domain.user.controller;
 import com.usw.sugo.domain.user.User;
 import com.usw.sugo.domain.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.dto.UserResponseDto.UserPageResponseForm;
+import com.usw.sugo.domain.user.service.UserService;
 import com.usw.sugo.domain.user.service.UserServiceCluster;
+import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,11 @@ public class UserController {
 
     private final UserControllerValidator userControllerValidator;
     private final UserServiceCluster userServiceCluster;
+
+    // ------------- 임시 의존성 ----------------//
+    private final UserService userService;
+    private final JwtResolver jwtResolver;
+
 
     @PostMapping("/check-loginId")
     public ResponseEntity<Map<String, Boolean>> checkLoginId(
@@ -80,15 +86,18 @@ public class UserController {
     }
 
     // 비밀번호 수정
+    @ResponseStatus(OK)
     @PutMapping("/password")
-    public ResponseEntity<Map<String, Boolean>> editPassword(
+    public Map<String, Boolean> editPassword(
+            @RequestHeader String authorization,
             @Valid @RequestBody EditPasswordRequestForm editPasswordRequestForm,
             @AuthenticationPrincipal User user) {
         userControllerValidator.validatePasswordForEditPassword(editPasswordRequestForm.getId(),
                 editPasswordRequestForm.getPassword());
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeEditPassword(editPasswordRequestForm, user));
+
+        userService.loadUserByLoginId(jwtResolver.jwtResolveToUserLoginId(authorization.substring(7)));
+
+        return userServiceCluster.executeEditPassword(editPasswordRequestForm, user);
     }
 
     @DeleteMapping
@@ -102,49 +111,49 @@ public class UserController {
                 .body(userServiceCluster.executeQuit(quitRequestForm, user));
     }
 
+    @ResponseStatus(OK)
     @GetMapping("/identifier")
-    public ResponseEntity<Map<String, Long>> getMyIndex(
+    public Map<String, Long> getMyIndex(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user) {
-        return ResponseEntity
-                .status(OK)
-                .body(new HashMap<>() {{
-                    put("userId", user.getId());
-                }});
-
+        return new HashMap<>() {{
+            put("userId", user.getId());
+        }};
     }
 
+    @ResponseStatus(OK)
     @GetMapping
-    public ResponseEntity<UserPageResponseForm> loadMyPage(
+    public UserPageResponseForm loadMyPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
-            Pageable pageable,
-            HttpServletRequest httpServletRequest) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeLoadUserPage(user, pageable, null));
+            Pageable pageable) {
+
+        // 임시 코드 --------------------------------------------------------------
+        Long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+        return userServiceCluster.executeLoadUserPage(userService.loadUserById(userId), userId, pageable);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<UserPageResponseForm> loadOtherUserPage(
+    @ResponseStatus(OK)
+    @GetMapping("/{userId}")
+    public UserPageResponseForm loadOtherUserPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @PathVariable Long userId,
-            Pageable pageable,
-            HttpServletRequest httpServletRequest) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeLoadUserPage(user, pageable, httpServletRequest.getPathInfo()));
+            Pageable pageable) {
+        // 임시 코드 --------------------------------------------------------------
+        Long userIdx = jwtResolver.jwtResolveToUserId(authorization.substring(7));
+        return userServiceCluster.executeLoadUserPage(userService.loadUserById(userIdx), userId, pageable);
     }
 
     @PostMapping("/manner")
-    public ResponseEntity<?> evaluateManner(
+    public ResponseEntity<Map<String, Boolean>> evaluateManner(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
         userControllerValidator.validateUserById(user.getId());
         userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
-        return ResponseEntity.status(OK)
+        return ResponseEntity
+                .status(OK)
                 .body(userServiceCluster.executeEvaluateManner(mannerEvaluationRequestForm, user));
     }
 }
