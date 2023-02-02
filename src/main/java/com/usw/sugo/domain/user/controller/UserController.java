@@ -8,7 +8,6 @@ import com.usw.sugo.domain.user.service.UserServiceCluster;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,60 +28,54 @@ public class UserController {
     // ------------- 임시 의존성 ----------------//
     private final UserService userService;
     private final JwtResolver jwtResolver;
+    // ------------- 임시 의존성 ----------------//
 
 
+    @ResponseStatus(OK)
     @PostMapping("/check-loginId")
-    public ResponseEntity<Map<String, Boolean>> checkLoginId(
+    public Map<String, Boolean> checkLoginId(
             @Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeIsLoginIdExist(isLoginIdExistRequestForm));
+        return userServiceCluster.executeIsLoginIdExist(isLoginIdExistRequestForm);
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/check-email")
-    public ResponseEntity<Map<String, Boolean>> checkEmail(
+    public Map<String, Boolean> checkEmail(
             @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeIsEmailExist(isEmailExistRequestForm));
+        return userServiceCluster.executeIsEmailExist(isEmailExistRequestForm);
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/find-id")
-    public ResponseEntity<Map<String, Boolean>> findId(
+    public Map<String, Boolean> findId(
             @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeFindLoginId(
-                        findLoginIdRequestForm,
-                        userControllerValidator.validateUserByEmail(findLoginIdRequestForm.getEmail())));
+        return userServiceCluster.executeFindLoginId(
+                findLoginIdRequestForm,
+                userControllerValidator.validateUserByEmail(findLoginIdRequestForm.getEmail()));
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/find-pw")
-    public ResponseEntity<Map<String, Boolean>> sendPasswordEmail(
+    public Map<String, Boolean> sendPasswordEmail(
             @Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
             @AuthenticationPrincipal User user) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeFindPassword(
-                        findPasswordRequestForm,
-                        userControllerValidator.validateUserByEmail(findPasswordRequestForm.getEmail())));
+        return userServiceCluster.executeFindPassword(
+                findPasswordRequestForm,
+                userControllerValidator.validateUserByEmail(findPasswordRequestForm.getEmail()));
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/join")
-    public ResponseEntity<Map<String, Object>> detailJoin(
+    public Map<String, Object> detailJoin(
             @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeJoin(detailJoinRequestForm));
+        return userServiceCluster.executeJoin(detailJoinRequestForm);
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Boolean>> confirmEmail(
+    public Map<String, Boolean> confirmEmail(
             @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
         userControllerValidator.validateUserEmailAuth(authEmailPayloadForm.getUserId());
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeAuthEmailPayload(authEmailPayloadForm));
+        return userServiceCluster.executeAuthEmailPayload(authEmailPayloadForm);
     }
 
     // 비밀번호 수정
@@ -100,15 +93,14 @@ public class UserController {
         return userServiceCluster.executeEditPassword(editPasswordRequestForm, user);
     }
 
+    @ResponseStatus(OK)
     @DeleteMapping
-    public ResponseEntity<Map<String, Boolean>> deleteUser(
+    public Map<String, Boolean> deleteUser(
             @RequestHeader String authorization,
             @Valid @RequestBody QuitRequestForm quitRequestForm,
             @AuthenticationPrincipal User user) {
         userControllerValidator.validatePasswordForAuthorization(user.getId(), user.getPassword());
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeQuit(quitRequestForm, user));
+        return userServiceCluster.executeQuit(quitRequestForm, user);
     }
 
     @ResponseStatus(OK)
@@ -145,15 +137,14 @@ public class UserController {
         return userServiceCluster.executeLoadUserPage(userService.loadUserById(userIdx), userId, pageable);
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/manner")
-    public ResponseEntity<Map<String, Boolean>> evaluateManner(
+    public Map<String, Boolean> evaluateManner(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
         userControllerValidator.validateUserById(user.getId());
         userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
-        return ResponseEntity
-                .status(OK)
-                .body(userServiceCluster.executeEvaluateManner(mannerEvaluationRequestForm, user));
+        return userServiceCluster.executeEvaluateManner(mannerEvaluationRequestForm, user);
     }
 }

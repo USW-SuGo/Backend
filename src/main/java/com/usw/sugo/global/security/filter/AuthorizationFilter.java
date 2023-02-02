@@ -50,7 +50,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isRequestURIWhiteList(HttpServletRequest request) {
-        return whiteListURI.contains(request.getRequestURI());
+        return (whiteListURI.contains(request.getRequestURI())
+                && (request.getRequestURI().startsWith("http")) || request.getRequestURI().startsWith("https"));
     }
 
     private boolean isNotContainedToken(HttpServletRequest request, HttpServletResponse response) {

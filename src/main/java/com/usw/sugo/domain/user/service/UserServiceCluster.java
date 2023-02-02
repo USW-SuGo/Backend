@@ -28,10 +28,18 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 @Transactional(readOnly = true)
 public class UserServiceCluster {
     private final UserService userService;
+
+    // --------------------------------------------------------------
+
+    // 결합 Up :-> 의존성 Up
+
     private final SendEmailServiceBySES sendEmailServiceBySES;
     private final NicknameGenerator nicknameGenerator;
     private final UserEmailAuthService userEmailAuthService;
     private final UserEmailAuthRepository userEmailAuthRepository;
+
+    // --------------------------------------------------------------
+
     private final UserRepository userRepository;
     private final NoteFileService noteFileService;
     private final ProductPostRepository productPostRepository;
@@ -41,7 +49,7 @@ public class UserServiceCluster {
         put("Exist", true);
     }};
     private static final Map<String, Boolean> unOverlapFlag = new HashMap<>() {{
-        put("Exist", true);
+        put("Exist", false);
     }};
     private static final Map<String, Boolean> successFlag = new HashMap<>() {{
         put("Success", true);
@@ -50,6 +58,8 @@ public class UserServiceCluster {
         put("Success", false);
     }};
 
+    
+    // Service에서 DTO 의존 시 쌍방향 의존성이 생겨버림.
     public Map<String, Boolean> executeIsLoginIdExist(IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
         if (userService.validateLoginIdDuplicated(isLoginIdExistRequestForm.getLoginId())) {
             return overlapFlag;
@@ -125,7 +135,6 @@ public class UserServiceCluster {
     }
 
     public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
-
         if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
                     .userId(userId)
@@ -137,17 +146,16 @@ public class UserServiceCluster {
                     .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
                     .likePosting(userLikePostRepository.loadMyLikePosting(user.getId()))
                     .build();
-        } else {
-            return UserPageResponseForm.builder()
-                    .userId(userId)
-                    .email(user.getEmail())
-                    .nickname(user.getNickname())
-                    .mannerGrade(user.getMannerGrade())
-                    .countMannerEvaluation(user.getCountMannerEvaluation())
-                    .countTradeAttempt(user.getCountTradeAttempt())
-                    .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
-                    .build();
         }
+        return UserPageResponseForm.builder()
+                .userId(userId)
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .mannerGrade(user.getMannerGrade())
+                .countMannerEvaluation(user.getCountMannerEvaluation())
+                .countTradeAttempt(user.getCountTradeAttempt())
+                .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
+                .build();
     }
 
     @Transactional
