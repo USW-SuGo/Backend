@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.user.user.service;
 
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -73,11 +72,11 @@ public class UserService {
     }
 
     @Transactional
-    public User softJoin(UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
+    public User softJoin(String loginId, String email, String password) {
         User newSoftUser = User.builder()
-                .email(detailJoinRequestForm.getEmail())
-                .loginId(detailJoinRequestForm.getLoginId())
-                .password(detailJoinRequestForm.getPassword())
+                .email(email)
+                .loginId(loginId)
+                .password(password)
                 .recentUpPost(LocalDateTime.now().minusDays(1))
                 .recentEvaluationManner(LocalDateTime.now().minusDays(1))
                 .countMannerEvaluation(0)

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Entity
@@ -68,5 +69,14 @@ public class User extends BaseTimeEntity {
 
     public void modifyingStatusToAvailable() {
         this.status = "AVAILABLE";
+    }
+
+    public void updateMannerGrade(BigDecimal grade) {
+        this.countMannerEvaluation += 1;
+        this.mannerGrade = mannerGrade.divide(BigDecimal.valueOf(this.countMannerEvaluation), RoundingMode.FLOOR);
+    }
+
+    public void updateRecentEvaluationManner() {
+        this.recentEvaluationManner = LocalDateTime.now();
     }
 }

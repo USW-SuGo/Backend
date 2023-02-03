@@ -3,9 +3,7 @@ package com.usw.sugo.domain.user.user.service;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.AuthEmailPayloadForm;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
@@ -17,9 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.usw.sugo.domain.ApiResult.EXIST;
+import static com.usw.sugo.domain.ApiResult.SUCCESS;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_EVALUATION;
 import static com.usw.sugo.global.exception.ExceptionType.PAYLOAD_NOT_VALID;
 
@@ -35,68 +36,66 @@ public class UserServiceCluster {
     private final UserLikePostService userLikePostService;
 
     private static final Map<String, Boolean> overlapFlag = new HashMap<>() {{
-        put("Exist", true);
+        put(EXIST.getResult(), true);
     }};
     private static final Map<String, Boolean> unOverlapFlag = new HashMap<>() {{
-        put("Exist", false);
+        put(EXIST.getResult(), false);
     }};
     private static final Map<String, Boolean> successFlag = new HashMap<>() {{
-        put("Success", true);
+        put(SUCCESS.getResult(), true);
     }};
     private static final Map<String, Boolean> failFlag = new HashMap<>() {{
-        put("Success", false);
+        put(SUCCESS.getResult(), false);
     }};
 
 
-    // Service에서 DTO 의존 시 쌍방향 의존성이 생겨버림.
-    public Map<String, Boolean> executeIsLoginIdExist(UserRequestDto.IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
-        if (userService.validateLoginIdDuplicated(isLoginIdExistRequestForm.getLoginId())) {
+    public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
+        if (userService.validateLoginIdDuplicated(loginId)) {
             return overlapFlag;
         }
         return unOverlapFlag;
     }
 
-    public Map<String, Boolean> executeIsEmailExist(UserRequestDto.IsEmailExistRequestForm isEmailExistRequestForm) {
-        userService.validateSuwonUniversityEmailForm(isEmailExistRequestForm.getEmail());
-        if (userService.validateEmailDuplicated(isEmailExistRequestForm.getEmail())) {
+    public Map<String, Boolean> executeIsEmailExist(String email) {
+        userService.validateSuwonUniversityEmailForm(email);
+        if (userService.validateEmailDuplicated(email)) {
             return overlapFlag;
         }
         return unOverlapFlag;
     }
 
-    public Map<String, Boolean> executeFindLoginId(UserRequestDto.FindLoginIdRequestForm findLoginIdRequestForm, User user) {
-        sendEmailServiceBySES.sendFindLoginIdResult(findLoginIdRequestForm.getEmail(), user.getLoginId());
+    public Map<String, Boolean> executeFindLoginId(String email) {
+        sendEmailServiceBySES.sendFindLoginIdResult(email, userService.loadUserByEmail(email).getLoginId());
         return successFlag;
     }
 
     @Transactional
-    public Map<String, Boolean> executeFindPassword(UserRequestDto.FindPasswordRequestForm findPasswordRequestForm, User user) {
+    public Map<String, Boolean> executeFindPassword(String email, User user) {
         String newPassword = userService.initPassword(user);
-        sendEmailServiceBySES.sendFindPasswordResult(findPasswordRequestForm.getEmail(), newPassword);
+        sendEmailServiceBySES.sendFindPasswordResult(email, newPassword);
         return successFlag;
     }
 
     @Transactional
-    public Map<String, Object> executeJoin(UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
-        userService.validateLoginIdDuplicated(detailJoinRequestForm.getLoginId());
-        userService.validateSuwonUniversityEmailForm(detailJoinRequestForm.getEmail());
-        userService.validateEmailDuplicated(detailJoinRequestForm.getEmail());
-        User requestUser = userService.softJoin(detailJoinRequestForm);
-        requestUser.updateNickname(NicknameGenerator.generateNickname(detailJoinRequestForm.getDepartment()));
+    public Map<String, Object> executeJoin(String loginId, String email, String password, String department) {
+        userService.validateLoginIdDuplicated(loginId);
+        userService.validateSuwonUniversityEmailForm(email);
+        userService.validateEmailDuplicated(email);
+        User requestUser = userService.softJoin(loginId, email, password);
+        requestUser.updateNickname(NicknameGenerator.generateNickname(department));
 
         String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
         return new HashMap<>() {{
-            put("Success", true);
+            put(SUCCESS.getResult(), true);
             put("id", requestUser.getId());
         }};
     }
 
     @Transactional
-    public Map<String, Boolean> executeAuthEmailPayload(AuthEmailPayloadForm authEmailPayloadForm) {
-        String payload = authEmailPayloadForm.getPayload();
+    public Map<String, Boolean> executeAuthEmailPayload(String payload, Long userId) {
         UserEmailAuth requestUserEmailAuth = userEmailAuthService.loadUserEmailAuthByUser(
-                userService.loadUserById(authEmailPayloadForm.getUserId()));
+                userService.loadUserById(userId));
 
         if (requestUserEmailAuth.getPayload().equals(payload)) {
             User requestUser = requestUserEmailAuth.getUser();
@@ -110,23 +109,22 @@ public class UserServiceCluster {
     }
 
     @Transactional
-    public Map<String, Boolean> executeEditPassword(UserRequestDto.EditPasswordRequestForm editPasswordRequestForm, User user) {
-        user.encryptPassword(editPasswordRequestForm.getPassword());
-        user.encryptPassword(editPasswordRequestForm.getPassword());
+    public Map<String, Boolean> executeEditPassword(User user, String newPassword) {
+        user.encryptPassword(newPassword);
         return successFlag;
     }
 
     @Transactional
-    public Map<String, Boolean> executeQuit(UserRequestDto.QuitRequestForm quitRequestForm, User user) {
+    public Map<String, Boolean> executeQuit(User user) {
         noteService.deleteNoteByUser(user);
         productPostService.deleteByUser(user);
         userService.deleteUser(user);
         return successFlag;
     }
 
-    public UserResponseDto.UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
+    public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
         if (user.getId().equals(userId)) {
-            return UserResponseDto.UserPageResponseForm.builder()
+            return UserPageResponseForm.builder()
                     .userId(userId)
                     .email(user.getEmail())
                     .nickname(user.getNickname())
@@ -137,7 +135,7 @@ public class UserServiceCluster {
                     .likePostings(userLikePostService.loadLikePosts(user.getId()))
                     .build();
         }
-        return UserResponseDto.UserPageResponseForm.builder()
+        return UserPageResponseForm.builder()
                 .userId(userId)
                 .email(user.getEmail())
                 .nickname(user.getNickname())
@@ -149,13 +147,12 @@ public class UserServiceCluster {
     }
 
     @Transactional
-    public Map<String, Boolean> executeEvaluateManner(UserRequestDto.MannerEvaluationRequestForm mannerEvaluationRequestForm, User user) {
+    public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade, User user) {
         if (userService.isBeforeDay(user.getRecentEvaluationManner())) {
-//            userRepository.setRecentMannerGradeDate(
-//                    mannerEvaluationRequestForm.getGrade(), mannerEvaluationRequestForm.getTargetUserId(), user.getId());
-        } else {
-            throw new CustomException(ALREADY_EVALUATION);
+            userService.loadUserById(targetUserId).updateMannerGrade(grade);
+            user.updateRecentEvaluationManner();
+            return successFlag;
         }
-        return successFlag;
+        throw new CustomException(ALREADY_EVALUATION);
     }
 }

@@ -2,6 +2,7 @@ package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto;
+import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import com.usw.sugo.domain.user.user.service.UserServiceCluster;
@@ -34,48 +35,52 @@ public class UserController {
     @ResponseStatus(OK)
     @PostMapping("/check-loginId")
     public Map<String, Boolean> checkLoginId(
-            @Valid @RequestBody UserRequestDto.IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
-        return userServiceCluster.executeIsLoginIdExist(isLoginIdExistRequestForm);
+            @Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
+        return userServiceCluster.executeIsLoginIdExist(isLoginIdExistRequestForm.getLoginId());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/check-email")
     public Map<String, Boolean> checkEmail(
-            @Valid @RequestBody UserRequestDto.IsEmailExistRequestForm isEmailExistRequestForm) {
-        return userServiceCluster.executeIsEmailExist(isEmailExistRequestForm);
+            @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
+        return userServiceCluster.executeIsEmailExist(isEmailExistRequestForm.getEmail());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/find-id")
     public Map<String, Boolean> findId(
-            @Valid @RequestBody UserRequestDto.FindLoginIdRequestForm findLoginIdRequestForm) {
-        return userServiceCluster.executeFindLoginId(
-                findLoginIdRequestForm,
-                userControllerValidator.validateUserByEmail(findLoginIdRequestForm.getEmail()));
+            @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
+        return userServiceCluster.executeFindLoginId(findLoginIdRequestForm.getEmail());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/find-pw")
     public Map<String, Boolean> sendPasswordEmail(
-            @Valid @RequestBody UserRequestDto.FindPasswordRequestForm findPasswordRequestForm,
+            @Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
             @AuthenticationPrincipal User user) {
         return userServiceCluster.executeFindPassword(
-                findPasswordRequestForm,
-                userControllerValidator.validateUserByEmail(findPasswordRequestForm.getEmail()));
+                findPasswordRequestForm.getEmail(), userService.loadUserByEmail(findPasswordRequestForm.getEmail()));
     }
 
     @ResponseStatus(OK)
     @PostMapping("/join")
     public Map<String, Object> detailJoin(
-            @Valid @RequestBody UserRequestDto.DetailJoinRequestForm detailJoinRequestForm) {
-        return userServiceCluster.executeJoin(detailJoinRequestForm);
+            @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
+        return userServiceCluster.executeJoin(
+                detailJoinRequestForm.getLoginId(),
+                detailJoinRequestForm.getEmail(),
+                detailJoinRequestForm.getPassword(),
+                detailJoinRequestForm.getDepartment()
+        );
     }
 
     @PostMapping("/auth")
     public Map<String, Boolean> confirmEmail(
-            @RequestBody UserRequestDto.AuthEmailPayloadForm authEmailPayloadForm) {
-        userControllerValidator.validateUserEmailAuth(authEmailPayloadForm.getUserId());
-        return userServiceCluster.executeAuthEmailPayload(authEmailPayloadForm);
+            @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
+        return userServiceCluster.executeAuthEmailPayload(
+                authEmailPayloadForm.getPayload(),
+                authEmailPayloadForm.getUserId()
+        );
     }
 
     // 비밀번호 수정
@@ -85,22 +90,22 @@ public class UserController {
             @RequestHeader String authorization,
             @Valid @RequestBody UserRequestDto.EditPasswordRequestForm editPasswordRequestForm,
             @AuthenticationPrincipal User user) {
-        userControllerValidator.validatePasswordForEditPassword(editPasswordRequestForm.getId(),
+        return userServiceCluster.executeEditPassword(
+                userService.loadUserByLoginId(
+                        jwtResolver.jwtResolveToUserLoginId(authorization.substring(7))),
                 editPasswordRequestForm.getPassword());
-
-        userService.loadUserByLoginId(jwtResolver.jwtResolveToUserLoginId(authorization.substring(7)));
-
-        return userServiceCluster.executeEditPassword(editPasswordRequestForm, user);
     }
 
+    // 리팩터링 필요
     @ResponseStatus(OK)
     @DeleteMapping
     public Map<String, Boolean> deleteUser(
             @RequestHeader String authorization,
             @Valid @RequestBody UserRequestDto.QuitRequestForm quitRequestForm,
             @AuthenticationPrincipal User user) {
-        userControllerValidator.validatePasswordForAuthorization(user.getId(), user.getPassword());
-        return userServiceCluster.executeQuit(quitRequestForm, user);
+        User user1 = userService.loadUserByLoginId(jwtResolver.jwtResolveToUserLoginId(authorization.substring(7)));
+
+        return userServiceCluster.executeQuit(user1);
     }
 
     @ResponseStatus(OK)
@@ -109,7 +114,7 @@ public class UserController {
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user) {
         return new HashMap<>() {{
-            put("userId", user.getId());
+            put("userId", jwtResolver.jwtResolveToUserId(authorization.substring(7)));
         }};
     }
 
@@ -142,9 +147,14 @@ public class UserController {
     public Map<String, Boolean> evaluateManner(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody UserRequestDto.MannerEvaluationRequestForm mannerEvaluationRequestForm) {
+            @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
         userControllerValidator.validateUserById(user.getId());
         userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
-        return userServiceCluster.executeEvaluateManner(mannerEvaluationRequestForm, user);
+
+        return userServiceCluster.executeEvaluateManner(
+                mannerEvaluationRequestForm.getTargetUserId(),
+                mannerEvaluationRequestForm.getGrade(),
+                userService.loadUserById(jwtResolver.jwtResolveToUserId(authorization.substring(7)))
+        );
     }
 }
