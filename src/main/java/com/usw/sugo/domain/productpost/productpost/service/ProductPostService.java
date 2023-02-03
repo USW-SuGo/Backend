@@ -5,10 +5,12 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingReq
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import com.usw.sugo.domain.user.user.service.UserService;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +37,10 @@ public class ProductPostService {
 
     public List<ProductPost> loadAllProductPostByUser(User user) {
         return productPostRepository.findAllByUser(user);
+    }
+
+    public List<MyPosting> loadUserWritingPostingList(User user, Pageable pageable) {
+        return productPostRepository.loadUserWritingPostingList(user, pageable);
     }
 
     // S3 버킷 객체 생성

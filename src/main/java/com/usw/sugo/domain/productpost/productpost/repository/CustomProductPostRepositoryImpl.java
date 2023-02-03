@@ -4,7 +4,6 @@ import com.amazonaws.util.StringUtils;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
@@ -228,19 +227,6 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .update(productPost)
                 .set(productPost.updatedAt, LocalDateTime.now())
                 .where(productPost.id.eq(productPostId))
-                .execute();
-    }
-
-    @Override
-    public void editPostContent(PutContentRequest putContentRequest) {
-        queryFactory
-                .update(productPost)
-                .set(productPost.title, putContentRequest.getTitle())
-                .set(productPost.content, putContentRequest.getContent())
-                .set(productPost.price, putContentRequest.getPrice())
-                .set(productPost.contactPlace, putContentRequest.getContactPlace())
-                .set(productPost.category, putContentRequest.getCategory())
-                .where(productPost.id.eq(putContentRequest.getProductPostId()))
                 .execute();
     }
 

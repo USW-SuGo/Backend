@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
@@ -26,8 +25,6 @@ public interface CustomProductPostRepository {
     List<MyPosting> loadUserWritingPostingList(User user, Pageable pageable);
 
     void refreshUpdateAt(long productPostId);
-
-    void editPostContent(PutContentRequest putContentRequest);
 
     void convertStatus(long productPostId);
 }

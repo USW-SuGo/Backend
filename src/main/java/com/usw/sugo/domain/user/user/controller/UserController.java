@@ -1,10 +1,10 @@
 package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.dto.UserRequestDto;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import com.usw.sugo.domain.user.user.service.UserServiceCluster;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -115,7 +115,7 @@ public class UserController {
 
     @ResponseStatus(OK)
     @GetMapping
-    public UserResponseDto.UserPageResponseForm loadMyPage(
+    public UserPageResponseForm loadMyPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             Pageable pageable) {
@@ -127,7 +127,7 @@ public class UserController {
 
     @ResponseStatus(OK)
     @GetMapping("/{userId}")
-    public UserResponseDto.UserPageResponseForm loadOtherUserPage(
+    public UserPageResponseForm loadOtherUserPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @PathVariable Long userId,

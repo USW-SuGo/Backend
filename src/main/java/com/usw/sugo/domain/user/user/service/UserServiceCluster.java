@@ -133,8 +133,8 @@ public class UserServiceCluster {
                     .mannerGrade(user.getMannerGrade())
                     .countMannerEvaluation(user.getCountMannerEvaluation())
                     .countTradeAttempt(user.getCountTradeAttempt())
-//                    .myPosting(productPostService.loadUserWritingPostingList(user, pageable))
-//                    .likePosting(productPostService.loadMyLikePosting(user.getId()))
+                    .myPostings(productPostService.loadUserWritingPostingList(user, pageable))
+                    .likePostings(userLikePostService.loadLikePosts(user.getId()))
                     .build();
         }
         return UserResponseDto.UserPageResponseForm.builder()
@@ -144,7 +144,7 @@ public class UserServiceCluster {
                 .mannerGrade(user.getMannerGrade())
                 .countMannerEvaluation(user.getCountMannerEvaluation())
                 .countTradeAttempt(user.getCountTradeAttempt())
-//                .myPosting(productPostRepository.loadUserWritingPostingList(user, pageable))
+                .myPostings(productPostService.loadUserWritingPostingList(user, pageable))
                 .build();
     }
 

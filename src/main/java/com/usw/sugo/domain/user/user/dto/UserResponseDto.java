@@ -39,8 +39,8 @@ public class UserResponseDto {
         private BigDecimal mannerGrade;
         private long countMannerEvaluation;
         private long countTradeAttempt;
-        private List<MyPosting> myPosting;
-        private List<LikePosting> likePosting;
+        private List<MyPosting> myPostings;
+        private List<LikePosting> likePostings;
 
         @QueryProjection
         public UserPageResponseForm(
