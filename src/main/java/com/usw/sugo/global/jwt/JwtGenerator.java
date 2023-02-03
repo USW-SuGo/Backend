@@ -2,7 +2,7 @@ package com.usw.sugo.global.jwt;
 
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

@@ -1,11 +1,11 @@
 package com.usw.sugo.global.entityvalidator;
 
-import com.usw.sugo.domain.note.Note;
-import com.usw.sugo.domain.note.repository.NoteRepository;
-import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.repository.ProductPostRepository;
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.repository.UserRepository;
+import com.usw.sugo.domain.note.note.Note;
+import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.productpost.productpost.ProductPost;
+import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
+import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

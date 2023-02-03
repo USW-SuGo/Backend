@@ -1,9 +1,10 @@
 package com.usw.sugo.domain.productpost.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.productpost.ProductPost;
-import com.usw.sugo.domain.productpostfile.ProductPostFile;
-import com.usw.sugo.domain.productpostfile.repository.ProductPostFileRepository;
+import com.usw.sugo.domain.productpost.productpost.ProductPost;
+import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
+import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
+import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

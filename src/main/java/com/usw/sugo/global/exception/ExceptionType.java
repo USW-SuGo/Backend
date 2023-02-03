@@ -1,7 +1,8 @@
 package com.usw.sugo.global.exception;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.*;
@@ -21,8 +22,8 @@ public enum ExceptionType {
     DO_NOT_LIKE_YOURSELF(BAD_REQUEST, "자신의 게시물은 좋아요를 기록할 수 없습니다."),
     USER_UNAUTHORIZED(UNAUTHORIZED, "권한이 없습니다."),
     PARAM_VALID_ERROR(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
-    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "올바른 메서드 요청이 아닙니다." ),
-    SERVER_ERROR(INTERNAL_SERVER_ERROR, "서버 내부 에러입니다. 관리자에게 문의하세요." ),
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "올바른 메서드 요청이 아닙니다."),
+    SERVER_ERROR(INTERNAL_SERVER_ERROR, "서버 내부 에러입니다. 관리자에게 문의하세요."),
     DUPLICATED_EMAIL(BAD_REQUEST, "이미 존재하는 이메일 입니다."),
     DUPLICATED_LOGINID(BAD_REQUEST, "이미 존재하는 아이디 입니다."),
     IS_SAME_PASSWORD(BAD_REQUEST, "변경할 비밀번호가 이전과 같습니다."),
@@ -34,7 +35,7 @@ public enum ExceptionType {
     ALREADY_UP_POSTING(BAD_REQUEST, "게시글 갱신은 하루에 한 번만 수행할 수 있습니다."),
     JWT_MALFORMED_EXCEPTION(BAD_REQUEST, "JWT_MALFORMED_EXCEPTION"),
     JWT_EXPIRED_EXCEPTION(FORBIDDEN, "토큰이 만료되었습니다."),
-    REQUIRE_TOKEN(BAD_REQUEST, "해당 요청은 토큰이 필요합니다.");
+    REQUIRE_TOKEN(UNAUTHORIZED, "해당 요청은 토큰이 필요합니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -1,9 +1,9 @@
 package com.usw.sugo.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.dto.UserRequestDto.LoginRequestForm;
-import com.usw.sugo.domain.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.dto.UserRequestDto.LoginRequestForm;
+import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import org.json.JSONObject;
@@ -24,7 +24,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 import static com.nimbusds.jose.util.StandardCharset.UTF_8;
 import static com.usw.sugo.global.exception.ExceptionType.PASSWORD_NOT_CORRECT;

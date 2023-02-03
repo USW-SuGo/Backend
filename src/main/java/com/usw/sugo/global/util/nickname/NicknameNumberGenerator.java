@@ -2,13 +2,13 @@ package com.usw.sugo.global.util.nickname;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.usw.sugo.domain.user.QUser.user;
+import static com.usw.sugo.domain.user.user.QUser.user;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class NicknameNumberGenerator {
 

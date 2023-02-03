@@ -1,6 +1,6 @@
 package com.usw.sugo.global.security.authentication.details;
 
-import com.usw.sugo.domain.user.User;
+import com.usw.sugo.domain.user.user.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,7 +1,7 @@
 package com.usw.sugo.global.security.authentication.details;
 
-import com.usw.sugo.domain.user.User;
-import com.usw.sugo.domain.user.repository.UserDetailsRepository;
+import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.exception.CustomException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

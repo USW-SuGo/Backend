@@ -50,8 +50,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isRequestURIWhiteList(HttpServletRequest request) {
-        return (whiteListURI.contains(request.getRequestURI())
-                && (request.getRequestURI().startsWith("http")) || request.getRequestURI().startsWith("https"));
+        return whiteListURI.contains(request.getRequestURI());
     }
 
     private boolean isNotContainedToken(HttpServletRequest request, HttpServletResponse response) {
@@ -95,7 +94,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     private void setExceptionResponseForm(HttpServletResponse response, CustomException customException) {
         response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(400);
+        response.setStatus(401);
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("Exception", customException.getExceptionType());
 
