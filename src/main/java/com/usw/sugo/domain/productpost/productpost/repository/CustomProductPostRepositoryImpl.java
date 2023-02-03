@@ -214,10 +214,12 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .fetch();
         String imageLink;
         for (MyPosting myPosting : response) {
-            imageLink = myPosting.getImageLink().split(",")[0];
+            imageLink = myPosting.getImageLink()
+                    .split(",")[0]
+                    .replace("[", "")
+                    .replace("]", "");
             myPosting.setImageLink(imageLink);
         }
-        System.out.println("response = " + response);
         return response;
     }
 
