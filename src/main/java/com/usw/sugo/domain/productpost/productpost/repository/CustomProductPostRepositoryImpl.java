@@ -53,7 +53,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost, productPostFile)
                     .join(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .join(user).on(productPost.user.id.eq(user.id))
-                    .where(productPost.title.contains(value))
+                    .where(productPost.title.contains(value)
+                            .and(productPost.status.eq(true)))
                     .orderBy(productPost.updatedAt.desc())
                     .fetch();
         } else {
@@ -68,7 +69,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .join(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
                     .join(user).on(productPost.user.id.eq(user.id))
                     .where(productPost.title.contains(value)
-                            .and(productPost.category.eq(category)))
+                            .and(productPost.category.eq(category))
+                            .and(productPost.status.eq(true)))
                     .orderBy(productPost.updatedAt.desc())
                     .fetch();
         }
@@ -88,6 +90,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                             productPost.user.nickname, productPost.category, productPost.status))
                     .from(productPost)
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .where(productPost.status.eq(true))
                     .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
@@ -103,6 +106,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .from(productPost)
                     .where(productPost.category.eq(inputCategory))
                     .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
+                    .where(productPost.status.eq(true))
                     .orderBy(productPost.updatedAt.desc())
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
@@ -121,7 +125,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                         productPost.user.nickname, productPost.category, productPost.status))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                .where(productPost.id.eq(productPostId))
+                .where(productPost.id.eq(productPostId)
+                        .and(productPost.status.eq(true)))
                 .fetchOne();
 
         long count = queryFactory
@@ -148,7 +153,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                         productPost.status))
                 .from(productPost)
                 .leftJoin(productPostFile).on(productPostFile.productPost.id.eq(productPost.id))
-                .where(productPost.user.eq(user))
+                .where(productPost.user.eq(user)
+                        .and(productPost.status.eq(true)))
                 .orderBy(productPost.updatedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -160,7 +166,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         queryFactory
                 .update(productPost)
                 .set(productPost.updatedAt, LocalDateTime.now())
-                .where(productPost.id.eq(productPostId))
+                .where(productPost.id.eq(productPostId)
+                        .and(productPost.status.eq(true)))
                 .execute();
     }
 
@@ -169,7 +176,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
         queryFactory
                 .update(productPost)
                 .set(productPost.status, false)
-                .where(productPost.id.eq(productPostId))
+                .where(productPost.id.eq(productPostId)
+                        .and(productPost.status.eq(true)))
                 .execute();
     }
 }
