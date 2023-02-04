@@ -51,15 +51,14 @@ public class UserService {
 
 
     public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
-        if (userServiceUtility.validateLoginIdDuplicated(loginId)) {
+        if (userServiceUtility.loadUserByLoginId(loginId) != null) {
             return overlapFlag;
         }
         return unOverlapFlag;
     }
 
     public Map<String, Boolean> executeIsEmailExist(String email) {
-        userServiceUtility.validateSuwonUniversityEmailForm(email);
-        if (userServiceUtility.validateEmailDuplicated(email)) {
+        if (userServiceUtility.loadUserByEmail(email) != null) {
             return overlapFlag;
         }
         return unOverlapFlag;
@@ -79,9 +78,7 @@ public class UserService {
 
     @Transactional
     public Map<String, Object> executeJoin(String loginId, String email, String password, String department) {
-        userServiceUtility.validateLoginIdDuplicated(loginId);
         userServiceUtility.validateSuwonUniversityEmailForm(email);
-        userServiceUtility.validateEmailDuplicated(email);
         User requestUser = userServiceUtility.softJoin(loginId, email, password);
         requestUser.updateNickname(NicknameGenerator.generateNickname(department));
 

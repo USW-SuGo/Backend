@@ -63,14 +63,6 @@ public class UserServiceUtility {
         }
     }
 
-    public boolean validateLoginIdDuplicated(String loginId) {
-        return userRepository.findByLoginId(loginId).isEmpty();
-    }
-
-    public boolean validateEmailDuplicated(String email) {
-        return userRepository.findByEmail(email).isEmpty();
-    }
-
     @Transactional
     public User softJoin(String loginId, String email, String password) {
         User newSoftUser = User.builder()

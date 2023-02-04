@@ -20,8 +20,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-
-    private final UserControllerValidator userControllerValidator;
     private final UserService userService;
 
     @ResponseStatus(OK)
@@ -131,7 +129,6 @@ public class UserController {
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
-        userControllerValidator.validateUserById(mannerEvaluationRequestForm.getTargetUserId());
         return userService.executeEvaluateManner(
                 mannerEvaluationRequestForm.getTargetUserId(),
                 mannerEvaluationRequestForm.getGrade(),
