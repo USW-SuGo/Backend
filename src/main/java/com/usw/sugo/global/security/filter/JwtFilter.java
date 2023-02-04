@@ -42,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
             registContextHolderForAuthentication(jwtResolver.jwtResolveToUserLoginId(token));
             filterChain.doFilter(request, response);
         }
+        filterChain.doFilter(request, response);
     }
 
     private Authentication getAuthentication(String loginId) {
