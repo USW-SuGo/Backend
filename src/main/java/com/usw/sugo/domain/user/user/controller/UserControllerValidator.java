@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.user.user.repository.UserRepository;
-import com.usw.sugo.domain.user.user.service.UserService;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.domain.user.user.User;
@@ -17,7 +17,7 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 public class UserControllerValidator {
     private final UserRepository userRepository;
     private final UserEmailAuthRepository userEmailAuthRepository;
-    private final UserService userService;
+    private final UserServiceUtility userServiceUtility;
 
     public User validateUserById(long userId) {
         return userRepository.findById(userId)
@@ -40,13 +40,13 @@ public class UserControllerValidator {
     }
 
     public void validatePasswordForEditPassword(Long userId, String password) {
-        if (userService.matchingPassword(userId, password)) {
+        if (userServiceUtility.matchingPassword(userId, password)) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
     }
 
     public void validatePasswordForAuthorization(Long userId, String password) {
-        if (userService.matchingPassword(userId, password)) {
+        if (userServiceUtility.matchingPassword(userId, password)) {
             throw new CustomException(USER_NOT_EXIST);
         }
     }

@@ -1,11 +1,16 @@
 package com.usw.sugo.global.jwt;
 
+import com.usw.sugo.domain.user.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,8 @@ public class JwtResolver {
 
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
+
+    private final UserDetailsService userDetailsService;
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
@@ -42,7 +49,6 @@ public class JwtResolver {
         return localDateTimeClaims.isBefore(subDetractedDateTime);
     }
 
-    // AccessToken 에서 userId 꺼내기
     public Long jwtResolveToUserId(String token) {
         Object claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -52,7 +58,11 @@ public class JwtResolver {
         return Long.valueOf(String.valueOf(claims));
     }
 
-    // AccessToken 에서 userEmail 꺼내기
+    public Authentication getAuthentication(String loginId) {
+        UserDetails user = userDetailsService.loadUserByUsername(loginId);
+        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+    }
+
     public String jwtResolveToUserEmail(String token) {
         Object claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

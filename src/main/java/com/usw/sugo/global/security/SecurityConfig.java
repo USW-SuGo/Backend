@@ -3,8 +3,9 @@ package com.usw.sugo.global.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.jwt.JwtGenerator;
+import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.global.security.filter.AuthorizationFilter;
+import com.usw.sugo.global.security.filter.JwtFilter;
 import com.usw.sugo.global.security.filter.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.filters.CorsFilter;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
     private final JwtValidator jwtValidator;
+    private final JwtResolver jwtResolver;
     private final ObjectMapper mapper;
 
     private final List<String> whiteListURI = List.of(
@@ -54,27 +56,11 @@ public class SecurityConfig {
         http
                 .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         // .addFilterBefore(authorizationFilter(), OncePerRequestFilter.class); NPE가 발생하는 코드 왜일까..
         return http.build();
     }
 
-    // 인증 필터 :--> 로그인 필터
-    public LoginFilter loginFilter() {
-        return new LoginFilter(
-                customAuthenticationManager,
-                userDetailsRepository,
-                userDetailsService,
-                bCryptPasswordEncoder(),
-                jwtGenerator, mapper);
-    }
-
-    // 인가 필터 :--> JWT 필터
-    public AuthorizationFilter authorizationFilter() {
-        return new AuthorizationFilter(whiteListURI, jwtValidator);
-    }
-
-    @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -84,6 +70,19 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter();
+    }
+
+    public LoginFilter loginFilter() {
+        return new LoginFilter(
+                customAuthenticationManager,
+                userDetailsRepository,
+                userDetailsService,
+                bCryptPasswordEncoder(),
+                jwtGenerator, mapper);
+    }
+
+    public JwtFilter jwtFilter() {
+        return new JwtFilter(whiteListURI, jwtResolver, userDetailsService);
     }
 
     @Bean

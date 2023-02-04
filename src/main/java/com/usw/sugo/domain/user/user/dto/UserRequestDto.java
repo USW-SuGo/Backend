@@ -91,9 +91,14 @@ public class UserRequestDto {
         @NotNull
         @NotEmpty
         private long id;
+
         @NotNull
         @NotEmpty
-        private String password;
+        private String prePassword;
+
+        @NotNull
+        @NotEmpty
+        private String newPassword;
     }
 
     // 회원탈퇴 요청 DTO

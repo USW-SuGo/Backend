@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.useremailauth.service;
 
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.service.UserService;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.global.exception.CustomException;
@@ -21,7 +21,7 @@ import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 @Transactional(readOnly = true)
 public class UserEmailAuthService {
 
-    private final UserService userService;
+    private final UserServiceUtility userServiceUtility;
     private final UserEmailAuthRepository userEmailAuthRepository;
 
     public UserEmailAuth loadUserEmailAuthByUser(User user) {
@@ -43,7 +43,7 @@ public class UserEmailAuthService {
     }
 
     private String createEmailAuthPayload(Long userId) {
-        User user = userService.loadUserById(userId);
+        User user = userServiceUtility.loadUserById(userId);
         StringBuilder payload = new StringBuilder();
         SecureRandom sr = new SecureRandom();
         sr.setSeed(new Date().getTime());
@@ -78,7 +78,7 @@ public class UserEmailAuthService {
         List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();
         for (UserEmailAuth userEmailAuth : loadedNotAuthenticatedUser) {
             userEmailAuthRepository.deleteByUserId(userEmailAuth.getUser().getId());
-            userService.deleteUser(userEmailAuth.getUser());
+            userServiceUtility.deleteUser(userEmailAuth.getUser());
         }
     }
 }

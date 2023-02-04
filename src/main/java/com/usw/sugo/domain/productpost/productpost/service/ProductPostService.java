@@ -6,7 +6,7 @@ import com.usw.sugo.domain.productpost.productpost.repository.ProductPostReposit
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
-import com.usw.sugo.domain.user.user.service.UserService;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ProductPostService {
 
-    private final UserService userService;
+    private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
     private final ProductPostFileService productPostFileService;
 
@@ -46,7 +46,7 @@ public class ProductPostService {
     // S3 버킷 객체 생성
     @Transactional
     public void savePosting(Long userId, PostingRequest postingRequest, MultipartFile[] multipartFiles) throws IOException {
-        User requestUser = userService.loadUserById(userId);
+        User requestUser = userServiceUtility.loadUserById(userId);
         ProductPost productPost = ProductPost.builder()
                 .user(requestUser)
                 .title(postingRequest.getTitle())

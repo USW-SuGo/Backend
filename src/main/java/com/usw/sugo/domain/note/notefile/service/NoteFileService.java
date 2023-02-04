@@ -4,7 +4,7 @@ import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notefile.NoteFile;
 import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
-import com.usw.sugo.domain.user.user.service.UserService;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.aws.s3.AwsS3ServiceNote;
 import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 @Transactional(readOnly = true)
 public class NoteFileService {
 
-    private final UserService userService;
+    private final UserServiceUtility userServiceUtility;
     private final NoteService noteService;
     private final NoteFileRepository noteFileRepository;
     private final AwsS3ServiceNote awsS3ServiceNote;
@@ -42,8 +42,8 @@ public class NoteFileService {
         List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, noteId);
         NoteFile noteFile = NoteFile.builder()
                 .note(noteService.loadNoteById(noteId))
-                .sender(userService.loadUserById(senderId))
-                .receiver(userService.loadUserById(receiverId))
+                .sender(userServiceUtility.loadUserById(senderId))
+                .receiver(userServiceUtility.loadUserById(receiverId))
                 .imageLink(imageLinks.toString())
                 .createdAt(LocalDateTime.now())
                 .build();
