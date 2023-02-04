@@ -9,20 +9,20 @@ public class PostResponseDto {
 
     @Data
     public static class SearchResultResponse {
-        private long productPostId;
+        private Long productPostId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
         private String title;
-        private int price;
+        private Integer price;
         private String nickname;
         private String category;
-        private boolean status;
+        private Boolean status;
 
         @QueryProjection
         public SearchResultResponse(
-                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                int price, String nickname, String category, boolean status) {
+                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                Integer price, String nickname, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -35,10 +35,9 @@ public class PostResponseDto {
         }
     }
 
-    // 전체 포스트 조회에 대한 DTO
     @Data
     public static class MainPageResponse {
-        private long productPostId;
+        private Long productPostId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
@@ -46,7 +45,7 @@ public class PostResponseDto {
         private int price;
         private String nickname;
         private String category;
-        private boolean status;
+        private Boolean status;
 
         @QueryProjection
         public MainPageResponse(
@@ -77,8 +76,8 @@ public class PostResponseDto {
         private int price;
         private String nickname;
         private String category;
-        private boolean status;
-        private boolean userLikeStatus;
+        private Boolean status;
+        private Boolean userLikeStatus;
 
         @QueryProjection
         public DetailPostResponse(

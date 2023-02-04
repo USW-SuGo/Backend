@@ -132,7 +132,7 @@ public class UserService {
                     .mannerGrade(user.getMannerGrade())
                     .countMannerEvaluation(user.getCountMannerEvaluation())
                     .countTradeAttempt(user.getCountTradeAttempt())
-                    .myPostings(productPostService.loadUserWritingPostingList(user, pageable))
+                    .myPostings(productPostService.myPostings(user, pageable))
                     .likePostings(userLikePostService.loadLikePosts(user.getId()))
                     .build();
         }
@@ -143,7 +143,7 @@ public class UserService {
                 .mannerGrade(user.getMannerGrade())
                 .countMannerEvaluation(user.getCountMannerEvaluation())
                 .countTradeAttempt(user.getCountTradeAttempt())
-                .myPostings(productPostService.loadUserWritingPostingList(user, pageable))
+                .myPostings(productPostService.myPostings(user, pageable))
                 .build();
     }
 

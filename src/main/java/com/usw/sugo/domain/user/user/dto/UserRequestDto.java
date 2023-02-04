@@ -90,10 +90,6 @@ public class UserRequestDto {
     public static class EditPasswordRequestForm {
         @NotNull
         @NotEmpty
-        private long id;
-
-        @NotNull
-        @NotEmpty
         private String prePassword;
 
         @NotNull
@@ -119,7 +115,7 @@ public class UserRequestDto {
     public static class MannerEvaluationRequestForm {
         @NotNull
         @NotEmpty
-        private long targetUserId;
+        private Long targetUserId;
         @NotNull
         @NotBlank
         private BigDecimal grade;

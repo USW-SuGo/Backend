@@ -41,14 +41,14 @@ public class ProductPostController {
     @GetMapping("/search")
     public List<SearchResultResponse> searchPost(
             @RequestParam String value, @RequestParam String category) {
-        return productPostRepository.searchPost(value, category);
+        return productPostService.searchPostings(value, category);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/all")
     public List<MainPageResponse> loadMainPage(
             Pageable pageable, @RequestParam String category) {
-        return productPostRepository.loadMainPagePostList(pageable, category);
+        return productPostService.mainPage(pageable, category);
     }
 
     @ResponseStatus(OK)
@@ -98,7 +98,6 @@ public class ProductPostController {
             put("Success", true);
         }};
     }
-
 
     @ResponseStatus(OK)
     @PostMapping("/up-post")

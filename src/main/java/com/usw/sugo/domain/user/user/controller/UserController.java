@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.user.user.controller;
 
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
@@ -89,7 +88,7 @@ public class UserController {
     @DeleteMapping
     public Map<String, Boolean> deleteUser(
             @RequestHeader String authorization,
-            @Valid @RequestBody UserRequestDto.QuitRequestForm quitRequestForm,
+            @Valid @RequestBody QuitRequestForm quitRequestForm,
             @AuthenticationPrincipal User user) {
         return userService.executeQuit(user);
     }

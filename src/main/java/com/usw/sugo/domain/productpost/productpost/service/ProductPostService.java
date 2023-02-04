@@ -3,6 +3,8 @@ package com.usw.sugo.domain.productpost.productpost.service;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,6 +32,49 @@ public class ProductPostService {
     private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
     private final ProductPostFileService productPostFileService;
+
+    public List<MainPageResponse> mainPage(Pageable pageable, String category) {
+        List<MainPageResponse> mainPageResponses = productPostRepository.loadMainPagePostList(pageable, category);
+        for (MainPageResponse mainPageResponse : mainPageResponses) {
+            if (mainPageResponse.getImageLink() == null) {
+                mainPageResponse.setImageLink("");
+            } else {
+                String imageLink = mainPageResponse.getImageLink()
+                        .replace("[", "")
+                        .replace("]", "");
+                mainPageResponse.setImageLink(imageLink);
+            }
+        }
+        return mainPageResponses;
+    }
+
+    public List<MyPosting> myPostings(User user, Pageable pageable) {
+        List<MyPosting> myPostings = productPostRepository.loadUserWritingPostingList(user, pageable);
+        String imageLink;
+        for (MyPosting myPosting : myPostings) {
+            imageLink = myPosting.getImageLink()
+                    .split(",")[0]
+                    .replace("[", "")
+                    .replace("]", "");
+            myPosting.setImageLink(imageLink);
+        }
+        return myPostings;
+    }
+
+    public List<SearchResultResponse> searchPostings(String value, String category) {
+        List<SearchResultResponse> searchResultResponses = productPostRepository.searchPost(value, validateCategory(category));
+        for (SearchResultResponse searchResultResponse : searchResultResponses) {
+            if (searchResultResponse.getImageLink() == null) {
+                searchResultResponse.setImageLink("");
+            } else {
+                String imageLink = searchResultResponse.getImageLink()
+                        .replace("[", "")
+                        .replace("]", "");
+                searchResultResponse.setImageLink(imageLink);
+            }
+        }
+        return searchResultResponses;
+    }
 
     public ProductPost loadProductPost(Long productPostId) {
         if (productPostRepository.findById(productPostId).isPresent()) {
@@ -42,10 +89,6 @@ public class ProductPostService {
 
     public List<ProductPost> loadAllProductPostByUser(User user) {
         return productPostRepository.findAllByUser(user);
-    }
-
-    public List<MyPosting> loadUserWritingPostingList(User user, Pageable pageable) {
-        return productPostRepository.loadUserWritingPostingList(user, pageable);
     }
 
     // S3 버킷 객체 생성
@@ -81,5 +124,16 @@ public class ProductPostService {
             productPostFileService.deleteProductPostFileByProductPost(productPost);
             productPostRepository.delete(productPost);
         }
+    }
+
+    public String validateCategory(String category) {
+        if (category.equals("서적") ||
+                category.equals("생활용품") ||
+                category.equals("전자기기") ||
+                category.equals("기타") ||
+                category.equals("")) {
+            return category;
+        }
+        throw new CustomException(CATEGORY_NOT_FOUND);
     }
 }
