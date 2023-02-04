@@ -2,6 +2,7 @@ package com.usw.sugo.domain.productpost.productpost.service;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
@@ -33,6 +34,10 @@ public class ProductPostService {
             return productPostRepository.findById(productPostId).get();
         }
         throw new CustomException(ExceptionType.POST_NOT_FOUND);
+    }
+
+    public DetailPostResponse loadDetailProductPost(Long productPostId, Long userId) {
+        return productPostRepository.loadDetailPost(productPostId, userId);
     }
 
     public List<ProductPost> loadAllProductPostByUser(User user) {

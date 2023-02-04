@@ -40,7 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             String token = request.getHeader("Authorization").substring(7);
             registContextHolderForAuthentication(jwtResolver.jwtResolveToUserLoginId(token));
-            filterChain.doFilter(request, response);
         }
         filterChain.doFilter(request, response);
     }

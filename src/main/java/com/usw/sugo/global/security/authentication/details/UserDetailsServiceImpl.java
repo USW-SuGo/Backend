@@ -20,8 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public User loadUserByUsername(String loginId) throws UsernameNotFoundException {
         if (userRepository.findByLoginId(loginId).isPresent()) {
-            System.out.println("loginId = " + loginId);
-            System.out.println("userRepository = " + userRepository.findByLoginId(loginId));
             return userRepository.findByLoginId(loginId).get();
         }
         throw new CustomException(USER_NOT_EXIST);

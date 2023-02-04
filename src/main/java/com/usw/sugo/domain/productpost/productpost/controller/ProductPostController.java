@@ -2,13 +2,12 @@ package com.usw.sugo.domain.productpost.productpost.controller;
 
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.DeleteContentRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.UpPostingRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
-import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
@@ -16,6 +15,7 @@ import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +33,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class ProductPostController {
 
     private final ProductPostRepository productPostRepository;
-    private final ProductPostFileRepository productPostFileRepository;
     private final ProductPostService productPostService;
     private final UserRepository userRepository;
     private final JwtResolver jwtResolver;
@@ -42,25 +41,23 @@ public class ProductPostController {
     @GetMapping("/search")
     public List<SearchResultResponse> searchPost(
             @RequestParam String value, @RequestParam String category) {
-
         return productPostRepository.searchPost(value, category);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/all")
-    public List<PostResponseDto.MainPageResponse> loadMainPage(
+    public List<MainPageResponse> loadMainPage(
             Pageable pageable, @RequestParam String category) {
         return productPostRepository.loadMainPagePostList(pageable, category);
     }
 
     @ResponseStatus(OK)
-    @GetMapping("/")
-    public PostResponseDto.DetailPostResponse loadDetailPost(
+    @GetMapping("/{productPostId}")
+    public DetailPostResponse loadDetailPost(
             @RequestHeader String authorization,
-            @RequestParam long productPostId) {
-
-        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        return productPostRepository.loadDetailPostList(productPostId, userId);
+            @PathVariable Long productPostId,
+            @AuthenticationPrincipal User user) {
+        return productPostService.loadDetailProductPost(productPostId, user.getId());
     }
 
     @ResponseStatus(OK)

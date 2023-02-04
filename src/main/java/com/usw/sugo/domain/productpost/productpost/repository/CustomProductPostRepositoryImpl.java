@@ -163,7 +163,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     }
 
     @Override
-    public DetailPostResponse loadDetailPostList(long productPostId, long userId) {
+    public DetailPostResponse loadDetailPost(long productPostId, long userId) {
         DetailPostResponse response = queryFactory
                 .select(new QPostResponseDto_DetailPostResponse(
                         productPost.id.as("productPostId"), productPost.user.id.as("writerId"),
@@ -188,12 +188,12 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
             String[] imageList;
             imageList = response.getImageLink().split(",");
             response.setImageLink(Arrays.toString(imageList));
-            return response;
+        } else {
+            response.setUserLikeStatus(true);
+            String[] imageList;
+            imageList = response.getImageLink().split(",");
+            response.setImageLink(Arrays.toString(imageList));
         }
-        response.setUserLikeStatus(true);
-        String[] imageList;
-        imageList = response.getImageLink().split(",");
-        response.setImageLink(Arrays.toString(imageList));
         return response;
     }
 

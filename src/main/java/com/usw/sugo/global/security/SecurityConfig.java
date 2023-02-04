@@ -21,7 +21,9 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.Filter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -57,7 +59,6 @@ public class SecurityConfig {
                 .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
                 .addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-        // .addFilterBefore(authorizationFilter(), OncePerRequestFilter.class); NPE가 발생하는 코드 왜일까..
         return http.build();
     }
 
