@@ -20,14 +20,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
+import static com.usw.sugo.domain.ApiResult.SUCCESS;
+import static com.usw.sugo.global.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductPostService {
+
+    private static final Map<String, Boolean> successFlag = new HashMap<>() {{
+        put(SUCCESS.getResult(), true);
+    }};
 
     private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
@@ -111,6 +118,15 @@ public class ProductPostService {
     }
 
     @Transactional
+    public Map<String, Boolean> editPosting(
+            ProductPost productPost, String title, String content,
+            Integer price, String contactPlace, String category, MultipartFile[] multipartFile) {
+        productPost.updateProductPost(title, content, price, contactPlace, category);
+        productPostFileService.editProductPostFile(productPost, multipartFile);
+        return successFlag;
+    }
+
+    @Transactional
     public void deleteByProductPostId(Long productPostId) {
         ProductPost productPost = loadProductPost(productPostId);
         productPostFileService.deleteProductPostFileByProductPost(productPost);
@@ -126,14 +142,31 @@ public class ProductPostService {
         }
     }
 
-    public String validateCategory(String category) {
-        if (category.equals("서적") ||
-                category.equals("생활용품") ||
-                category.equals("전자기기") ||
-                category.equals("기타") ||
+    private String validateCategory(String category) {
+        if (category.equals("서적") || category.equals("생활용품") || category.equals("전자기기") || category.equals("기타") ||
                 category.equals("")) {
             return category;
         }
         throw new CustomException(CATEGORY_NOT_FOUND);
+    }
+
+    private boolean validateUpPostIsAvailable(User user) {
+        if (user.getRecentUpPost().isBefore(LocalDateTime.now().minusDays(1))) {
+            return true;
+        }
+        throw new CustomException(ALREADY_UP_POSTING);
+    }
+
+    public Map<String, Boolean> upPost(User user, ProductPost productPost) {
+        if (validateUpPostIsAvailable(user)) {
+            user.updateRecentUpPost();
+            productPost.updateUpdatedAt();
+        }
+        return successFlag;
+    }
+
+    public Map<String, Boolean> changeStatus(ProductPost productPost) {
+        productPost.updateStatus();
+        return successFlag;
     }
 }

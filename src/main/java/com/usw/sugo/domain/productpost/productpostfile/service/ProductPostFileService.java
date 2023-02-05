@@ -5,7 +5,6 @@ import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
 import com.usw.sugo.global.aws.s3.AwsS3ServiceProductPost;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +29,10 @@ public class ProductPostFileService {
         if (productPostFileRepository.findByProductPost(productPost).isPresent()) {
             return productPostFileRepository.findByProductPost(productPost).get();
         }
-        throw new CustomException(ExceptionType.POST_NOT_FOUND);
+        throw new CustomException(POST_NOT_FOUND);
     }
 
+    @Transactional
     public List<String> saveProductPostFile(ProductPost productPost, MultipartFile[] multipartFiles) throws IOException {
         List<String> imageLinks = awsS3ServiceProductPost.uploadS3ByProductPost(multipartFiles, productPost.getId());
         ProductPostFile productPostFile = ProductPostFile.builder()
@@ -44,5 +48,19 @@ public class ProductPostFileService {
     public void deleteProductPostFileByProductPost(ProductPost productPost) {
         awsS3ServiceProductPost.deleteS3ProductPostFile(loadProductPostFileByProductPost(productPost));
         productPostFileRepository.deleteByProductPost(productPost);
+    }
+
+    @Transactional
+    public void editProductPostFile(ProductPost productPost, MultipartFile[] multipartFiles) {
+        if (productPostFileRepository.findByProductPost(productPost).isEmpty()) {
+            throw new CustomException(POST_NOT_FOUND);
+        }
+        awsS3ServiceProductPost.deleteS3ProductPostFile(loadProductPostFileByProductPost(productPost));
+        awsS3ServiceProductPost.uploadS3ByProductPost(multipartFiles, productPost.getId());
+        try {
+            saveProductPostFile(productPost, multipartFiles);
+        } catch (IOException e) {
+            throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
+        }
     }
 }

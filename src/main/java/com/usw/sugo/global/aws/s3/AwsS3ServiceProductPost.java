@@ -2,10 +2,10 @@ package com.usw.sugo.global.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
+import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.usw.sugo.global.aws.s3.BucketDetailPath.PRODUCT_POST;
+import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +29,23 @@ public class AwsS3ServiceProductPost {
     private final String defaultProductPostPath = PRODUCT_POST.getPath();
     private final AmazonS3Client amazonS3Client;
 
-    public List<String> uploadS3ByProductPost(MultipartFile[] multipartFiles, Long productPostId) throws IOException {
+    public List<String> uploadS3ByProductPost(MultipartFile[] multipartFiles, Long productPostId) {
         List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String fileName = multipartFile.getOriginalFilename();
-            String bucketNameByProductPostId = reIssueBucketNameByProductPostId(productPostId, fileName);
-            ObjectMetadata objectMetadata = initObjectMetaData(multipartFile);
-            amazonS3Client.putObject(generatePubObjectRequest(bucketNameByProductPostId, multipartFile, objectMetadata));
-            imagePathList.add(preSignedUrl + bucketName + "/" + bucketNameByProductPostId);
+            String filename = multipartFile.getOriginalFilename();
+            String generatedUrlByProductPostId = generateURLByProductPostId(productPostId);
+            try {
+                amazonS3Client.putObject(
+                        generatePubObjectRequest(
+                                generatedUrlByProductPostId + filename,
+                                multipartFile,
+                                initObjectMetaData(multipartFile)));
+                imagePathList.add(amazonS3Client.getUrl(
+                        bucketName,
+                        generatedUrlByProductPostId + filename).toString());
+            } catch (IOException e) {
+                throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
+            }
         }
         return imagePathList;
     }
@@ -44,8 +54,7 @@ public class AwsS3ServiceProductPost {
         String[] objectUrls = productPostFile.getImageLink().split(",");
         for (String objectUrl : objectUrls) {
             objectUrl = filteringUrl(objectUrl);
-            String objectKey = objectUrl.substring(objectUrl.indexOf(bucketName + "/") + bucketName.length() + 1);
-            amazonS3Client.deleteObject(bucketName, objectKey);
+            amazonS3Client.deleteObject(bucketName, objectUrl);
         }
     }
 
@@ -56,8 +65,8 @@ public class AwsS3ServiceProductPost {
                 .replace(" ", "");
     }
 
-    private String reIssueBucketNameByProductPostId(Long productPostId, String fileName) {
-        return defaultProductPostPath + "/" + productPostId + "/" + fileName;
+    private String generateURLByProductPostId(Long productPostId) {
+        return defaultProductPostPath + "/" + productPostId + "/";
     }
 
     private ObjectMetadata initObjectMetaData(MultipartFile multipartFile) {

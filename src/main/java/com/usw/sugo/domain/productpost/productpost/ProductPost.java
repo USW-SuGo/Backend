@@ -50,4 +50,20 @@ public class ProductPost {
 
     @Column
     private Boolean status;
+
+    public void updateUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateStatus() {
+        this.status = false;
+    }
+
+    public void updateProductPost(String title, String content, Integer price, String contactPlace, String category) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.contactPlace = contactPlace;
+        this.category = category;
+    }
 }

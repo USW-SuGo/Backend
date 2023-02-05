@@ -114,6 +114,10 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.mannerGrade = mannerGrade.divide(BigDecimal.valueOf(this.countMannerEvaluation), RoundingMode.FLOOR);
     }
 
+    public void updateRecentUpPost() {
+        this.recentUpPost = LocalDateTime.now();
+    }
+
     public void updateRecentEvaluationManner() {
         this.recentEvaluationManner = LocalDateTime.now();
     }

@@ -49,7 +49,7 @@ public class PostResponseDto {
 
         @QueryProjection
         public MainPageResponse(
-                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
                 int price, String nickname, String category, boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
