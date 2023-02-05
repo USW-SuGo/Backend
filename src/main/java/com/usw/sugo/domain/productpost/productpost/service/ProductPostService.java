@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.usw.sugo.domain.ApiResult.SUCCESS;
-import static com.usw.sugo.global.exception.ExceptionType.*;
+import static com.usw.sugo.global.exception.ExceptionType.ALREADY_UP_POSTING;
+import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +92,16 @@ public class ProductPostService {
     }
 
     public DetailPostResponse loadDetailProductPost(Long productPostId, Long userId) {
-        return productPostRepository.loadDetailPost(productPostId, userId);
+        DetailPostResponse detailPostResponse = productPostRepository.loadDetailPost(productPostId, userId);
+        if (detailPostResponse.getImageLink() == null) {
+            detailPostResponse.setImageLink("");
+        } else {
+            String imageLink = detailPostResponse.getImageLink()
+                    .replace("[", "")
+                    .replace("]", "");
+            detailPostResponse.setImageLink(imageLink);
+        }
+        return detailPostResponse;
     }
 
     public List<ProductPost> loadAllProductPostByUser(User user) {
