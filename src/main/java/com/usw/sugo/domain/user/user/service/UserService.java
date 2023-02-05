@@ -124,6 +124,7 @@ public class UserService {
     }
 
     public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
+        // 요청유저와 userId가 같으면 마이페이지
         if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
                     .userId(userId)
@@ -136,14 +137,15 @@ public class UserService {
                     .likePostings(userLikePostService.loadLikePosts(user.getId()))
                     .build();
         }
+        User otherUser = userServiceUtility.loadUserById(userId);
         return UserPageResponseForm.builder()
                 .userId(userId)
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .mannerGrade(user.getMannerGrade())
-                .countMannerEvaluation(user.getCountMannerEvaluation())
-                .countTradeAttempt(user.getCountTradeAttempt())
-                .myPostings(productPostService.myPostings(user, pageable))
+                .email(otherUser.getEmail())
+                .nickname(otherUser.getNickname())
+                .mannerGrade(otherUser.getMannerGrade())
+                .countMannerEvaluation(otherUser.getCountMannerEvaluation())
+                .countTradeAttempt(otherUser.getCountTradeAttempt())
+                .myPostings(productPostService.myPostings(otherUser, pageable))
                 .build();
     }
 
