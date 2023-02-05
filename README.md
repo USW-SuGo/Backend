@@ -8,7 +8,7 @@
 
 |                     Deploy Environment                     |
 |:----------------------------------------------------------:|
-| EC2(Ubuntu 20.04) <br> NGINX <br> Gradle 7.5.2 <br> JDK 11 |
+| EC2(Ubuntu 20.04) <br> Gradle 7.5.2 <br> JDK 11 |
 
 ---
 
