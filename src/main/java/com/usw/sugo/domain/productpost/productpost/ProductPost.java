@@ -55,7 +55,11 @@ public class ProductPost {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateStatus() {
+    public void updateStatusToTrue() {
+        this.status = true;
+    }
+
+    public void updateStatusToFalse() {
         this.status = false;
     }
 

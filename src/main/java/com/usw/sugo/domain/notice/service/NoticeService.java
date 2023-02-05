@@ -57,6 +57,7 @@ public class NoticeService {
         notice.updateTitle(title);
         notice.updateContent(content);
         notice.updateUpdatedAt();
+        noticeRepository.save(notice);
         return successFlag;
     }
 

@@ -52,11 +52,11 @@ public class ProductPostFileService {
 
     @Transactional
     public void editProductPostFile(ProductPost productPost, MultipartFile[] multipartFiles) {
+        Optional<ProductPostFile> productPostFile = productPostFileRepository.findByProductPost(productPost);
         if (productPostFileRepository.findByProductPost(productPost).isEmpty()) {
             throw new CustomException(POST_NOT_FOUND);
         }
         awsS3ServiceProductPost.deleteS3ProductPostFile(loadProductPostFileByProductPost(productPost));
-        awsS3ServiceProductPost.uploadS3ByProductPost(multipartFiles, productPost.getId());
         try {
             saveProductPostFile(productPost, multipartFiles);
         } catch (IOException e) {

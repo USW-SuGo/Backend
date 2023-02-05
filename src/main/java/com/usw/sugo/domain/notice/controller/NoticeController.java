@@ -18,7 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/notice")
-
 public class NoticeController {
     private final NoticeService noticeService;
 
@@ -45,7 +44,11 @@ public class NoticeController {
             @RequestHeader String authorization,
             @RequestBody @Valid NoticeUpdateRequest noticeUpdateRequest,
             @AuthenticationPrincipal User user) {
-        return noticeService.edit(user, noticeUpdateRequest.getNoticeId(), noticeUpdateRequest.getTitle(), noticeUpdateRequest.getContent());
+        return noticeService.edit(
+                user,
+                noticeUpdateRequest.getNoticeId(),
+                noticeUpdateRequest.getTitle(),
+                noticeUpdateRequest.getContent());
     }
 
     @DeleteMapping

@@ -8,10 +8,10 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchRes
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.usw.sugo.domain.ApiResult.SUCCESS;
-import static com.usw.sugo.global.exception.ExceptionType.ALREADY_UP_POSTING;
-import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
+import static com.usw.sugo.global.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class ProductPostService {
     }
 
     public List<MyPosting> myPostings(User user, Pageable pageable) {
-        List<MyPosting> myPostings = productPostRepository.loadUserWritingPostingList(user, pageable);
+        List<MyPosting> myPostings = productPostRepository.loadWrittenPost(user, pageable);
         String imageLink;
         for (MyPosting myPosting : myPostings) {
             imageLink = myPosting.getImageLink()
@@ -88,7 +87,7 @@ public class ProductPostService {
         if (productPostRepository.findById(productPostId).isPresent()) {
             return productPostRepository.findById(productPostId).get();
         }
-        throw new CustomException(ExceptionType.POST_NOT_FOUND);
+        throw new CustomException(POST_NOT_FOUND);
     }
 
     public DetailPostResponse loadDetailProductPost(Long productPostId, Long userId) {
@@ -108,9 +107,23 @@ public class ProductPostService {
         return productPostRepository.findAllByUser(user);
     }
 
+    public List<ClosePosting> loadClosePosting(User user, Pageable pageable) {
+        List<ClosePosting> closePostings = productPostRepository.loadClosePost(user, pageable);
+        String imageLink;
+        for (ClosePosting closePosting : closePostings) {
+            imageLink = closePosting.getImageLink()
+                    .split(",")[0]
+                    .replace("[", "")
+                    .replace("]", "");
+            closePosting.setImageLink(imageLink);
+        }
+        return closePostings;
+    }
+
+
     // S3 버킷 객체 생성
     @Transactional
-    public void savePosting(Long userId, PostingRequest postingRequest, MultipartFile[] multipartFiles) throws IOException {
+    public Map<String, Boolean> savePosting(Long userId, PostingRequest postingRequest, MultipartFile[] multipartFiles) throws IOException {
         User requestUser = userServiceUtility.loadUserById(userId);
         ProductPost productPost = ProductPost.builder()
                 .user(requestUser)
@@ -125,6 +138,7 @@ public class ProductPostService {
                 .build();
         productPostRepository.save(productPost);
         productPostFileService.saveProductPostFile(productPost, multipartFiles);
+        return successFlag;
     }
 
     @Transactional
@@ -132,6 +146,7 @@ public class ProductPostService {
             ProductPost productPost, String title, String content,
             Integer price, String contactPlace, String category, MultipartFile[] multipartFile) {
         productPost.updateProductPost(title, content, price, contactPlace, category);
+        productPostRepository.save(productPost);
         productPostFileService.editProductPostFile(productPost, multipartFile);
         return successFlag;
     }
@@ -152,8 +167,32 @@ public class ProductPostService {
         }
     }
 
+    @Transactional
+    public Map<String, Boolean> upPost(User user, ProductPost productPost) {
+        if (validateUpPostIsAvailable(user)) {
+            user.updateRecentUpPost();
+            productPost.updateUpdatedAt();
+        }
+        return successFlag;
+    }
+
+    @Transactional
+    public Map<String, Boolean> closePost(ProductPost productPost) {
+        productPost.updateStatusToFalse();
+        return successFlag;
+    }
+
+    @Transactional
+    public Map<String, Boolean> openPost(ProductPost productPost) {
+        productPost.updateStatusToTrue();
+        return successFlag;
+    }
+
     private String validateCategory(String category) {
-        if (category.equals("서적") || category.equals("생활용품") || category.equals("전자기기") || category.equals("기타") ||
+        if (category.equals("서적") ||
+                category.equals("생활용품") ||
+                category.equals("전자기기") ||
+                category.equals("기타") ||
                 category.equals("")) {
             return category;
         }
@@ -165,18 +204,5 @@ public class ProductPostService {
             return true;
         }
         throw new CustomException(ALREADY_UP_POSTING);
-    }
-
-    public Map<String, Boolean> upPost(User user, ProductPost productPost) {
-        if (validateUpPostIsAvailable(user)) {
-            user.updateRecentUpPost();
-            productPost.updateUpdatedAt();
-        }
-        return successFlag;
-    }
-
-    public Map<String, Boolean> changeStatus(ProductPost productPost) {
-        productPost.updateStatus();
-        return successFlag;
     }
 }

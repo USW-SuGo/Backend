@@ -5,9 +5,7 @@ import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPos
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
-import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,8 +25,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class ProductPostController {
 
     private final ProductPostService productPostService;
-    private final ProductPostFileService productPostFileService;
-    private final JwtResolver jwtResolver;
 
     @ResponseStatus(OK)
     @GetMapping("/search")
@@ -56,23 +52,18 @@ public class ProductPostController {
     @ResponseStatus(OK)
     @PostMapping
     public Map<String, Boolean> savePost(
-            @RequestHeader String authorization, PostingRequest postingRequest,
-            @RequestBody MultipartFile[] multipartFileList) throws IOException {
-
-        productPostService.savePosting(
-                jwtResolver.jwtResolveToUserId(
-                        authorization.substring(7)), postingRequest, multipartFileList);
-
-        return new HashMap<>() {{
-            put("Success", true);
-        }};
+            @RequestHeader String authorization,
+            @RequestBody PostingRequest postingRequest,
+            @AuthenticationPrincipal User user,
+            MultipartFile[] multipartFileList) throws IOException {
+        return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
     }
 
     @ResponseStatus(OK)
     @PutMapping
     public Map<String, Boolean> putProductPostAndImage(
             @RequestBody MultipartFile[] multipartFileList,
-            PutContentRequest putContentRequest) throws IOException {
+            PutContentRequest putContentRequest) {
         return productPostService.editPosting(
                 productPostService.loadProductPost(putContentRequest.getProductPostId()),
                 putContentRequest.getTitle(), putContentRequest.getContent(), putContentRequest.getPrice(),
@@ -95,14 +86,13 @@ public class ProductPostController {
             @RequestHeader String authorization,
             @RequestBody UpPostingRequest upPostingRequest,
             @AuthenticationPrincipal User user) {
-
         return productPostService.upPost(user, productPostService.loadProductPost(upPostingRequest.getProductPostId()));
     }
 
     @ResponseStatus(OK)
-    @PostMapping("/close")
-    public Map<String, Boolean> closePost(
+    @PostMapping("/status")
+    public Map<String, Boolean> changeStatus(
             @RequestBody ClosePostRequest closePostRequest) {
-        return productPostService.changeStatus(productPostService.loadProductPost(closePostRequest.getProductPostId()));
+        return productPostService.closePost(productPostService.loadProductPost(closePostRequest.getProductPostId()));
     }
 }

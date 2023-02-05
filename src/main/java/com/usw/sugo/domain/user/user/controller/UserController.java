@@ -1,7 +1,9 @@
 package com.usw.sugo.domain.user.user.controller;
 
+import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.UpPostingRequest;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -110,6 +113,16 @@ public class UserController {
             @AuthenticationPrincipal User user,
             Pageable pageable) {
         return userService.executeLoadUserPage(user, user.getId(), pageable);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/{userId}/close-post")
+    public List<ClosePosting> loadClosePost(
+            @RequestHeader String authorization,
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User user,
+            Pageable pageable) {
+        return userService.executeLoadCloseMyPost(user, pageable);
     }
 
     @ResponseStatus(OK)

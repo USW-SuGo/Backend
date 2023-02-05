@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.usw.sugo.domain.notice.QNotice.notice;
@@ -18,9 +17,8 @@ import static com.usw.sugo.domain.notice.QNotice.notice;
 public class CustomNoticeRepositoryImpl implements CustomNoticeRepository {
 
     private final JPAQueryFactory queryFactory;
-
     @Override
-    public List<Notice> findAll(Pageable pageable) {
+    public List<Notice> loadAllNotice(Pageable pageable) {
         return queryFactory
                 .selectFrom(notice)
                 .offset(pageable.getOffset())

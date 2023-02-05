@@ -3,8 +3,8 @@ package com.usw.sugo.domain.user.user.service;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
-import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.usw.sugo.domain.ApiResult.EXIST;
@@ -28,7 +29,6 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
-    private final UserRepository userRepository;
     private final UserServiceUtility userServiceUtility;
     private final SendEmailServiceBySES sendEmailServiceBySES;
     private final UserEmailAuthService userEmailAuthService;
@@ -45,10 +45,6 @@ public class UserService {
     private static final Map<String, Boolean> successFlag = new HashMap<>() {{
         put(SUCCESS.getResult(), true);
     }};
-    private static final Map<String, Boolean> failFlag = new HashMap<>() {{
-        put(SUCCESS.getResult(), false);
-    }};
-
 
     public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
         if (userServiceUtility.loadUserByLoginId(loginId) != null) {
@@ -157,5 +153,9 @@ public class UserService {
             return successFlag;
         }
         throw new CustomException(ALREADY_EVALUATION);
+    }
+
+    public List<ClosePosting> executeLoadCloseMyPost(User user, Pageable pageable) {
+        return productPostService.loadClosePosting(user, pageable);
     }
 }

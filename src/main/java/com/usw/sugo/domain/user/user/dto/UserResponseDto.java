@@ -12,13 +12,13 @@ public class UserResponseDto {
     @Getter
     @Builder
     public static class IsEmailExistResponseForm {
-        boolean exist;
+        Boolean exist;
     }
 
     @Getter
     @Builder
     public static class IsLoginIdExistResponseForm {
-        boolean exist;
+        Boolean exist;
     }
 
     @Getter
@@ -33,19 +33,19 @@ public class UserResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserPageResponseForm {
-        private long userId;
+        private Long userId;
         private String email;
         private String nickname;
         private BigDecimal mannerGrade;
-        private long countMannerEvaluation;
-        private long countTradeAttempt;
+        private Long countMannerEvaluation;
+        private Long countTradeAttempt;
         private List<MyPosting> myPostings;
         private List<LikePosting> likePostings;
 
         @QueryProjection
         public UserPageResponseForm(
-                long userId, String email, String nickname, BigDecimal mannerGrade,
-                long countMannerEvaluation, long countTradeAttempt) {
+                Long userId, String email, String nickname, BigDecimal mannerGrade,
+                Long countMannerEvaluation, Long countTradeAttempt) {
             this.userId = userId;
             this.email = email;
             this.nickname = nickname;
@@ -59,19 +59,19 @@ public class UserResponseDto {
     @Setter
     @Builder
     public static class MyPosting {
-        private long productPostId;
+        private Long productPostId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
         private String title;
-        private int price;
+        private Integer price;
         private String category;
-        private boolean status;
+        private Boolean status;
 
         @QueryProjection
         public MyPosting(
-                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                int price, String category, boolean status) {
+                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                Integer price, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -86,19 +86,47 @@ public class UserResponseDto {
     @Getter
     @Builder(access = AccessLevel.PROTECTED)
     public static class LikePosting {
-        private long productPostId;
+        private Long productPostId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
         private String title;
-        private int price;
+        private Integer price;
         private String category;
-        private boolean status;
+        private Boolean status;
 
         @QueryProjection
         public LikePosting(
-                long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                int price, String category, boolean status) {
+                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                Integer price, String category, Boolean status) {
+            this.productPostId = productPostId;
+            this.imageLink = imageLink;
+            this.contactPlace = contactPlace;
+            this.updatedAt = updatedAt;
+            this.title = title;
+            this.price = price;
+            this.category = category;
+            this.status = status;
+        }
+    }
+
+    @Getter
+    @Setter
+    @Builder(access = AccessLevel.PROTECTED)
+    public static class ClosePosting {
+        private Long productPostId;
+        private String imageLink;
+        private String contactPlace;
+        private LocalDateTime updatedAt;
+        private String title;
+        private Integer price;
+        private String category;
+        private Boolean status;
+
+        @QueryProjection
+        public ClosePosting(
+                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
+                Integer price, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;

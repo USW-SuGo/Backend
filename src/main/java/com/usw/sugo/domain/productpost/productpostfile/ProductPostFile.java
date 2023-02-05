@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -31,4 +32,12 @@ public class ProductPostFile {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public void updateImageLink(List<String> imageLinks) {
+        StringBuilder finalLink = new StringBuilder();
+        for (String link : imageLinks) {
+            finalLink.append(link);
+        }
+        this.imageLink = finalLink.toString();
+    }
 }
