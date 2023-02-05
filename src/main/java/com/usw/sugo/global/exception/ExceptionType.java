@@ -10,6 +10,7 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum ExceptionType {
+    NOT_ALLOWED(BAD_REQUEST, "해당 요청을 수행할 권한이 없습니다."),
     USER_BAD_REQUEST(BAD_REQUEST, "파라미터가 올바르지 않습니다."),
     CATEGORY_NOT_FOUND(BAD_REQUEST, "해당 카테고리 이름을 찾을 수 없습니다."),
     EMAIL_NOT_VALIDATED(BAD_REQUEST, "이메일 형식이 올바르지 않습니다. 교내 웹 메일 주소만 입력할 수 있습니다."),
@@ -30,7 +31,6 @@ public enum ExceptionType {
     INVALID_DEPARTMENT(BAD_REQUEST, "존재하지 않는 학과입니다."),
     USER_NOT_EXIST(BAD_REQUEST, "존재하지 않는 회원 정보입니다."),
     PASSWORD_NOT_CORRECT(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-    // USER_ALREADY_JOIN(BAD_REQUEST, "이미 회원가입이 되어있는 유저입니다."),
     ALREADY_EVALUATION(BAD_REQUEST, "매너 평가는 하루에 한 번만 수행할 수 있습니다."),
     ALREADY_UP_POSTING(BAD_REQUEST, "게시글 갱신은 하루에 한 번만 수행할 수 있습니다."),
     JWT_MALFORMED_EXCEPTION(BAD_REQUEST, "JWT_MALFORMED_EXCEPTION"),

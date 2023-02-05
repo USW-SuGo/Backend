@@ -1,25 +1,40 @@
 package com.usw.sugo.domain.notice.dto;
 
-import lombok.Data;
+import lombok.Getter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 public class NoticeRequestDto {
 
-    @Data
+    @Getter
     public static class NoticePostRequest {
+        @NotEmpty
+        @NotBlank
         private String title;
+        @NotEmpty
+        @NotBlank
         private String content;
     }
 
-    @Data
+    @Getter
     public static class NoticeUpdateRequest {
-        private long noticeId;
+        @NotEmpty
+        @NotBlank
+        private Long noticeId;
+        @NotEmpty
+        @NotBlank
         private String title;
+        @NotEmpty
+        @NotBlank
         private String content;
     }
 
-    @Data
+    @Getter
     public static class NoticeDeleteRequest {
-        private long id;
+        @NotEmpty
+        @NotBlank
+        private Long noticeId;
     }
 
 }

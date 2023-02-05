@@ -30,4 +30,16 @@ public class Notice {
 
     @Column
     private LocalDateTime updatedAt;
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

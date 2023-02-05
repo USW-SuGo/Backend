@@ -10,6 +10,4 @@ import java.util.List;
 public interface CustomNoticeRepository{
 
     List<Notice> loadAllNotice(Pageable pageable);
-
-    void editNotice(long noticeId, String title, String content);
 }

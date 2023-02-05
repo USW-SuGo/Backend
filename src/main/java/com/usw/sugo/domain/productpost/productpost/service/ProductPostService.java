@@ -33,7 +33,7 @@ import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
 @Transactional(readOnly = true)
 public class ProductPostService {
 
-    private static final Map<String, Boolean> successFlag = new HashMap<>() {{
+    private final Map<String, Boolean> successFlag = new HashMap<>() {{
         put(SUCCESS.getResult(), true);
     }};
 

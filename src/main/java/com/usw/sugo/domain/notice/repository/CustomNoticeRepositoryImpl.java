@@ -20,22 +20,11 @@ public class CustomNoticeRepositoryImpl implements CustomNoticeRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Notice> loadAllNotice(Pageable pageable) {
+    public List<Notice> findAll(Pageable pageable) {
         return queryFactory
                 .selectFrom(notice)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-    }
-
-    @Override
-    public void editNotice(long noticeId, String title, String content) {
-        queryFactory
-                .update(notice)
-                .set(notice.title, title)
-                .set(notice.content, content)
-                .set(notice.updatedAt, LocalDateTime.now())
-                .where(notice.id.eq(noticeId))
-                .execute();
     }
 }
