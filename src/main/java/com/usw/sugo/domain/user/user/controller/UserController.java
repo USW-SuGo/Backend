@@ -93,7 +93,7 @@ public class UserController {
             @RequestHeader String authorization,
             @Valid @RequestBody QuitRequestForm quitRequestForm,
             @AuthenticationPrincipal User user) {
-        return userService.executeQuit(user);
+        return userService.executeQuit(user, quitRequestForm.getPassword());
     }
 
     @ResponseStatus(OK)

@@ -112,11 +112,14 @@ public class UserService {
     }
 
     @Transactional
-    public Map<String, Boolean> executeQuit(User user) {
-        noteService.deleteNoteByUser(user);
-        productPostService.deleteByUser(user);
-        userServiceUtility.deleteUser(user);
-        return successFlag;
+    public Map<String, Boolean> executeQuit(User user, String password) {
+        if (userServiceUtility.matchingPassword(user.getId(), password)) {
+            noteService.deleteNoteByUser(user);
+            productPostService.deleteByUser(user);
+            userServiceUtility.deleteUser(user);
+            return successFlag;
+        }
+        throw new CustomException(PASSWORD_NOT_CORRECT);
     }
 
     public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
