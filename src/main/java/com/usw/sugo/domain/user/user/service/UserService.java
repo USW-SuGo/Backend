@@ -5,6 +5,7 @@ import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
+import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
@@ -29,6 +30,7 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+    private final UserRepository userRepository;
     private final UserServiceUtility userServiceUtility;
     private final SendEmailServiceBySES sendEmailServiceBySES;
     private final UserEmailAuthService userEmailAuthService;
@@ -47,14 +49,14 @@ public class UserService {
     }};
 
     public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
-        if (userServiceUtility.loadUserByLoginId(loginId) != null) {
+        if (userRepository.findByLoginId(loginId).isPresent()) {
             return overlapFlag;
         }
         return unOverlapFlag;
     }
 
     public Map<String, Boolean> executeIsEmailExist(String email) {
-        if (userServiceUtility.loadUserByEmail(email) != null) {
+        if (userRepository.findByEmail(email).isPresent()) {
             return overlapFlag;
         }
         return unOverlapFlag;
