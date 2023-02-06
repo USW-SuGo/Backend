@@ -71,8 +71,8 @@ public class UserServiceUtility {
                 .password(password)
                 .recentUpPost(LocalDateTime.now().minusDays(1))
                 .recentEvaluationManner(LocalDateTime.now().minusDays(1))
-                .countMannerEvaluation(0)
-                .countTradeAttempt(0)
+                .countMannerEvaluation(0L)
+                .countTradeAttempt(0L)
                 .mannerGrade(BigDecimal.ZERO)
                 .status("NOT_AUTH")
                 .build();
