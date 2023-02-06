@@ -11,6 +11,7 @@ import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final UserServiceUtility userServiceUtility;
@@ -67,14 +68,12 @@ public class UserService {
         return successFlag;
     }
 
-    @Transactional
     public Map<String, Boolean> executeFindPassword(String email, User user) {
         String newPassword = userServiceUtility.initPassword(user);
         sendEmailServiceBySES.sendFindPasswordResult(email, newPassword);
         return successFlag;
     }
 
-    @Transactional
     public Map<String, Object> executeJoin(String loginId, String email, String password, String department) {
         userServiceUtility.validateSuwonUniversityEmailForm(email);
         User requestUser = userServiceUtility.softJoin(loginId, email, password);
@@ -88,11 +87,9 @@ public class UserService {
         }};
     }
 
-    @Transactional
     public Map<String, Boolean> executeAuthEmailPayload(String payload, Long userId) {
         UserEmailAuth requestUserEmailAuth = userEmailAuthService.loadUserEmailAuthByUser(
                 userServiceUtility.loadUserById(userId));
-
         if (requestUserEmailAuth.getPayload().equals(payload)) {
             User requestUser = requestUserEmailAuth.getUser();
             requestUserEmailAuth.confirmToken();
@@ -104,16 +101,15 @@ public class UserService {
         throw new CustomException(PAYLOAD_NOT_VALID);
     }
 
-    @Transactional
-    public Map<String, Boolean> executeEditPassword(User user, String prePassword, String newPassword) {
-        if (user.getPassword().equals(prePassword)) {
+    public Map<String, Boolean> executeEditPassword(User user, String newPassword) {
+        User requestUser = userServiceUtility.loadUserById(user.getId());
+        if (BCryptPasswordFactory.getBCryptPasswordEncoder().matches(newPassword, requestUser.getPassword())) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
-        user.encryptPassword(newPassword);
+        requestUser.encryptPassword(newPassword);
         return successFlag;
     }
 
-    @Transactional
     public Map<String, Boolean> executeQuit(User user, String password) {
         if (userServiceUtility.matchingPassword(user.getId(), password)) {
             noteService.deleteNoteByUser(user);
@@ -148,11 +144,10 @@ public class UserService {
                 .countMannerEvaluation(otherUser.getCountMannerEvaluation())
                 .countTradeAttempt(otherUser.getCountTradeAttempt())
                 .myPostings(productPostService.myPostings(otherUser, pageable))
-                .closePostings(executeLoadCloseMyPost(user, pageable))
+                .closePostings(executeLoadCloseMyPost(otherUser, pageable))
                 .build();
     }
 
-    @Transactional
     public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade, User user) {
         if (userServiceUtility.isBeforeDay(user.getRecentEvaluationManner())) {
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);

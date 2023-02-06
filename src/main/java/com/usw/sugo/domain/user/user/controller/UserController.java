@@ -1,9 +1,7 @@
 package com.usw.sugo.domain.user.user.controller;
 
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.UpPostingRequest;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -83,8 +80,7 @@ public class UserController {
             @RequestHeader String authorization,
             @Valid @RequestBody EditPasswordRequestForm editPasswordRequestForm,
             @AuthenticationPrincipal User user) {
-        return userService.executeEditPassword(
-                user, editPasswordRequestForm.getPrePassword(), editPasswordRequestForm.getNewPassword());
+        return userService.executeEditPassword(user, editPasswordRequestForm.getNewPassword());
     }
 
     @ResponseStatus(OK)

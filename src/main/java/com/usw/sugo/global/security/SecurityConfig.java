@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
-import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.filter.JwtFilter;
 import com.usw.sugo.global.security.filter.LoginFilter;
+import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +21,7 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.Filter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,7 +31,6 @@ public class SecurityConfig {
     private final UserDetailsRepository userDetailsRepository;
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
-    private final JwtValidator jwtValidator;
     private final JwtResolver jwtResolver;
     private final ObjectMapper mapper;
 
@@ -88,6 +85,6 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+        return BCryptPasswordFactory.getBCryptPasswordEncoder();
     }
 }
