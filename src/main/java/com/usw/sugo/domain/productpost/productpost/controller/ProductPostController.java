@@ -90,7 +90,7 @@ public class ProductPostController {
     }
 
     @ResponseStatus(OK)
-    @PostMapping("/status")
+    @PostMapping("/close")
     public Map<String, Boolean> changeStatus(
             @RequestBody ClosePostRequest closePostRequest) {
         return productPostService.closePost(productPostService.loadProductPost(closePostRequest.getProductPostId()));

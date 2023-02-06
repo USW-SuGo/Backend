@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.usw.sugo.domain.ApiResult.SUCCESS;
 import static com.usw.sugo.global.exception.ExceptionType.*;
@@ -84,8 +85,9 @@ public class ProductPostService {
     }
 
     public ProductPost loadProductPost(Long productPostId) {
-        if (productPostRepository.findById(productPostId).isPresent()) {
-            return productPostRepository.findById(productPostId).get();
+        Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
+        if (productPost.isPresent()) {
+            return productPost.get();
         }
         throw new CustomException(POST_NOT_FOUND);
     }
