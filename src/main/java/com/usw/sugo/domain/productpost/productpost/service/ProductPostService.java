@@ -172,7 +172,8 @@ public class ProductPostService {
     @Transactional
     public Map<String, Boolean> upPost(User user, ProductPost productPost) {
         if (validateUpPostIsAvailable(user)) {
-            user.updateRecentUpPost();
+            User requestUser = userServiceUtility.loadUserById(user.getId());
+            requestUser.updateRecentUpPost();
             productPost.updateUpdatedAt();
         }
         return successFlag;

@@ -149,9 +149,10 @@ public class UserService {
     }
 
     public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade, User user) {
-        if (userServiceUtility.isBeforeDay(user.getRecentEvaluationManner())) {
+        User requestUser = userServiceUtility.loadUserById(user.getId());
+        if (userServiceUtility.isBeforeDay(requestUser.getRecentEvaluationManner())) {
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);
-            user.updateRecentEvaluationManner();
+            requestUser.updateRecentEvaluationManner();
             return successFlag;
         }
         throw new CustomException(ALREADY_EVALUATION);
