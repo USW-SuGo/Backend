@@ -116,16 +116,6 @@ public class UserController {
     }
 
     @ResponseStatus(OK)
-    @GetMapping("/{userId}/close-post")
-    public List<ClosePosting> loadClosePost(
-            @RequestHeader String authorization,
-            @PathVariable Long userId,
-            @AuthenticationPrincipal User user,
-            Pageable pageable) {
-        return userService.executeLoadCloseMyPost(user, pageable);
-    }
-
-    @ResponseStatus(OK)
     @GetMapping("/{userId}")
     public UserPageResponseForm loadOtherUserPage(
             @RequestHeader String authorization,

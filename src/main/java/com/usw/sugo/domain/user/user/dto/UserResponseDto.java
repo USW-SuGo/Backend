@@ -41,6 +41,7 @@ public class UserResponseDto {
         private Long countTradeAttempt;
         private List<MyPosting> myPostings;
         private List<LikePosting> likePostings;
+        private List<ClosePosting> closePostings;
 
         @QueryProjection
         public UserPageResponseForm(

@@ -136,6 +136,7 @@ public class UserService {
                     .countTradeAttempt(user.getCountTradeAttempt())
                     .myPostings(productPostService.myPostings(user, pageable))
                     .likePostings(userLikePostService.loadLikePosts(user.getId()))
+                    .closePostings(executeLoadCloseMyPost(user, pageable))
                     .build();
         }
         User otherUser = userServiceUtility.loadUserById(userId);
@@ -147,6 +148,7 @@ public class UserService {
                 .countMannerEvaluation(otherUser.getCountMannerEvaluation())
                 .countTradeAttempt(otherUser.getCountTradeAttempt())
                 .myPostings(productPostService.myPostings(otherUser, pageable))
+                .closePostings(executeLoadCloseMyPost(user, pageable))
                 .build();
     }
 
