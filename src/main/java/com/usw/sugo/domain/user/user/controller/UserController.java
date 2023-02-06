@@ -5,7 +5,6 @@ import com.usw.sugo.domain.user.user.dto.UserRequestDto.*;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -106,9 +105,8 @@ public class UserController {
     @GetMapping
     public UserPageResponseForm loadMyPage(
             @RequestHeader String authorization,
-            @AuthenticationPrincipal User user,
-            Pageable pageable) {
-        return userService.executeLoadUserPage(user, user.getId(), pageable);
+            @AuthenticationPrincipal User user) {
+        return userService.executeLoadUserPage(user, user.getId());
     }
 
     @ResponseStatus(OK)
@@ -116,9 +114,8 @@ public class UserController {
     public UserPageResponseForm loadOtherUserPage(
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
-            @PathVariable Long userId,
-            Pageable pageable) {
-        return userService.executeLoadUserPage(user, userId, pageable);
+            @PathVariable Long userId) {
+        return userService.executeLoadUserPage(user, userId);
     }
 
     @ResponseStatus(OK)

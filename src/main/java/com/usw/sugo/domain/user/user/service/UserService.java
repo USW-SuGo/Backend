@@ -1,14 +1,13 @@
 package com.usw.sugo.domain.user.user.service;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.ClosePosting;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
-import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
@@ -37,7 +36,6 @@ public class UserService {
     private final UserEmailAuthService userEmailAuthService;
     private final NoteService noteService;
     private final ProductPostService productPostService;
-    private final UserLikePostService userLikePostService;
 
     private static final Map<String, Boolean> overlapFlag = new HashMap<>() {{
         put(EXIST.getResult(), true);
@@ -120,7 +118,7 @@ public class UserService {
         throw new CustomException(PASSWORD_NOT_CORRECT);
     }
 
-    public UserPageResponseForm executeLoadUserPage(User user, Long userId, Pageable pageable) {
+    public UserPageResponseForm executeLoadUserPage(User user, Long userId) {
         // 요청유저와 userId가 같으면 마이페이지
         if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
@@ -130,9 +128,6 @@ public class UserService {
                     .mannerGrade(user.getMannerGrade())
                     .countMannerEvaluation(user.getCountMannerEvaluation())
                     .countTradeAttempt(user.getCountTradeAttempt())
-                    .myPostings(productPostService.myPostings(user, pageable))
-                    .likePostings(userLikePostService.loadLikePosts(user.getId()))
-                    .closePostings(executeLoadCloseMyPost(user, pageable))
                     .build();
         }
         User otherUser = userServiceUtility.loadUserById(userId);
@@ -143,8 +138,6 @@ public class UserService {
                 .mannerGrade(otherUser.getMannerGrade())
                 .countMannerEvaluation(otherUser.getCountMannerEvaluation())
                 .countTradeAttempt(otherUser.getCountTradeAttempt())
-                .myPostings(productPostService.myPostings(otherUser, pageable))
-                .closePostings(executeLoadCloseMyPost(otherUser, pageable))
                 .build();
     }
 
@@ -156,9 +149,5 @@ public class UserService {
             return successFlag;
         }
         throw new CustomException(ALREADY_EVALUATION);
-    }
-
-    public List<ClosePosting> executeLoadCloseMyPost(User user, Pageable pageable) {
-        return productPostService.loadClosePosting(user, pageable);
     }
 }

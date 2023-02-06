@@ -44,10 +44,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     private BigDecimal mannerGrade;
 
     @Column
-    private long countMannerEvaluation;
+    private Long countMannerEvaluation;
 
     @Column
-    private long countTradeAttempt;
+    private Long countTradeAttempt;
 
     @Column
     private LocalDateTime recentUpPost;

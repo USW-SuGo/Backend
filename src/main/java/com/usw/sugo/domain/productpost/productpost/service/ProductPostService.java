@@ -2,14 +2,10 @@ package com.usw.sugo.domain.productpost.productpost.service;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.*;
 import com.usw.sugo.domain.productpost.productpost.repository.ProductPostRepository;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +29,13 @@ import static com.usw.sugo.global.exception.ExceptionType.*;
 @Transactional(readOnly = true)
 public class ProductPostService {
 
-    private final Map<String, Boolean> successFlag = new HashMap<>() {{
-        put(SUCCESS.getResult(), true);
-    }};
-
     private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
     private final ProductPostFileService productPostFileService;
+
+    private final Map<String, Boolean> successFlag = new HashMap<>() {{
+        put(SUCCESS.getResult(), true);
+    }};
 
     public List<MainPageResponse> mainPage(Pageable pageable, String category) {
         List<MainPageResponse> mainPageResponses = productPostRepository.loadMainPagePostList(pageable, category);
@@ -56,8 +52,23 @@ public class ProductPostService {
         return mainPageResponses;
     }
 
-    public List<MyPosting> myPostings(User user, Pageable pageable) {
-        List<MyPosting> myPostings = productPostRepository.loadWrittenPost(user, pageable);
+    public List<MyPosting> loadMyPosting(User user, Long userId, Pageable pageable) {
+        // 마이 페이지
+        if (user.getId().equals(userId)) {
+            List<MyPosting> myPostings = productPostRepository.loadWrittenPost(user, pageable);
+            String imageLink;
+            for (MyPosting myPosting : myPostings) {
+                imageLink = myPosting.getImageLink()
+                        .split(",")[0]
+                        .replace("[", "")
+                        .replace("]", "");
+                myPosting.setImageLink(imageLink);
+            }
+            return myPostings;
+        }
+        // 다른 유저 페이지
+        User otherUser = userServiceUtility.loadUserById(userId);
+        List<MyPosting> myPostings = productPostRepository.loadWrittenPost(otherUser, pageable);
         String imageLink;
         for (MyPosting myPosting : myPostings) {
             imageLink = myPosting.getImageLink()
@@ -84,7 +95,7 @@ public class ProductPostService {
         return searchResultResponses;
     }
 
-    public ProductPost loadProductPost(Long productPostId) {
+    public ProductPost loadProductPostById(Long productPostId) {
         Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
         if (productPost.isPresent()) {
             return productPost.get();
@@ -155,7 +166,7 @@ public class ProductPostService {
 
     @Transactional
     public void deleteByProductPostId(Long productPostId) {
-        ProductPost productPost = loadProductPost(productPostId);
+        ProductPost productPost = loadProductPostById(productPostId);
         productPostFileService.deleteProductPostFileByProductPost(productPost);
         productPostRepository.deleteByEntity(productPost);
     }

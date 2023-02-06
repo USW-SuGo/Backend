@@ -1,9 +1,7 @@
 package com.usw.sugo.domain.productpost.productpost.controller;
 
 import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.*;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.*;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +34,8 @@ public class ProductPostController {
     @ResponseStatus(OK)
     @GetMapping("/all")
     public List<MainPageResponse> loadMainPage(
-            Pageable pageable, @RequestParam String category) {
+            @RequestParam String category,
+            Pageable pageable) {
         return productPostService.mainPage(pageable, category);
     }
 
@@ -47,6 +46,34 @@ public class ProductPostController {
             @PathVariable Long productPostId,
             @AuthenticationPrincipal User user) {
         return productPostService.loadDetailProductPost(productPostId, user.getId());
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/my-post")
+    public List<MyPosting> loadUserPost(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            Pageable pageable) {
+        return productPostService.loadMyPosting(user, user.getId(), pageable);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/my-post/{userId}")
+    public List<MyPosting> loadOtherUserPost(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return productPostService.loadMyPosting(user, userId, pageable);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/close-post")
+    public List<ClosePosting> loadUserClosePost(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            Pageable pageable) {
+        return productPostService.loadClosePosting(user, pageable);
     }
 
     @ResponseStatus(OK)
@@ -65,7 +92,7 @@ public class ProductPostController {
             @RequestBody MultipartFile[] multipartFileList,
             PutContentRequest putContentRequest) {
         return productPostService.editPosting(
-                productPostService.loadProductPost(putContentRequest.getProductPostId()),
+                productPostService.loadProductPostById(putContentRequest.getProductPostId()),
                 putContentRequest.getTitle(), putContentRequest.getContent(), putContentRequest.getPrice(),
                 putContentRequest.getContactPlace(), putContentRequest.getCategory(), multipartFileList);
     }
@@ -86,13 +113,13 @@ public class ProductPostController {
             @RequestHeader String authorization,
             @RequestBody UpPostingRequest upPostingRequest,
             @AuthenticationPrincipal User user) {
-        return productPostService.upPost(user, productPostService.loadProductPost(upPostingRequest.getProductPostId()));
+        return productPostService.upPost(user, productPostService.loadProductPostById(upPostingRequest.getProductPostId()));
     }
 
     @ResponseStatus(OK)
     @PostMapping("/close")
     public Map<String, Boolean> changeStatus(
             @RequestBody ClosePostRequest closePostRequest) {
-        return productPostService.closePost(productPostService.loadProductPost(closePostRequest.getProductPostId()));
+        return productPostService.closePost(productPostService.loadProductPostById(closePostRequest.getProductPostId()));
     }
 }

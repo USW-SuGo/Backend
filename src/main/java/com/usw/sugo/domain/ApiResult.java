@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ApiResult {
 
     SUCCESS("Success"),
-    EXIST("Exist");
+    EXIST("Exist"),
+    LIKE("Like");
 
     private final String result;
 }

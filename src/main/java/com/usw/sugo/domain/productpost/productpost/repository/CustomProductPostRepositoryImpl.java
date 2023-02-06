@@ -2,17 +2,9 @@ package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.*;
+import com.usw.sugo.domain.productpost.productpost.dto.*;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.QUserResponseDto_ClosePosting;
-import com.usw.sugo.domain.user.user.dto.QUserResponseDto_MyPosting;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.ClosePosting;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.MyPosting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -147,7 +139,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     @Override
     public List<MyPosting> loadWrittenPost(User user, Pageable pageable) {
         return queryFactory
-                .select(new QUserResponseDto_MyPosting(
+                .select(new QPostResponseDto_MyPosting(
                         productPost.id.as("productPostId"), productPostFile.imageLink, productPost.contactPlace,
                         productPost.updatedAt, productPost.title, productPost.price, productPost.category,
                         productPost.status))
@@ -164,7 +156,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     @Override
     public List<ClosePosting> loadClosePost(User user, Pageable pageable) {
         return queryFactory
-                .select(new QUserResponseDto_ClosePosting(
+                .select(new QPostResponseDto_ClosePosting(
                         productPost.id.as("productPostId"), productPostFile.imageLink, productPost.contactPlace,
                         productPost.updatedAt, productPost.title, productPost.price, productPost.category,
                         productPost.status))
