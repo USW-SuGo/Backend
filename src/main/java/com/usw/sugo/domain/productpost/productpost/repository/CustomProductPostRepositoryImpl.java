@@ -109,7 +109,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     }
 
     @Override
-    public DetailPostResponse loadDetailPost(long productPostId, long userId) {
+    public DetailPostResponse loadDetailPost(Long productPostId, Long userId) {
         DetailPostResponse response = queryFactory
                 .select(new QPostResponseDto_DetailPostResponse(
                         productPost.id.as("productPostId"), productPost.user.id.as("writerId"),

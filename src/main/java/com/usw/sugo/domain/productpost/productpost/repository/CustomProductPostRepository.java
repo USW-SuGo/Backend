@@ -19,7 +19,7 @@ public interface CustomProductPostRepository {
 
     List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category);
 
-    DetailPostResponse loadDetailPost(long productPostId, long userId);
+    DetailPostResponse loadDetailPost(Long productPostId, Long userId);
 
     List<MyPosting> loadWrittenPost(User user, Pageable pageable);
 

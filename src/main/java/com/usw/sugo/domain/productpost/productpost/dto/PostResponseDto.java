@@ -42,7 +42,7 @@ public class PostResponseDto {
         private String contactPlace;
         private LocalDateTime updatedAt;
         private String title;
-        private int price;
+        private Integer price;
         private String nickname;
         private String category;
         private Boolean status;
@@ -50,7 +50,7 @@ public class PostResponseDto {
         @QueryProjection
         public MainPageResponse(
                 Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                int price, String nickname, String category, boolean status) {
+                Integer price, String nickname, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -66,14 +66,14 @@ public class PostResponseDto {
     // 특정 게시물 조회에 대한 반환 DTO
     @Data
     public static class DetailPostResponse {
-        private long productPostId;
-        private long writerId;
+        private Long productPostId;
+        private Long writerId;
         private String imageLink;
         private String contactPlace;
         private LocalDateTime updatedAt;
         private String title;
         private String content;
-        private int price;
+        private Integer price;
         private String nickname;
         private String category;
         private Boolean status;
@@ -81,8 +81,8 @@ public class PostResponseDto {
 
         @QueryProjection
         public DetailPostResponse(
-                long productPostId, long writerId, String imageLink, String contactPlace, LocalDateTime updatedAt,
-                String title, String content, int price, String nickname, String category, boolean status) {
+                Long productPostId, Long writerId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+                String title, String content, Integer price, String nickname, String category, Boolean status) {
             this.productPostId = productPostId;
             this.writerId = writerId;
             this.imageLink = imageLink;
