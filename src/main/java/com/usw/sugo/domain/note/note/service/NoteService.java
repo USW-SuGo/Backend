@@ -44,7 +44,6 @@ public class NoteService {
     }
 
     public void deleteNoteByUser(User user) {
-        // noteFileService.deleteByNote(user);
         noteRepository.deleteByCreatingUser(user);
         noteRepository.deleteByOpponentUser(user);
     }

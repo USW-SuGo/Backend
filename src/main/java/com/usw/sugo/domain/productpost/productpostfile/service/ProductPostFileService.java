@@ -34,7 +34,7 @@ public class ProductPostFileService {
 
     @Transactional
     public List<String> saveProductPostFile(ProductPost productPost, MultipartFile[] multipartFiles) throws IOException {
-        List<String> imageLinks = awsS3ServiceProductPost.uploadS3ByProductPost(multipartFiles, productPost.getId());
+        List<String> imageLinks = awsS3ServiceProductPost.uploadS3(multipartFiles, productPost.getId());
         ProductPostFile productPostFile = ProductPostFile.builder()
                 .productPost(productPost)
                 .imageLink(imageLinks.toString())
@@ -57,6 +57,7 @@ public class ProductPostFileService {
             throw new CustomException(POST_NOT_FOUND);
         }
         awsS3ServiceProductPost.deleteS3ProductPostFile(loadProductPostFileByProductPost(productPost));
+        productPostFileRepository.deleteById(productPostFile.get().getId());
         try {
             saveProductPostFile(productPost, multipartFiles);
         } catch (IOException e) {

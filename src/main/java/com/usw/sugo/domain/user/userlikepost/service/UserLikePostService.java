@@ -13,6 +13,7 @@ import com.usw.sugo.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserLikePostService {
 
     private final UserLikePostRepository userLikePostRepository;
@@ -66,5 +68,10 @@ public class UserLikePostService {
 
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
         return userLikePostRepository.loadMyLikePosting(userId, pageable);
+    }
+
+    @Transactional
+    public void deleteByUser(User user) {
+        userLikePostRepository.deleteByUser(user);
     }
 }

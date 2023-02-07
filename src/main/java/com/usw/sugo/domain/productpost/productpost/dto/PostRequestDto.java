@@ -1,81 +1,72 @@
 package com.usw.sugo.domain.productpost.productpost.dto;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 
 public class PostRequestDto {
 
     @Getter
+    @Setter
     public static class PostingRequest {
-        @NotEmpty
         @NotBlank
         private String title;
 
-        @NotEmpty
         @NotBlank
         private String content;
 
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Integer price;
 
-        @NotEmpty
         @NotBlank
         private String contactPlace;
 
-        @NotEmpty
         @NotBlank
         private String category;
     }
 
     @Getter
+    @Setter
     public static class PutContentRequest {
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Long productPostId;
 
-        @NotEmpty
         @NotBlank
         private String title;
 
-        @NotEmpty
         @NotBlank
         private String content;
 
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Integer price;
 
-        @NotEmpty
         @NotBlank
         private String contactPlace;
 
-        @NotEmpty
         @NotBlank
         private String category;
     }
 
     @Getter
     public static class DeleteContentRequest {
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Long productPostId;
     }
 
     @Getter
     public static class UpPostingRequest {
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Long productPostId;
     }
 
     @Getter
     public static class ClosePostRequest {
-        @NotEmpty
-        @NotBlank
+        @NotNull
         private Long productPostId;
     }
 }

@@ -29,7 +29,7 @@ public class AwsS3ServiceProductPost {
     private final String defaultProductPostPath = PRODUCT_POST.getPath();
     private final AmazonS3Client amazonS3Client;
 
-    public List<String> uploadS3ByProductPost(MultipartFile[] multipartFiles, Long productPostId) {
+    public List<String> uploadS3(MultipartFile[] multipartFiles, Long productPostId) {
         List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String filename = multipartFile.getOriginalFilename();

@@ -22,30 +22,26 @@ public class UserController {
 
     @ResponseStatus(OK)
     @PostMapping("/check-loginId")
-    public Map<String, Boolean> checkLoginId(
-            @Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
+    public Map<String, Boolean> checkLoginId(@Valid @RequestBody IsLoginIdExistRequestForm isLoginIdExistRequestForm) {
         return userService.executeIsLoginIdExist(isLoginIdExistRequestForm.getLoginId());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/check-email")
-    public Map<String, Boolean> checkEmail(
-            @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
+    public Map<String, Boolean> checkEmail(@Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
         return userService.executeIsEmailExist(isEmailExistRequestForm.getEmail());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/find-id")
-    public Map<String, Boolean> findId(
-            @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
+    public Map<String, Boolean> findId(@Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
         return userService.executeFindLoginId(findLoginIdRequestForm.getEmail());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/find-pw")
-    public Map<String, Boolean> sendPasswordEmail(
-            @Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
-            @AuthenticationPrincipal User user) {
+    public Map<String, Boolean> sendPasswordEmail(@Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
+                                                  @AuthenticationPrincipal User user) {
         return userService.executeFindPassword(
                 findPasswordRequestForm.getEmail(),
                 user);
@@ -53,8 +49,7 @@ public class UserController {
 
     @ResponseStatus(OK)
     @PostMapping("/join")
-    public Map<String, Object> detailJoin(
-            @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
+    public Map<String, Object> detailJoin(@Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
         return userService.executeJoin(
                 detailJoinRequestForm.getLoginId(),
                 detailJoinRequestForm.getEmail(),
@@ -64,8 +59,7 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-    public Map<String, Boolean> confirmEmail(
-            @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
+    public Map<String, Boolean> confirmEmail(@Valid @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
         return userService.executeAuthEmailPayload(
                 authEmailPayloadForm.getPayload(),
                 authEmailPayloadForm.getUserId()
@@ -75,27 +69,21 @@ public class UserController {
     // 비밀번호 수정
     @ResponseStatus(OK)
     @PutMapping("/password")
-    public Map<String, Boolean> editPassword(
-            @RequestHeader String authorization,
-            @Valid @RequestBody EditPasswordRequestForm editPasswordRequestForm,
-            @AuthenticationPrincipal User user) {
+    public Map<String, Boolean> editPassword(@Valid @RequestBody EditPasswordRequestForm editPasswordRequestForm,
+                                             @AuthenticationPrincipal User user) {
         return userService.executeEditPassword(user, editPasswordRequestForm.getNewPassword());
     }
 
     @ResponseStatus(OK)
     @DeleteMapping
-    public Map<String, Boolean> deleteUser(
-            @RequestHeader String authorization,
-            @Valid @RequestBody QuitRequestForm quitRequestForm,
-            @AuthenticationPrincipal User user) {
+    public Map<String, Boolean> deleteUser(@Valid @RequestBody QuitRequestForm quitRequestForm,
+                                           @AuthenticationPrincipal User user) {
         return userService.executeQuit(user, quitRequestForm.getPassword());
     }
 
     @ResponseStatus(OK)
     @GetMapping("/identifier")
-    public Map<String, Long> getMyIndex(
-            @RequestHeader String authorization,
-            @AuthenticationPrincipal User user) {
+    public Map<String, Long> getMyIndex(@AuthenticationPrincipal User user) {
         return new HashMap<>() {{
             put("userId", user.getId());
         }};
@@ -103,27 +91,20 @@ public class UserController {
 
     @ResponseStatus(OK)
     @GetMapping
-    public UserPageResponseForm loadMyPage(
-            @RequestHeader String authorization,
-            @AuthenticationPrincipal User user) {
+    public UserPageResponseForm loadMyPage(@AuthenticationPrincipal User user) {
         return userService.executeLoadUserPage(user, user.getId());
     }
 
     @ResponseStatus(OK)
     @GetMapping("/{userId}")
-    public UserPageResponseForm loadOtherUserPage(
-            @RequestHeader String authorization,
-            @AuthenticationPrincipal User user,
-            @PathVariable Long userId) {
+    public UserPageResponseForm loadOtherUserPage(@PathVariable Long userId, @AuthenticationPrincipal User user) {
         return userService.executeLoadUserPage(user, userId);
     }
 
     @ResponseStatus(OK)
     @PostMapping("/manner")
-    public Map<String, Boolean> evaluateManner(
-            @RequestHeader String authorization,
-            @AuthenticationPrincipal User user,
-            @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm) {
+    public Map<String, Boolean> evaluateManner(@Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm,
+                                               @AuthenticationPrincipal User user) {
         return userService.executeEvaluateManner(
                 mannerEvaluationRequestForm.getTargetUserId(),
                 mannerEvaluationRequestForm.getGrade(),

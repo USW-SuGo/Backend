@@ -171,16 +171,17 @@ public class ProductPostService {
             ProductPost productPost, String title, String content,
             Integer price, String contactPlace, String category, MultipartFile[] multipartFile) {
         productPost.updateProductPost(title, content, price, contactPlace, category);
-        productPostRepository.save(productPost);
         productPostFileService.editProductPostFile(productPost, multipartFile);
         return successFlag;
     }
 
     @Transactional
-    public void deleteByProductPostId(Long productPostId) {
+    public Map<String, Boolean> deleteByProductPostId(Long productPostId) {
         ProductPost productPost = loadProductPostById(productPostId);
         productPostFileService.deleteProductPostFileByProductPost(productPost);
         productPostRepository.deleteByEntity(productPost);
+
+        return successFlag;
     }
 
     @Transactional

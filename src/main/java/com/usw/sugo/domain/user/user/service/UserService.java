@@ -2,11 +2,13 @@ package com.usw.sugo.domain.user.user.service;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
+import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
+import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
@@ -33,6 +35,8 @@ public class UserService {
     private final UserEmailAuthService userEmailAuthService;
     private final NoteService noteService;
     private final ProductPostService productPostService;
+    private final UserLikePostService userLikePostService;
+    private final RefreshTokenService refreshTokenService;
 
     private static final Map<String, Boolean> overlapFlag = new HashMap<>() {{
         put(EXIST.getResult(), true);
@@ -108,7 +112,9 @@ public class UserService {
     public Map<String, Boolean> executeQuit(User user, String password) {
         if (userServiceUtility.matchingPassword(user.getId(), password)) {
             noteService.deleteNoteByUser(user);
+            userLikePostService.deleteByUser(user);
             productPostService.deleteByUser(user);
+            refreshTokenService.deleteByUser(user);
             userServiceUtility.deleteUser(user);
             return successFlag;
         }
