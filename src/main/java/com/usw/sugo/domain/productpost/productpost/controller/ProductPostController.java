@@ -6,6 +6,7 @@ import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,7 +81,7 @@ public class ProductPostController {
     @PostMapping
     public Map<String, Boolean> savePost(
             @RequestHeader String authorization,
-            @RequestBody MultipartFile[] multipartFileList,
+            MultipartFile[] multipartFileList,
             PostingRequest postingRequest,
             @AuthenticationPrincipal User user) throws IOException {
         return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
@@ -89,7 +90,7 @@ public class ProductPostController {
     @ResponseStatus(OK)
     @PutMapping
     public Map<String, Boolean> putProductPostAndImage(
-            @RequestBody MultipartFile[] multipartFileList,
+            MultipartFile[] multipartFileList,
             PutContentRequest putContentRequest) {
         return productPostService.editPosting(
                 productPostService.loadProductPostById(putContentRequest.getProductPostId()),

@@ -47,7 +47,7 @@ public class PostRequestDto {
 
         @NotEmpty
         @NotBlank
-        private int price;
+        private Integer price;
 
         @NotEmpty
         @NotBlank
