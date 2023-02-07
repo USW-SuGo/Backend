@@ -6,7 +6,6 @@ import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,7 +73,17 @@ public class ProductPostController {
             @RequestHeader String authorization,
             @AuthenticationPrincipal User user,
             Pageable pageable) {
-        return productPostService.loadClosePosting(user, pageable);
+        return productPostService.loadClosePosting(user, user.getId(), pageable);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/close-post/{userId}")
+    public List<ClosePosting> loadUserClosePost(
+            @RequestHeader String authorization,
+            @AuthenticationPrincipal User user,
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return productPostService.loadClosePosting(user, userId, pageable);
     }
 
     @ResponseStatus(OK)
@@ -84,6 +93,7 @@ public class ProductPostController {
             MultipartFile[] multipartFileList,
             PostingRequest postingRequest,
             @AuthenticationPrincipal User user) throws IOException {
+        System.out.println(postingRequest.getTitle());
         return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
     }
 

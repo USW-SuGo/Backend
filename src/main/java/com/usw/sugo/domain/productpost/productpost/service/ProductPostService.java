@@ -120,8 +120,21 @@ public class ProductPostService {
         return productPostRepository.findAllByUser(user);
     }
 
-    public List<ClosePosting> loadClosePosting(User user, Pageable pageable) {
-        List<ClosePosting> closePostings = productPostRepository.loadClosePost(user, pageable);
+    public List<ClosePosting> loadClosePosting(User user, Long userId, Pageable pageable) {
+        if (user.getId().equals(userId)) {
+            List<ClosePosting> closePostings = productPostRepository.loadClosePost(user, pageable);
+            String imageLink;
+            for (ClosePosting closePosting : closePostings) {
+                imageLink = closePosting.getImageLink()
+                        .split(",")[0]
+                        .replace("[", "")
+                        .replace("]", "");
+                closePosting.setImageLink(imageLink);
+            }
+            return closePostings;
+        }
+        User requestUser = userServiceUtility.loadUserById(userId);
+        List<ClosePosting> closePostings = productPostRepository.loadClosePost(requestUser, pageable);
         String imageLink;
         for (ClosePosting closePosting : closePostings) {
             imageLink = closePosting.getImageLink()
@@ -132,7 +145,6 @@ public class ProductPostService {
         }
         return closePostings;
     }
-
 
     // S3 버킷 객체 생성
     @Transactional
