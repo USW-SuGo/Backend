@@ -1,7 +1,6 @@
 package com.usw.sugo.domain.user.user.service;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.ClosePosting;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
@@ -13,13 +12,11 @@ import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.usw.sugo.domain.ApiResult.EXIST;

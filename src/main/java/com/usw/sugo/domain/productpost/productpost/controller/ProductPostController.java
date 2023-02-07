@@ -80,9 +80,9 @@ public class ProductPostController {
     @PostMapping
     public Map<String, Boolean> savePost(
             @RequestHeader String authorization,
-            @RequestBody PostingRequest postingRequest,
-            @AuthenticationPrincipal User user,
-            MultipartFile[] multipartFileList) throws IOException {
+            @RequestBody MultipartFile[] multipartFileList,
+            PostingRequest postingRequest,
+            @AuthenticationPrincipal User user) throws IOException {
         return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
     }
 
