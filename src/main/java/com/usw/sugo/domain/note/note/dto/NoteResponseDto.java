@@ -1,17 +1,14 @@
 package com.usw.sugo.domain.note.note.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 public class NoteResponseDto {
-
-    public static class CreatedNoteForm {
-        private Map<String, Long> createdNoteId;
-    }
 
     @Getter
     @Builder
@@ -43,6 +40,7 @@ public class NoteResponseDto {
 
     @Getter
     @Builder
+    @AllArgsConstructor
     public static class LoadNoteAllContentForm {
         private Long requestUserId;
         private Long productPostId;
