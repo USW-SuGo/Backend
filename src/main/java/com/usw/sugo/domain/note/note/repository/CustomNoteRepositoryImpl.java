@@ -71,7 +71,6 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
      */
     @Override
     public void readNoteRoom(long requestUserId, long noteId) {
-
         queryFactory
                 .update(note)
                 .set(note.creatingUserUnreadCount, 0)

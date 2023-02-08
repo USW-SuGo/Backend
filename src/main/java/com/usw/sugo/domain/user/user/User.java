@@ -111,7 +111,7 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     public void updateMannerGrade(BigDecimal grade) {
         this.countMannerEvaluation += 1;
-        this.mannerGrade = mannerGrade.divide(BigDecimal.valueOf(this.countMannerEvaluation), RoundingMode.FLOOR);
+        this.mannerGrade = mannerGrade.divide(this.mannerGrade.add(grade), RoundingMode.FLOOR);
     }
 
     public void updateRecentUpPost() {

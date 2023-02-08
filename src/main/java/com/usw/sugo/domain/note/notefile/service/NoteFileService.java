@@ -41,7 +41,7 @@ public class NoteFileService {
 
         List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, noteId);
         NoteFile noteFile = NoteFile.builder()
-                .note(noteService.loadNoteById(noteId))
+                .note(noteService.loadNoteByNoteId(noteId))
                 .sender(userServiceUtility.loadUserById(senderId))
                 .receiver(userServiceUtility.loadUserById(receiverId))
                 .imageLink(imageLinks.toString())

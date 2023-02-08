@@ -4,17 +4,18 @@ import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.user.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long>, CustomNoteRepository {
     void deleteByCreatingUser(User requestUser);
+
     void deleteByOpponentUser(User requestUser);
-    void deleteById(Long Id);
 
-    List<Note> findByCreatingUser(User requestUser);
+    void deleteById(Long id);
 
-    List<Note> findByOpponentUser(User requestUser);
+    Optional<Note> findByCreatingUserAndId(User creatingUser, Long id);
+
+    Optional<Note> findByOpponentUserAndId(User opponentUser, Long id);
 }

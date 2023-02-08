@@ -1,62 +1,38 @@
 package com.usw.sugo.domain.note.note.controller;
 
 import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequestForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
-import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note")
 public class NoteController {
-    private final JwtResolver jwtResolver;
-    private final NoteControllerValidator noteControllerValidator;
     private final NoteService noteService;
 
+    @ResponseStatus(OK)
     @PostMapping
-    public ResponseEntity<Object> createRoom(
-            @RequestHeader String authorization,
-            @RequestBody CreateNoteRequestForm createNoteRequestForm) {
-
-        User creatingRequestUser = validateAndExtractUser(authorization);
-        User opponentUser = noteControllerValidator
-                .validateUser(createNoteRequestForm.getOpponentUserId());
-
-        ProductPost productPost = noteControllerValidator
-                .validateProductPost(createNoteRequestForm.getProductPostId());
-
-        noteControllerValidator.validateCreatingNoteRoom(
-                creatingRequestUser.getId(), opponentUser.getId(), productPost.getId());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new HashMap<>() {{
-                    put("noteId", noteService.makeNote(productPost, creatingRequestUser, opponentUser));
-                }});
+    public Map<String, Long> createRoom(
+            @RequestBody CreateNoteRequestForm createNoteRequestForm,
+            @AuthenticationPrincipal User user) {
+        return noteService.executeCreatingRoom(
+                user.getId(),
+                createNoteRequestForm.getOpponentUserId(),
+                createNoteRequestForm.getProductPostId());
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Object> loadAllNoteListByUserId(
-            @RequestHeader String authorization,
-            Pageable pageable) {
-
-        User requestUser = validateAndExtractUser(authorization);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(noteService.loadNoteList(requestUser, pageable));
-    }
-
-    private User validateAndExtractUser(String authorization) {
-        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        return noteControllerValidator.validateUser(userId);
+    public Stream<LoadNoteListForm> loadAllNoteListByUserId(Pageable pageable, @AuthenticationPrincipal User user) {
+        return noteService.executeLoadAllNotes(user, pageable);
     }
 }

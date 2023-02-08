@@ -2,7 +2,6 @@ package com.usw.sugo.domain.note.note.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class NoteRequestDto {
@@ -10,11 +9,9 @@ public class NoteRequestDto {
     @Data
     public static class CreateNoteRequestForm {
         @NotNull
-        @NotBlank
-        private long opponentUserId;
+        private Long opponentUserId;
 
         @NotNull
-        @NotBlank
-        private long productPostId;
+        private Long productPostId;
     }
 }

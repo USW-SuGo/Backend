@@ -1,54 +1,46 @@
 package com.usw.sugo.domain.note.notecontent.controller;
 
-import com.usw.sugo.domain.note.notecontent.dto.NoteContentRequestDto;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
+import com.usw.sugo.domain.note.notecontent.dto.NoteContentRequestDto.SendNoteContentForm;
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.global.jwt.JwtResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note-content")
 public class NoteContentController {
 
-    private final JwtResolver jwtResolver;
     private final NoteContentControllerValidator noteContentControllerValidator;
     private final NoteContentService noteContentService;
 
+    @ResponseStatus(OK)
     @GetMapping("/{noteId}")
-    public ResponseEntity<Object> loadAllNoteContentByRoomId(
-            @RequestHeader String authorization, @PathVariable Long noteId,
-            Pageable pageable) {
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(noteContentService
-                        .loadAllContentByNoteId(validateAndExtractUser(authorization), noteId, pageable));
+    public List<LoadNoteAllContentForm> loadAllNoteContentByRoomId(
+            @PathVariable Long noteId,
+            Pageable pageable,
+            @AuthenticationPrincipal User user) {
+        return noteContentService.loadAllContentByNoteId(user, noteId, pageable);
     }
 
+    @ResponseStatus(OK)
     @PostMapping("/")
-    public ResponseEntity<Object> sendNoteContent(
-            @RequestBody @Valid NoteContentRequestDto.SendNoteContentForm sendNoteContentForm) {
+    public Map<String, Boolean> sendNoteContent(
+            @RequestBody SendNoteContentForm sendNoteContentForm) {
         noteContentControllerValidator.validateUser(sendNoteContentForm.getSenderId());
         noteContentControllerValidator.validateUser(sendNoteContentForm.getReceiverId());
-        noteContentService.sendContent(sendNoteContentForm);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new HashMap<>() {{
-                    put("Success", true);
-                }});
-    }
-
-    private User validateAndExtractUser(String authorization) {
-        long userId = jwtResolver.jwtResolveToUserId(authorization.substring(7));
-        return noteContentControllerValidator.validateUser(userId);
+        return noteContentService.executeSendNoteContent(
+                sendNoteContentForm.getNoteId(),
+                sendNoteContentForm.getMessage(),
+                sendNoteContentForm.getSenderId(),
+                sendNoteContentForm.getReceiverId());
     }
 }

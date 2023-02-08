@@ -2,25 +2,27 @@ package com.usw.sugo.domain.note.notecontent.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class NoteContentRequestDto {
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class SendNoteContentForm {
-        @NotBlank
-        private long noteId;
-
         @NotNull
+        private Long noteId;
+
+        @NotEmpty
         private String message;
 
-        @NotBlank
-        private long senderId;
+        @NotNull
+        private Long senderId;
 
-        @NotBlank
-        private long receiverId;
+        @NotNull
+        private Long receiverId;
     }
 }

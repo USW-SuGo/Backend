@@ -1,30 +1,34 @@
 package com.usw.sugo.domain.note.note.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class NoteResponseDto {
+
+    public static class CreatedNoteForm {
+        private Map<String, Long> createdNoteId;
+    }
 
     @Getter
     @Builder
     public static class LoadNoteListForm {
-        private long noteId;
-        private long productPostId;
-        private long requestUserId;
-        private long opponentUserId;
+        private Long noteId;
+        private Long productPostId;
+        private Long requestUserId;
+        private Long opponentUserId;
         private String opponentUserNickname;
         private String recentContent;
-        private int requestUserUnreadCount;
+        private Integer requestUserUnreadCount;
         private LocalDateTime recentChattingDate;
 
         @QueryProjection
         public LoadNoteListForm(
-                long noteId, long productPostId, long requestUserId, long opponentUserId,
-                String opponentUserNickname, String recentContent, int requestUserUnreadCount,
+                Long noteId, Long productPostId, Long requestUserId, Long opponentUserId,
+                String opponentUserNickname, String recentContent, Integer requestUserUnreadCount,
                 LocalDateTime recentChattingDate) {
             this.noteId = noteId;
             this.productPostId = productPostId;
@@ -39,26 +43,25 @@ public class NoteResponseDto {
 
     @Getter
     @Builder
-    @AllArgsConstructor
     public static class LoadNoteAllContentForm {
-        private long requestUserId;
-        private long productPostId;
-        private long noteContentId;
+        private Long requestUserId;
+        private Long productPostId;
+        private Long noteContentId;
         private String message;
-        private long messageSenderId;
-        private long messageReceiverId;
+        private Long messageSenderId;
+        private Long messageReceiverId;
         private LocalDateTime messageCreatedAt;
-        private long noteFileId;
+        private Long noteFileId;
         private String imageLink;
-        private long fileSenderId;
-        private long fileReceiverId;
+        private Long fileSenderId;
+        private Long fileReceiverId;
         private LocalDateTime fileCreatedAt;
 
         @QueryProjection
         public LoadNoteAllContentForm(
-                long productPostId, long noteContentId, String message,
-                long messageSenderId, long messageReceiverId, LocalDateTime messageCreatedAt,
-                long noteFileId, String imageLink, long fileSenderId, long fileReceiverId, LocalDateTime fileCreatedAt) {
+                Long productPostId, Long noteContentId, String message,
+                Long messageSenderId, Long messageReceiverId, LocalDateTime messageCreatedAt,
+                Long noteFileId, String imageLink, Long fileSenderId, Long fileReceiverId, LocalDateTime fileCreatedAt) {
             this.productPostId = productPostId;
             this.noteContentId = noteContentId;
             this.message = message;
@@ -72,7 +75,7 @@ public class NoteResponseDto {
             this.fileCreatedAt = fileCreatedAt;
         }
 
-        public void setRequestUserId(long requestUserId) {
+        public void setRequestUserId(Long requestUserId) {
             this.requestUserId = requestUserId;
         }
     }
