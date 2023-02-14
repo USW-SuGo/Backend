@@ -1,15 +1,14 @@
 package com.usw.sugo.global.util.nickname;
 
+import static com.usw.sugo.global.exception.ExceptionType.INVALID_DEPARTMENT;
+
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.usw.sugo.global.exception.ExceptionType.INVALID_DEPARTMENT;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +17,8 @@ public class NicknameGenerator {
     private static UserRepository userRepository;
 
     private static final List<String> departmentList = Stream.of(Department.values())
-            .map(Enum::name)
-            .collect(Collectors.toList());
+        .map(Enum::name)
+        .collect(Collectors.toList());
 
     private static void validateDepartment(String department) {
         if (!departmentList.contains(department)) {
@@ -43,7 +42,8 @@ public class NicknameGenerator {
         }
         int fetchToStringLengthAfterFiltering = toAvailableNicknameNumber.length();
         long currentLongNumber = Long.parseLong(
-                toAvailableNicknameNumber.substring(indexOfHyphen + 1, fetchToStringLengthAfterFiltering));
+            toAvailableNicknameNumber.substring(indexOfHyphen + 1,
+                fetchToStringLengthAfterFiltering));
 
         return currentLongNumber + 1;
     }

@@ -1,7 +1,15 @@
 package com.usw.sugo.global.security.filter;
 
+import static com.usw.sugo.global.exception.ExceptionType.REQUIRE_TOKEN;
+
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtResolver;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,15 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-
-import static com.usw.sugo.global.exception.ExceptionType.REQUIRE_TOKEN;
-
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -28,8 +27,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+        FilterChain filterChain)
+        throws ServletException, IOException {
 
         // WhiteList에 포함되어있지 않으면 조건문 들어감
         if (!isRequestURIWhiteList(request)) {
@@ -60,10 +60,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isNotContainedToken(HttpServletRequest request, HttpServletResponse response) {
         return request.getHeader("Authorization") == null ||
-                !request.getHeader("Authorization").startsWith("Bearer ");
+            !request.getHeader("Authorization").startsWith("Bearer ");
     }
 
-    private void setExceptionResponseForm(HttpServletResponse response, CustomException customException) {
+    private void setExceptionResponseForm(HttpServletResponse response,
+        CustomException customException) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
         JSONObject jsonResponse = new JSONObject();

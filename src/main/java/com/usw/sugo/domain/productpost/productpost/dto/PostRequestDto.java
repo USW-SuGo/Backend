@@ -1,19 +1,17 @@
 package com.usw.sugo.domain.productpost.productpost.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 
 public class PostRequestDto {
 
     @Getter
-    @Setter
+    @AllArgsConstructor
     public static class PostingRequest {
+
         @NotBlank
         private String title;
 
@@ -31,8 +29,9 @@ public class PostRequestDto {
     }
 
     @Getter
-    @Setter
+    @AllArgsConstructor
     public static class PutContentRequest {
+
         @NotNull
         private Long productPostId;
 
@@ -54,18 +53,21 @@ public class PostRequestDto {
 
     @Getter
     public static class DeleteContentRequest {
+
         @NotNull
         private Long productPostId;
     }
 
     @Getter
     public static class UpPostingRequest {
+
         @NotNull
         private Long productPostId;
     }
 
     @Getter
     public static class ClosePostRequest {
+
         @NotNull
         private Long productPostId;
     }

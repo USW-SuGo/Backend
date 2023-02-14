@@ -1,5 +1,14 @@
 package com.usw.sugo.domain.user.user.service;
 
+import static com.usw.sugo.global.apiresult.ApiResult.SUCCESS;
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getExistFlag;
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getNotExistFlag;
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.exception.ExceptionType.ALREADY_EVALUATION;
+import static com.usw.sugo.global.exception.ExceptionType.IS_SAME_PASSWORD;
+import static com.usw.sugo.global.exception.ExceptionType.PASSWORD_NOT_CORRECT;
+import static com.usw.sugo.global.exception.ExceptionType.PAYLOAD_NOT_VALID;
+
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
@@ -13,22 +22,18 @@ import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import com.usw.sugo.global.util.nickname.NicknameGenerator;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.usw.sugo.domain.ApiResult.EXIST;
-import static com.usw.sugo.domain.ApiResult.SUCCESS;
-import static com.usw.sugo.global.exception.ExceptionType.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
+
     private final UserRepository userRepository;
     private final UserServiceUtility userServiceUtility;
     private final SendEmailServiceBySES sendEmailServiceBySES;
@@ -38,42 +43,34 @@ public class UserService {
     private final UserLikePostService userLikePostService;
     private final RefreshTokenService refreshTokenService;
 
-    private static final Map<String, Boolean> overlapFlag = new HashMap<>() {{
-        put(EXIST.getResult(), true);
-    }};
-    private static final Map<String, Boolean> unOverlapFlag = new HashMap<>() {{
-        put(EXIST.getResult(), false);
-    }};
-    private static final Map<String, Boolean> successFlag = new HashMap<>() {{
-        put(SUCCESS.getResult(), true);
-    }};
-
     public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
         if (userRepository.findByLoginId(loginId).isPresent()) {
-            return overlapFlag;
+            return getExistFlag();
         }
-        return unOverlapFlag;
+        return getNotExistFlag();
     }
 
     public Map<String, Boolean> executeIsEmailExist(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
-            return overlapFlag;
+            return getExistFlag();
         }
-        return unOverlapFlag;
+        return getNotExistFlag();
     }
 
     public Map<String, Boolean> executeFindLoginId(String email) {
-        sendEmailServiceBySES.sendFindLoginIdResult(email, userServiceUtility.loadUserByEmail(email).getLoginId());
-        return successFlag;
+        sendEmailServiceBySES.sendFindLoginIdResult(email,
+            userServiceUtility.loadUserByEmail(email).getLoginId());
+        return getSuccessFlag();
     }
 
     public Map<String, Boolean> executeFindPassword(String email, User user) {
         String newPassword = userServiceUtility.initPassword(user);
         sendEmailServiceBySES.sendFindPasswordResult(email, newPassword);
-        return successFlag;
+        return getSuccessFlag();
     }
 
-    public Map<String, Object> executeJoin(String loginId, String email, String password, String department) {
+    public Map<String, Object> executeJoin(String loginId, String email, String password,
+        String department) {
         userServiceUtility.validateSuwonUniversityEmailForm(email);
         User requestUser = userServiceUtility.softJoin(loginId, email, password);
         requestUser.updateNickname(NicknameGenerator.generateNickname(department));
@@ -88,25 +85,26 @@ public class UserService {
 
     public Map<String, Boolean> executeAuthEmailPayload(String payload, Long userId) {
         UserEmailAuth requestUserEmailAuth = userEmailAuthService.loadUserEmailAuthByUser(
-                userServiceUtility.loadUserById(userId));
+            userServiceUtility.loadUserById(userId));
         if (requestUserEmailAuth.getPayload().equals(payload)) {
             User requestUser = requestUserEmailAuth.getUser();
             requestUserEmailAuth.confirmToken();
             requestUser.encryptPassword(requestUser.getPassword());
             requestUser.modifyingStatusToAvailable();
             userEmailAuthService.deleteConfirmedEmailAuthByUser(requestUser);
-            return successFlag;
+            return getSuccessFlag();
         }
         throw new CustomException(PAYLOAD_NOT_VALID);
     }
 
     public Map<String, Boolean> executeEditPassword(User user, String newPassword) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
-        if (BCryptPasswordFactory.getBCryptPasswordEncoder().matches(newPassword, requestUser.getPassword())) {
+        if (BCryptPasswordFactory.getBCryptPasswordEncoder()
+            .matches(newPassword, requestUser.getPassword())) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
         requestUser.encryptPassword(newPassword);
-        return successFlag;
+        return getSuccessFlag();
     }
 
     public Map<String, Boolean> executeQuit(User user, String password) {
@@ -116,7 +114,7 @@ public class UserService {
             productPostService.deleteByUser(user);
             refreshTokenService.deleteByUser(user);
             userServiceUtility.deleteUser(user);
-            return successFlag;
+            return getSuccessFlag();
         }
         throw new CustomException(PASSWORD_NOT_CORRECT);
     }
@@ -125,31 +123,32 @@ public class UserService {
         // 요청유저와 userId가 같으면 마이페이지
         if (user.getId().equals(userId)) {
             return UserPageResponseForm.builder()
-                    .userId(userId)
-                    .email(user.getEmail())
-                    .nickname(user.getNickname())
-                    .mannerGrade(user.getMannerGrade())
-                    .countMannerEvaluation(user.getCountMannerEvaluation())
-                    .countTradeAttempt(user.getCountTradeAttempt())
-                    .build();
+                .userId(userId)
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .mannerGrade(user.getMannerGrade())
+                .countMannerEvaluation(user.getCountMannerEvaluation())
+                .countTradeAttempt(user.getCountTradeAttempt())
+                .build();
         }
         User otherUser = userServiceUtility.loadUserById(userId);
         return UserPageResponseForm.builder()
-                .userId(userId)
-                .email(otherUser.getEmail())
-                .nickname(otherUser.getNickname())
-                .mannerGrade(otherUser.getMannerGrade())
-                .countMannerEvaluation(otherUser.getCountMannerEvaluation())
-                .countTradeAttempt(otherUser.getCountTradeAttempt())
-                .build();
+            .userId(userId)
+            .email(otherUser.getEmail())
+            .nickname(otherUser.getNickname())
+            .mannerGrade(otherUser.getMannerGrade())
+            .countMannerEvaluation(otherUser.getCountMannerEvaluation())
+            .countTradeAttempt(otherUser.getCountTradeAttempt())
+            .build();
     }
 
-    public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade, User user) {
+    public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade,
+        User user) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
         if (userServiceUtility.isBeforeDay(requestUser.getRecentEvaluationManner())) {
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);
             requestUser.updateRecentEvaluationManner();
-            return successFlag;
+            return getSuccessFlag();
         }
         throw new CustomException(ALREADY_EVALUATION);
     }

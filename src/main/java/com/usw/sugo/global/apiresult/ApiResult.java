@@ -1,4 +1,4 @@
-package com.usw.sugo.domain;
+package com.usw.sugo.global.apiresult;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

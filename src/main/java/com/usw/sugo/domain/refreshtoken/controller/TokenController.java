@@ -1,11 +1,16 @@
 package com.usw.sugo.domain.refreshtoken.controller;
 
-import com.usw.sugo.domain.user.user.User;
+import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTION;
+import static org.springframework.http.HttpStatus.OK;
+
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
 import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
+import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtValidator;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTION;
-import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RequestMapping("/token")
@@ -37,9 +36,10 @@ public class TokenController {
 
         // RefreshToken 검증이 끝나면, 토큰 재발급
         if (jwtValidator.validateToken(requestRefreshToken) &&
-                refreshTokenRepository.findByPayload(requestRefreshToken).isPresent()) {
+            refreshTokenRepository.findByPayload(requestRefreshToken).isPresent()) {
 
-            RefreshToken requestRefreshTokenDomain = refreshTokenRepository.findByPayload(requestRefreshToken).get();
+            RefreshToken requestRefreshTokenDomain = refreshTokenRepository.findByPayload(
+                requestRefreshToken).get();
 
             User requestUser = requestRefreshTokenDomain.getUser();
 
@@ -51,10 +51,10 @@ public class TokenController {
             response.set("Authorization", result.toString());
 
             return ResponseEntity.status(OK)
-                    .headers(response)
-                    .body(new HashMap<>() {{
-                        put("Success", true);
-                    }});
+                .headers(response)
+                .body(new HashMap<>() {{
+                    put("Success", true);
+                }});
         }
         // 해당 리프레시 토큰이 DB에 없으면 에러
         throw new CustomException(JWT_MALFORMED_EXCEPTION);

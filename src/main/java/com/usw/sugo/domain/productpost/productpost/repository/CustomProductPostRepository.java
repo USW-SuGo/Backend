@@ -1,13 +1,15 @@
 package com.usw.sugo.domain.productpost.productpost.repository;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.*;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.ClosePosting;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MyPosting;
+import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.user.user.User;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface CustomProductPostRepository {

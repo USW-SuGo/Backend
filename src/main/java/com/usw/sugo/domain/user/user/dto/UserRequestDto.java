@@ -1,10 +1,9 @@
 package com.usw.sugo.domain.user.user.dto;
 
-import lombok.Data;
-
+import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+import lombok.Data;
 
 // NotBlank는 String 타입에서만 가능
 // Integer, Long 은 Notnull가능
@@ -12,18 +11,21 @@ public class UserRequestDto {
 
     @Data
     public static class IsEmailExistRequestForm {
+
         @NotBlank
         private String email;
     }
 
     @Data
     public static class IsLoginIdExistRequestForm {
+
         @NotBlank
         private String loginId;
     }
 
     @Data
     public static class DetailJoinRequestForm {
+
         @NotBlank
         private String email;
         @NotBlank
@@ -37,6 +39,7 @@ public class UserRequestDto {
     // 인증번호 DTO
     @Data
     public static class AuthEmailPayloadForm {
+
         @NotBlank
         private Long userId;
         @NotBlank
@@ -45,12 +48,14 @@ public class UserRequestDto {
 
     @Data
     public static class FindLoginIdRequestForm {
+
         @NotBlank
         private String email;
     }
 
     @Data
     public static class FindPasswordRequestForm {
+
         @NotBlank
         private String loginId;
         @NotBlank
@@ -59,6 +64,7 @@ public class UserRequestDto {
 
     @Data
     public static class LoginRequestForm {
+
         @NotBlank
         private String loginId;
         @NotBlank
@@ -67,6 +73,7 @@ public class UserRequestDto {
 
     @Data
     public static class EditPasswordRequestForm {
+
         @NotBlank
         private String prePassword;
 
@@ -76,6 +83,7 @@ public class UserRequestDto {
 
     @Data
     public static class QuitRequestForm {
+
         @NotBlank
         private String loginId;
         @NotBlank
@@ -86,6 +94,7 @@ public class UserRequestDto {
 
     @Data
     public static class MannerEvaluationRequestForm {
+
         @NotNull
         private Long targetUserId;
         @NotNull

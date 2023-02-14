@@ -16,7 +16,7 @@ public enum Status implements GrantedAuthority {
     private String authority;
     private String description;
 
-    Status (String authority, String description){
+    Status(String authority, String description) {
         this.authority = authority;
         this.description = description;
     }

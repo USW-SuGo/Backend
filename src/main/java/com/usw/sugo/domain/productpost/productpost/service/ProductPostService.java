@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.usw.sugo.domain.ApiResult.SUCCESS;
+import static com.usw.sugo.global.apiresult.ApiResult.SUCCESS;
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.*;
 
 @Service
@@ -32,10 +33,6 @@ public class ProductPostService {
     private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
     private final ProductPostFileService productPostFileService;
-
-    private final Map<String, Boolean> successFlag = new HashMap<>() {{
-        put(SUCCESS.getResult(), true);
-    }};
 
     public List<MainPageResponse> mainPage(Pageable pageable, String category) {
         List<MainPageResponse> mainPageResponses = productPostRepository.loadMainPagePostList(pageable, category);
@@ -163,7 +160,7 @@ public class ProductPostService {
                 .build();
         productPostRepository.save(productPost);
         productPostFileService.saveProductPostFile(productPost, multipartFiles);
-        return successFlag;
+        return getSuccessFlag();
     }
 
     @Transactional
@@ -172,7 +169,7 @@ public class ProductPostService {
             Integer price, String contactPlace, String category, MultipartFile[] multipartFile) {
         productPost.updateProductPost(title, content, price, contactPlace, category);
         productPostFileService.editProductPostFile(productPost, multipartFile);
-        return successFlag;
+        return getSuccessFlag();
     }
 
     @Transactional
@@ -180,8 +177,7 @@ public class ProductPostService {
         ProductPost productPost = loadProductPostById(productPostId);
         productPostFileService.deleteProductPostFileByProductPost(productPost);
         productPostRepository.deleteByEntity(productPost);
-
-        return successFlag;
+        return getSuccessFlag();
     }
 
     @Transactional
@@ -200,19 +196,19 @@ public class ProductPostService {
             requestUser.updateRecentUpPost();
             productPost.updateUpdatedAt();
         }
-        return successFlag;
+        return getSuccessFlag();
     }
 
     @Transactional
     public Map<String, Boolean> closePost(ProductPost productPost) {
         productPost.updateStatusToFalse();
-        return successFlag;
+        return getSuccessFlag();
     }
 
     @Transactional
     public Map<String, Boolean> openPost(ProductPost productPost) {
         productPost.updateStatusToTrue();
-        return successFlag;
+        return getSuccessFlag();
     }
 
     private String validateCategory(String category) {

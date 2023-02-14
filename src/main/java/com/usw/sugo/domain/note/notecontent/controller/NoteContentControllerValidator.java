@@ -11,7 +11,8 @@ public class NoteContentControllerValidator extends EntityValidator {
 
     private NoteContentController noteContentController;
 
-    public NoteContentControllerValidator(UserRepository userRepository, ProductPostRepository productPostRepository, NoteRepository noteRepository) {
+    public NoteContentControllerValidator(UserRepository userRepository,
+        ProductPostRepository productPostRepository, NoteRepository noteRepository) {
         super(userRepository, productPostRepository, noteRepository);
     }
 }

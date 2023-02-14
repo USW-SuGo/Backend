@@ -1,14 +1,18 @@
 package com.usw.sugo.domain.productpost.productpost.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 public class PostResponseDto {
 
     @Data
     public static class SearchResultResponse {
+
         private Long productPostId;
         private String imageLink;
         private String contactPlace;
@@ -21,8 +25,9 @@ public class PostResponseDto {
 
         @QueryProjection
         public SearchResultResponse(
-                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                Integer price, String nickname, String category, Boolean status) {
+            Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+            String title,
+            Integer price, String nickname, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -37,6 +42,7 @@ public class PostResponseDto {
 
     @Data
     public static class MainPageResponse {
+
         private Long productPostId;
         private String imageLink;
         private String contactPlace;
@@ -49,8 +55,9 @@ public class PostResponseDto {
 
         @QueryProjection
         public MainPageResponse(
-                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                Integer price, String nickname, String category, Boolean status) {
+            Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+            String title,
+            Integer price, String nickname, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -66,6 +73,7 @@ public class PostResponseDto {
     // 특정 게시물 조회에 대한 반환 DTO
     @Data
     public static class DetailPostResponse {
+
         private Long productPostId;
         private Long writerId;
         private String imageLink;
@@ -81,8 +89,10 @@ public class PostResponseDto {
 
         @QueryProjection
         public DetailPostResponse(
-                Long productPostId, Long writerId, String imageLink, String contactPlace, LocalDateTime updatedAt,
-                String title, String content, Integer price, String nickname, String category, Boolean status) {
+            Long productPostId, Long writerId, String imageLink, String contactPlace,
+            LocalDateTime updatedAt,
+            String title, String content, Integer price, String nickname, String category,
+            Boolean status) {
             this.productPostId = productPostId;
             this.writerId = writerId;
             this.imageLink = imageLink;
@@ -101,6 +111,7 @@ public class PostResponseDto {
     @Setter
     @Builder
     public static class MyPosting {
+
         private Long productPostId;
         private String imageLink;
         private String contactPlace;
@@ -112,8 +123,9 @@ public class PostResponseDto {
 
         @QueryProjection
         public MyPosting(
-                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                Integer price, String category, Boolean status) {
+            Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+            String title,
+            Integer price, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -128,6 +140,7 @@ public class PostResponseDto {
     @Getter
     @Builder(access = AccessLevel.PROTECTED)
     public static class LikePosting {
+
         private Long productPostId;
         private String imageLink;
         private String contactPlace;
@@ -139,8 +152,9 @@ public class PostResponseDto {
 
         @QueryProjection
         public LikePosting(
-                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                Integer price, String category, Boolean status) {
+            Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+            String title,
+            Integer price, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;
@@ -156,6 +170,7 @@ public class PostResponseDto {
     @Setter
     @Builder(access = AccessLevel.PROTECTED)
     public static class ClosePosting {
+
         private Long productPostId;
         private String imageLink;
         private String contactPlace;
@@ -167,8 +182,9 @@ public class PostResponseDto {
 
         @QueryProjection
         public ClosePosting(
-                Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt, String title,
-                Integer price, String category, Boolean status) {
+            Long productPostId, String imageLink, String contactPlace, LocalDateTime updatedAt,
+            String title,
+            Integer price, String category, Boolean status) {
             this.productPostId = productPostId;
             this.imageLink = imageLink;
             this.contactPlace = contactPlace;

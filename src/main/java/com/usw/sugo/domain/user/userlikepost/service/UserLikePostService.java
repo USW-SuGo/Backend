@@ -1,5 +1,9 @@
 package com.usw.sugo.domain.user.userlikepost.service;
 
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getDisLikeFlag;
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getLikeFlag;
+import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
+
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.LikePosting;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
@@ -10,18 +14,13 @@ import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import com.usw.sugo.domain.user.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.global.exception.CustomException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.usw.sugo.domain.ApiResult.LIKE;
-import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 
 @Service
 @RequiredArgsConstructor
@@ -33,32 +32,25 @@ public class UserLikePostService {
     private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
 
-    private static final Map<String, Boolean> likeCreated = new HashMap<>() {{
-        put(LIKE.getResult(), true);
-    }};
-
-    private static final Map<String, Boolean> likeDeleted = new HashMap<>() {{
-        put(LIKE.getResult(), true);
-    }};
-
     public Map<String, Boolean> executeLikeUnlikePost(Long userId, Long productPostId) {
         User user = userServiceUtility.loadUserById(userId);
         ProductPost productPost = productPostService.loadProductPostById(productPostId);
-        ProductPostFile productPostFile = productPostFileService.loadProductPostFileByProductPost(productPost);
+        ProductPostFile productPostFile = productPostFileService.loadProductPostFileByProductPost(
+            productPost);
         if (productPost.getUser().equals(user)) {
             throw new CustomException(DO_NOT_LIKE_YOURSELF);
         } else if (!isAlreadyLike(userId, productPostId)) {
             UserLikePost userLikePost = UserLikePost.builder()
-                    .user(user)
-                    .productPost(productPost)
-                    .productPostFile(productPostFile)
-                    .createdAt(LocalDateTime.now())
-                    .build();
+                .user(user)
+                .productPost(productPost)
+                .productPostFile(productPostFile)
+                .createdAt(LocalDateTime.now())
+                .build();
             userLikePostRepository.save(userLikePost);
-            return likeCreated;
+            return getLikeFlag();
         }
         userLikePostRepository.deleteLikePostByUserId(userId, productPostId);
-        return likeDeleted;
+        return getDisLikeFlag();
     }
 
 

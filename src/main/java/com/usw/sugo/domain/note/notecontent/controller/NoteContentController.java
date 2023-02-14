@@ -24,23 +24,23 @@ public class NoteContentController {
 
     @ResponseStatus(OK)
     @GetMapping("/{noteId}")
-    public List<LoadNoteAllContentForm> loadAllNoteContentByRoomId(
-            @PathVariable Long noteId,
-            Pageable pageable,
-            @AuthenticationPrincipal User user) {
-        return noteContentService.loadAllContentByNoteId(user, noteId, pageable);
+    public List<LoadNoteAllContentForm> loadAllNoteContentsByRoomId(
+        @PathVariable Long noteId,
+        Pageable pageable,
+        @AuthenticationPrincipal User user) {
+        return noteContentService.executeLoadAllContentsByNoteId(user, noteId, pageable);
     }
 
     @ResponseStatus(OK)
     @PostMapping("/")
     public Map<String, Boolean> sendNoteContent(
-            @RequestBody SendNoteContentForm sendNoteContentForm) {
+        @RequestBody SendNoteContentForm sendNoteContentForm) {
         noteContentControllerValidator.validateUser(sendNoteContentForm.getSenderId());
         noteContentControllerValidator.validateUser(sendNoteContentForm.getReceiverId());
         return noteContentService.executeSendNoteContent(
-                sendNoteContentForm.getNoteId(),
-                sendNoteContentForm.getMessage(),
-                sendNoteContentForm.getSenderId(),
-                sendNoteContentForm.getReceiverId());
+            sendNoteContentForm.getNoteId(),
+            sendNoteContentForm.getMessage(),
+            sendNoteContentForm.getSenderId(),
+            sendNoteContentForm.getReceiverId());
     }
 }

@@ -1,14 +1,14 @@
 package com.usw.sugo.domain.notice.dto;
 
-import lombok.Getter;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import lombok.Getter;
 
 public class NoticeRequestDto {
 
     @Getter
     public static class NoticePostRequest {
+
         @NotEmpty
         @NotBlank
         private String title;
@@ -19,6 +19,7 @@ public class NoticeRequestDto {
 
     @Getter
     public static class NoticeUpdateRequest {
+
         @NotEmpty
         @NotBlank
         private Long noticeId;
@@ -32,6 +33,7 @@ public class NoticeRequestDto {
 
     @Getter
     public static class NoticeDeleteRequest {
+
         @NotEmpty
         @NotBlank
         private Long noticeId;

@@ -8,17 +8,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,30 +65,34 @@ public class JwtGenerator {
 
         // Bearer Access Token 생성
         return "Bearer " + Jwts.builder()
-                .setHeaderParam("type", "JWT")
-                .setClaims(claims)
-                .setExpiration(accessTokenExpireIn)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+            .setHeaderParam("type", "JWT")
+            .setClaims(claims)
+            .setExpiration(accessTokenExpireIn)
+            .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+            .compact();
     }
 
     public String generateRefreshToken(User user) {
         // DB에 존재하는 리프레시 토큰 꺼내 담기
-        Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(user.getId());
+        Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(
+            user.getId());
 
         // 리프레시 토큰이 DB에 있는 상황
         if (findRefreshTokenByUserId.isPresent()) {
-            String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get().getPayload();
+            String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get()
+                .getPayload();
 
             if (jwtValidator.refreshTokenIsExpired(refreshToken)) {
                 return updateRefreshToken(user);
             }
             // 리프레시 토큰이 DB에 있고, 만료되지 않았으며, 갱신은 필요로 할 때
-            else if (!jwtValidator.refreshTokenIsExpired(refreshToken) && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+            else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
+                && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return updateRefreshToken(user);
             }
             // 리프레시 토큰이 DB에 있고, 만료되지 않았으며 갱신을 필요로 하지 않을 때
-            else if (!jwtValidator.refreshTokenIsExpired(refreshToken) && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+            else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
+                && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return "Bearer " + refreshToken;
             }
         }
@@ -109,16 +112,16 @@ public class JwtGenerator {
 
         // Access Token 생성
         String stringRefreshToken = Jwts.builder()
-                .setHeaderParam("type", "JWT")
-                .setClaims(claims)
-                .setExpiration(refreshTokenExpireIn)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+            .setHeaderParam("type", "JWT")
+            .setClaims(claims)
+            .setExpiration(refreshTokenExpireIn)
+            .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+            .compact();
 
         RefreshToken entityFormRefreshToken = RefreshToken.builder()
-                .user(user)
-                .payload(stringRefreshToken)
-                .build();
+            .user(user)
+            .payload(stringRefreshToken)
+            .build();
 
         refreshTokenRepository.save(entityFormRefreshToken);
 
@@ -135,11 +138,11 @@ public class JwtGenerator {
 
         // RefreshToken Token 생성
         String updatedRefreshToken = Jwts.builder()
-                .setHeaderParam("type", "JWT")
-                .setClaims(claims)
-                .setExpiration(refreshTokenExpireIn)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+            .setHeaderParam("type", "JWT")
+            .setClaims(claims)
+            .setExpiration(refreshTokenExpireIn)
+            .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+            .compact();
 
         refreshTokenRepository.refreshPayload(user.getId(), updatedRefreshToken);
 

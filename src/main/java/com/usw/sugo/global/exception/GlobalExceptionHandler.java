@@ -23,11 +23,11 @@ public class GlobalExceptionHandler {
         String message = e.getMessage();
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(message)
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(message)
+            .status(status.value())
+            .error(status.getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, status);
     }
@@ -38,11 +38,11 @@ public class GlobalExceptionHandler {
         ExceptionType exceptionType = e.getExceptionType();
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(exceptionType.getMessage())
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(exceptionType.getMessage())
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
@@ -54,78 +54,84 @@ public class GlobalExceptionHandler {
         String message = "";
 
         if (e instanceof MethodArgumentNotValidException) {
-            message = ((MethodArgumentNotValidException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage();
+            message = ((MethodArgumentNotValidException) e).getBindingResult().getAllErrors().get(0)
+                .getDefaultMessage();
         } else if (e instanceof BindException) {
-            message = ((BindException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage();
+            message = ((BindException) e).getBindingResult().getAllErrors().get(0)
+                .getDefaultMessage();
         }
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(message)
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(message)
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<ExceptionInformation> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<ExceptionInformation> handleHttpRequestMethodNotSupportedException(
+        HttpRequestMethodNotSupportedException e) {
         String className = e.getClass().getName();
         ExceptionType exceptionType = ExceptionType.METHOD_NOT_ALLOWED;
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(e.getMessage())
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(e.getMessage())
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
 
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
-    public ResponseEntity<ExceptionInformation> HttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<ExceptionInformation> HttpMessageNotReadableException(
+        HttpMessageNotReadableException e) {
         String className = e.getClass().getName();
         ExceptionType exceptionType = ExceptionType.USER_BAD_REQUEST;
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(exceptionType.getMessage())
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(exceptionType.getMessage())
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {HttpServerErrorException.InternalServerError.class})
-    public ResponseEntity<ExceptionInformation> InternalServerError(HttpServerErrorException.InternalServerError e) {
+    public ResponseEntity<ExceptionInformation> InternalServerError(
+        HttpServerErrorException.InternalServerError e) {
         String className = e.getClass().getName();
         ExceptionType exceptionType = ExceptionType.SERVER_ERROR;
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(exceptionType.getMessage())
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(exceptionType.getMessage())
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<ExceptionInformation> IllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<ExceptionInformation> IllegalArgumentException(
+        IllegalArgumentException e) {
         String className = e.getClass().getName();
         ExceptionType exceptionType = ExceptionType.USER_BAD_REQUEST;
 
         ExceptionInformation exceptionInformation = ExceptionInformation.builder()
-                .exception(className.substring(className.lastIndexOf(".") + 1))
-                .message(exceptionType.getMessage())
-                .status(exceptionType.getStatus().value())
-                .error(exceptionType.getStatus().getReasonPhrase())
-                .build();
+            .exception(className.substring(className.lastIndexOf(".") + 1))
+            .message(exceptionType.getMessage())
+            .status(exceptionType.getStatus().value())
+            .error(exceptionType.getStatus().getReasonPhrase())
+            .build();
 
         return new ResponseEntity<>(exceptionInformation, exceptionType.getStatus());
     }

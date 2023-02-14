@@ -1,20 +1,19 @@
 package com.usw.sugo.domain.user.useremailauth.service;
 
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
+
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.repository.UserEmailAuthRepository;
 import com.usw.sugo.global.exception.CustomException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-
-import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +32,11 @@ public class UserEmailAuthService {
 
     public String saveUserEmailAuth(User user) {
         UserEmailAuth userEmailAuth = UserEmailAuth.builder()
-                .payload(createEmailAuthPayload(user.getId()))
-                .createdAt(LocalDateTime.now())
-                .user(user)
-                .status(false)
-                .build();
+            .payload(createEmailAuthPayload(user.getId()))
+            .createdAt(LocalDateTime.now())
+            .user(user)
+            .status(false)
+            .build();
         userEmailAuthRepository.save(userEmailAuth);
         return userEmailAuth.getPayload();
     }

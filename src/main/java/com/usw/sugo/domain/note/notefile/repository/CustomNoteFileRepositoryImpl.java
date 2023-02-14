@@ -1,10 +1,9 @@
 package com.usw.sugo.domain.note.notefile.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
 
 @Repository
 @RequiredArgsConstructor

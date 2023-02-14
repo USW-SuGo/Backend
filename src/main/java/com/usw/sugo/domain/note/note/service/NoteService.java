@@ -39,21 +39,29 @@ public class NoteService {
         }};
     }
 
-    public Stream<LoadNoteListForm> executeLoadAllNotes(User user, Pageable pageable) {
+    public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
         List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
 
         List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
         List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
 
-        List<LoadNoteListForm> tempResult = new ArrayList<>();
-        tempResult.addAll(loadNoteListFormRequestUserIsCreatingNote);
-        tempResult.addAll(loadNoteListFormsRequestUserIsCreatedNote);
+        List<LoadNoteListForm> loadedNotes = new ArrayList<>();
+        loadedNotes.addAll(loadNoteListFormRequestUserIsCreatingNote);
+        loadedNotes.addAll(loadNoteListFormsRequestUserIsCreatedNote);
 
-        return tempResult
+        Stream<LoadNoteListForm> sortedNotes = loadedNotes
                 .stream()
                 .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
                         .reversed());
+
+        List<Object> result = new ArrayList<>();
+        result.add(new HashMap<>() {{
+            put("requestUserId", user.getId());
+        }});
+        result.add(sortedNotes);
+
+        return result;
     }
 
     public Note loadNoteByNoteId(Long noteId) {
@@ -98,7 +106,7 @@ public class NoteService {
     }
 
     // 쪽지 방 읽음 처리
-    public void readNoteRoom(Long noteId, User user) {
+    public void updateReadNoteRoom(Long noteId, User user) {
         Note note = loadNoteByNoteId(noteId);
         note.resetUserUnreadCount(user);
     }

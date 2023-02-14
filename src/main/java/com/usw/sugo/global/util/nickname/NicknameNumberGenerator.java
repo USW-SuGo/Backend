@@ -1,12 +1,11 @@
 package com.usw.sugo.global.util.nickname;
 
+import static com.usw.sugo.domain.user.user.QUser.user;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.usw.sugo.domain.user.user.QUser.user;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,12 +16,12 @@ public class NicknameNumberGenerator {
     public long findToAvailableNicknameNumber(String department) {
 
         List<String> fetch = queryFactory
-                .select(user.nickname)
-                .from(user)
-                .where(user.nickname.contains(department))
-                .orderBy(user.nickname.desc())
-                .limit(1)
-                .fetch();
+            .select(user.nickname)
+            .from(user)
+            .where(user.nickname.contains(department))
+            .orderBy(user.nickname.desc())
+            .limit(1)
+            .fetch();
 
         if (fetch.isEmpty()) {
             return 1L;
@@ -53,7 +52,7 @@ public class NicknameNumberGenerator {
 
         // 하이픈 이후, 가장 마지막에 위치한 숫자 가져오기
         long currentLongNumber = Long.parseLong(
-                fetchToString.substring(indexOfHyphen + 1, fetchToStringLengthAfterFiltering));
+            fetchToString.substring(indexOfHyphen + 1, fetchToStringLengthAfterFiltering));
 
         return currentLongNumber + 1;
     }

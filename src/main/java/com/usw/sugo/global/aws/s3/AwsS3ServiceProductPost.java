@@ -1,22 +1,21 @@
 package com.usw.sugo.global.aws.s3;
 
+import static com.usw.sugo.global.aws.s3.BucketDetailPath.PRODUCT_POST;
+import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
+
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.global.exception.CustomException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.usw.sugo.global.aws.s3.BucketDetailPath.PRODUCT_POST;
-import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +35,13 @@ public class AwsS3ServiceProductPost {
             String generatedUrlByProductPostId = generateURLByProductPostId(productPostId);
             try {
                 amazonS3Client.putObject(
-                        generatePubObjectRequest(
-                                generatedUrlByProductPostId + filename,
-                                multipartFile,
-                                initObjectMetaData(multipartFile)));
+                    generatePubObjectRequest(
+                        generatedUrlByProductPostId + filename,
+                        multipartFile,
+                        initObjectMetaData(multipartFile)));
                 imagePathList.add(amazonS3Client.getUrl(
-                        bucketName,
-                        generatedUrlByProductPostId + filename).toString());
+                    bucketName,
+                    generatedUrlByProductPostId + filename).toString());
             } catch (IOException e) {
                 throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
             }
@@ -60,9 +59,9 @@ public class AwsS3ServiceProductPost {
 
     private String filteringUrl(String url) {
         return url
-                .replace("[", "")
-                .replace("]", "")
-                .replace(" ", "");
+            .replace("[", "")
+            .replace("]", "")
+            .replace(" ", "");
     }
 
     private String generateURLByProductPostId(Long productPostId) {
@@ -78,8 +77,10 @@ public class AwsS3ServiceProductPost {
     }
 
     private PutObjectRequest generatePubObjectRequest(
-            String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata) throws IOException {
-        return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(), objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead);
+        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata)
+        throws IOException {
+        return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
+            objectMetadata)
+            .withCannedAcl(CannedAccessControlList.PublicRead);
     }
 }

@@ -1,11 +1,10 @@
 package com.usw.sugo.domain.user.user.dto;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 public class UserResponseDto {
 
@@ -14,6 +13,7 @@ public class UserResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserPageResponseForm {
+
         private Long userId;
         private String email;
         private String nickname;

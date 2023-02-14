@@ -2,20 +2,20 @@ package com.usw.sugo.domain.note.note.repository;
 
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 public interface CustomNoteRepository {
 
     void deleteBeforeWeek();
 
-    List<List<LoadNoteListForm>> loadNoteListByUserId(long requestUserId, Pageable pageable);
+    List<List<LoadNoteListForm>> loadNoteListByUserId(Long requestUserId, Pageable pageable);
 
-    void readNoteRoom(long requestUserId, long noteId);
+    void readNoteRoom(Long requestUserId, Long noteId);
 
-    void updateRecentContent(long unreadUserId, long noteId, String content, String imageLink);
+    void updateRecentContent(Long unreadUserId, Long noteId, String content, String imageLink);
 
-    Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(long noteRequestUserId, long targetUserId, long productPostId);
+    Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(Long noteRequestUserId,
+        Long targetUserId, Long productPostId);
 }

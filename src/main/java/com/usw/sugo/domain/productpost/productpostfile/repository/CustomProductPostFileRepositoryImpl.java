@@ -1,12 +1,12 @@
 package com.usw.sugo.domain.productpost.productpostfile.repository;
 
+import static com.usw.sugo.domain.productpost.productpostfile.QProductPostFile.productPostFile;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.usw.sugo.domain.productpost.productpostfile.QProductPostFile.productPostFile;
 
 @Transactional
 @Repository
@@ -18,8 +18,8 @@ public class CustomProductPostFileRepositoryImpl implements CustomProductPostFil
     @Override
     public void deleteByProductPost(ProductPost productPost) {
         queryFactory
-                .delete(productPostFile)
-                .where(productPostFile.productPost.eq(productPost))
-                .execute();
+            .delete(productPostFile)
+            .where(productPostFile.productPost.eq(productPost))
+            .execute();
     }
 }
