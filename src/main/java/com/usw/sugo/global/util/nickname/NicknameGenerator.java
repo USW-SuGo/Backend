@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NicknameGenerator {
 
-    private static UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private static final List<String> departmentList = Stream.of(Department.values())
-        .map(Enum::name)
+        .map(Department::getDepartment)
         .collect(Collectors.toList());
 
     private static void validateDepartment(String department) {
@@ -26,8 +26,11 @@ public class NicknameGenerator {
         }
     }
 
-    private static long generateNicknameNumber(String department) {
+    private Long generateNicknameNumber(String department) {
         String toAvailableNicknameNumber = userRepository.findToAvailableNicknameNumber(department);
+        if (toAvailableNicknameNumber == null) {
+            return 1L;
+        }
         int fetchToStringLength = toAvailableNicknameNumber.length();
 
         // 하이픈 인덱스
@@ -41,14 +44,13 @@ public class NicknameGenerator {
             }
         }
         int fetchToStringLengthAfterFiltering = toAvailableNicknameNumber.length();
-        long currentLongNumber = Long.parseLong(
+        Long currentLongNumber = Long.parseLong(
             toAvailableNicknameNumber.substring(indexOfHyphen + 1,
                 fetchToStringLengthAfterFiltering));
-
         return currentLongNumber + 1;
     }
 
-    public static String generateNickname(String department) {
+    public String generateNickname(String department) {
         validateDepartment(department);
         return department + "-" + generateNicknameNumber(department);
     }

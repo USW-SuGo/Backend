@@ -21,7 +21,6 @@ import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
-import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,14 +68,14 @@ public class UserService {
         return getSuccessFlag();
     }
 
+    @Transactional
     public Map<String, Object> executeJoin(String loginId, String email, String password,
         String department) {
         userServiceUtility.validateSuwonUniversityEmailForm(email);
-        User requestUser = userServiceUtility.softJoin(loginId, email, password);
-        requestUser.updateNickname(NicknameGenerator.generateNickname(department));
-
+        User requestUser = userServiceUtility.softJoin(loginId, email, password, department);
         String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
+
         return new HashMap<>() {{
             put(SUCCESS.getResult(), true);
             put("id", requestUser.getId());

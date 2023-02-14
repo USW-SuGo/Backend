@@ -6,6 +6,7 @@ import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.util.nickname.NicknameGenerator;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class UserServiceUtility {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final NicknameGenerator nicknameGenerator;
 
     public User loadUserById(Long userId) {
         if (userRepository.findById(userId).isPresent()) {
@@ -63,10 +65,11 @@ public class UserServiceUtility {
     }
 
     @Transactional
-    public User softJoin(String loginId, String email, String password) {
-        User newSoftUser = User.builder()
-            .email(email)
+    public User softJoin(String loginId, String email, String password, String department) {
+        User user = User.builder()
             .loginId(loginId)
+            .nickname(nicknameGenerator.generateNickname(department))
+            .email(email)
             .password(password)
             .recentUpPost(LocalDateTime.now().minusDays(1))
             .recentEvaluationManner(LocalDateTime.now().minusDays(1))
@@ -76,8 +79,8 @@ public class UserServiceUtility {
             .status("NOT_AUTH")
             .build();
 
-        userRepository.save(newSoftUser);
-        return newSoftUser;
+        userRepository.save(user);
+        return user;
     }
 
     public boolean matchingPassword(Long id, String inputPassword) {

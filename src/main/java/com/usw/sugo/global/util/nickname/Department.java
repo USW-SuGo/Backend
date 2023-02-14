@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum Department {
 
-    Korean("국어국문학"),
+    KOREAN("국어국문학"),
 
     HISTORY("사학"),
 
