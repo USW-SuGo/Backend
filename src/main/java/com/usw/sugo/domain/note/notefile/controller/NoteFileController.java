@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.note.notefile.controller.dto.NoteFileRequestDto.SendNoteFileForm;
 import com.usw.sugo.domain.note.notefile.service.NoteFileService;
-import java.util.HashMap;
 import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,8 @@ public class NoteFileController {
     @PostMapping("/")
     public Map<String, Boolean> sendNoteContent(
         @RequestBody @Valid SendNoteFileForm sendNoteFileForm, MultipartFile[] multipartForms) {
-
-        noteFileService.saveNoteFile(
-            sendNoteFileForm.getNoteId(), sendNoteFileForm.getSenderId(),
+        return noteFileService.saveNoteFile(sendNoteFileForm.getNoteId(),
+            sendNoteFileForm.getSenderId(),
             sendNoteFileForm.getReceiverId(), multipartForms);
-        return new HashMap<>() {{
-            put("Success", true);
-        }};
     }
 }
