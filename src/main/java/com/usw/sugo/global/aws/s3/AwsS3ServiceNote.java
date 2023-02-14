@@ -1,13 +1,14 @@
 package com.usw.sugo.global.aws.s3;
 
 import static com.usw.sugo.global.aws.s3.BucketDetailPath.NOTE;
+import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.note.notefile.NoteFile;
+import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,29 +28,24 @@ public class AwsS3ServiceNote {
     private final String defaultNotePath = NOTE.getPath();
     private final AmazonS3Client amazonS3Client;
 
-    public List<String> uploadS3ByNote(MultipartFile[] multipartFiles, Long noteId)
-        throws IOException {
+    public List<String> uploadS3ByNote(MultipartFile[] multipartFiles, Long noteId) {
         List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String fileName = multipartFile.getOriginalFilename();
-            String bucketNameByProductPostId = reIssueBucketNameByNoteId(noteId, fileName);
-            ObjectMetadata objectMetadata = initObjectMetaData(multipartFile);
+            final String filename = multipartFile.getOriginalFilename();
+            final String finalUrl = generateURLByProductPostId(noteId);
             amazonS3Client.putObject(
-                generatePubObjectRequest(bucketNameByProductPostId, multipartFile, objectMetadata));
-            imagePathList.add(preSignedUrl + bucketName + "/" + bucketNameByProductPostId);
+                generatePutObjectRequest(finalUrl + filename, multipartFile,
+                    initObjectMetaData(multipartFile)));
+            imagePathList.add(amazonS3Client.getUrl(bucketName, finalUrl + filename).toString());
         }
         return imagePathList;
     }
 
-    public void deleteS3ByNote(NoteFile noteFile) {
+    public void deleteS3ByNoteFile(NoteFile noteFile) {
         String[] objectUrls = noteFile.getImageLink().split(",");
         for (String objectUrl : objectUrls) {
             objectUrl = filteringUrl(objectUrl);
-            String bucketName = objectUrl.substring(
-                objectUrl.indexOf(".com/") + 5,
-                objectUrl.indexOf("/", objectUrl.indexOf(".com/") + 5));
-            String fileName = objectUrl.substring(objectUrl.lastIndexOf("/") + 1);
-            amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+            amazonS3Client.deleteObject(bucketName, objectUrl);
         }
     }
 
@@ -60,10 +56,6 @@ public class AwsS3ServiceNote {
             .replace(" ", "");
     }
 
-    private String reIssueBucketNameByNoteId(Long noteId, String fileName) {
-        return defaultNotePath + "/" + noteId + "/" + fileName;
-    }
-
     private ObjectMetadata initObjectMetaData(MultipartFile multipartFile) {
         long size = multipartFile.getSize();
         ObjectMetadata objectMetaData = new ObjectMetadata();
@@ -72,11 +64,18 @@ public class AwsS3ServiceNote {
         return objectMetaData;
     }
 
-    private PutObjectRequest generatePubObjectRequest(
-        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata)
-        throws IOException {
-        return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
-            objectMetadata)
-            .withCannedAcl(CannedAccessControlList.PublicRead);
+    private String generateURLByProductPostId(Long noteId) {
+        return defaultNotePath + "/" + noteId + "/";
+    }
+
+    private PutObjectRequest generatePutObjectRequest(
+        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata) {
+        try {
+            return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
+                objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead);
+        } catch (IOException e) {
+            throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
+        }
     }
 }

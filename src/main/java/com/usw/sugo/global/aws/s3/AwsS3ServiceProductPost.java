@@ -32,16 +32,14 @@ public class AwsS3ServiceProductPost {
         List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String filename = multipartFile.getOriginalFilename();
-            String generatedUrlByProductPostId = generateURLByProductPostId(productPostId);
+            String finalUrl = generateURLByProductPostId(productPostId);
             try {
                 amazonS3Client.putObject(
-                    generatePubObjectRequest(
-                        generatedUrlByProductPostId + filename,
-                        multipartFile,
+                    generatePutObjectRequest(finalUrl + filename, multipartFile,
                         initObjectMetaData(multipartFile)));
                 imagePathList.add(amazonS3Client.getUrl(
                     bucketName,
-                    generatedUrlByProductPostId + filename).toString());
+                    finalUrl + filename).toString());
             } catch (IOException e) {
                 throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
             }
@@ -76,7 +74,7 @@ public class AwsS3ServiceProductPost {
         return objectMetaData;
     }
 
-    private PutObjectRequest generatePubObjectRequest(
+    private PutObjectRequest generatePutObjectRequest(
         String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata)
         throws IOException {
         return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
