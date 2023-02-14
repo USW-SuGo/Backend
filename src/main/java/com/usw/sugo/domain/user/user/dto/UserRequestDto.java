@@ -40,7 +40,7 @@ public class UserRequestDto {
     @Data
     public static class AuthEmailPayloadForm {
 
-        @NotBlank
+        @NotNull
         private Long userId;
         @NotBlank
         private String payload;
