@@ -33,17 +33,18 @@ public class JwtGenerator {
     // 어느시점에 secretKey 값이 등록되는가?
     @Value("${spring.jwt.secret-key}")
     private String secretKey;
-    // 배포 환경 JWT 만료 기간
-//    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
-//    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
+
+    //배포 환경 JWT 만료 기간
+    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
+    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
     // 테스트 환경 JWT 만료기간
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
 
-    // 테스트 환경 JWT 만료기간 2
-    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
-    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
+//    // 테스트 환경 JWT 만료기간 2
+//    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
+//    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
