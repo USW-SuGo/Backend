@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 jwtValidator.validateToken(token);
             } catch (CustomException customException) {
-                setExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
+                setExceptionResponseForm(response, customException);
                 response.flushBuffer();
                 return;
             }
