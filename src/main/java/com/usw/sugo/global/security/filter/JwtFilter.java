@@ -4,6 +4,7 @@ import static com.usw.sugo.global.exception.ExceptionType.REQUIRE_TOKEN;
 
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtResolver;
+import com.usw.sugo.global.jwt.JwtValidator;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.FilterChain;
@@ -24,6 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final List<String> whiteListURI;
     private final JwtResolver jwtResolver;
+    private final JwtValidator jwtValidator;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -39,6 +41,13 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
             String token = request.getHeader("Authorization").substring(7);
+            try {
+                jwtValidator.validateToken(token);
+            } catch (CustomException customException) {
+                setExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
+                response.flushBuffer();
+                return;
+            }
             registContextHolderForAuthentication(jwtResolver.jwtResolveToUserLoginId(token));
         }
         filterChain.doFilter(request, response);
@@ -69,7 +78,7 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setStatus(401);
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("Exception", customException.getExceptionType());
-
+        jsonResponse.put("Message", customException.getMessage());
         try {
             response.getWriter().print(jsonResponse);
         } catch (IOException e) {
