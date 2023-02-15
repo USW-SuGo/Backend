@@ -138,6 +138,7 @@ public class PostResponseDto {
     }
 
     @Getter
+    @Setter
     @Builder(access = AccessLevel.PROTECTED)
     public static class LikePosting {
 

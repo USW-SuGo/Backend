@@ -59,7 +59,15 @@ public class UserLikePostService {
     }
 
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
-        return userLikePostRepository.loadMyLikePosting(userId, pageable);
+        List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
+        for (LikePosting likePosting : likePostings) {
+            String imageLink = likePosting.getImageLink()
+                .split(",")[0]
+                .replace("[", "")
+                .replace("]", "");
+            likePosting.setImageLink(imageLink);
+        }
+        return likePostings;
     }
 
     @Transactional
