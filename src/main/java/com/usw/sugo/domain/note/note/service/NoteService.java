@@ -1,5 +1,7 @@
 package com.usw.sugo.domain.note.note.service;
 
+import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
+
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
@@ -8,15 +10,17 @@ import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Stream;
-
-import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 
 @Service
 @Transactional
@@ -27,13 +31,15 @@ public class NoteService {
     private final UserServiceUtility userServiceUtility;
     private final ProductPostService productPostService;
 
-    public Map<String, Long> executeCreatingRoom(Long creatingRequestUserId, Long opponentUserId, Long productPostId) {
+    public Map<String, Long> executeCreatingRoom(Long creatingRequestUserId, Long opponentUserId,
+        Long productPostId) {
         User validatedCreatingRequestUser = userServiceUtility.loadUserById(creatingRequestUserId);
         User validatedOpponentUser = userServiceUtility.loadUserById(opponentUserId);
         ProductPost validatedProductPost = productPostService.loadProductPostById(productPostId);
         validatedCreatingRequestUser.addCountTradeAttempt();
         validatedOpponentUser.addCountTradeAttempt();
-        Note note = saveNote(validatedProductPost, validatedCreatingRequestUser, validatedOpponentUser);
+        Note note = saveNote(validatedProductPost, validatedCreatingRequestUser,
+            validatedOpponentUser);
         return new HashMap<>() {{
             put("noteId", note.getId());
         }};
@@ -41,7 +47,8 @@ public class NoteService {
 
     public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
-        List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
+        List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(
+            requestUser.getId(), pageable);
 
         List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
         List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
@@ -51,9 +58,9 @@ public class NoteService {
         loadedNotes.addAll(loadNoteListFormsRequestUserIsCreatedNote);
 
         Stream<LoadNoteListForm> sortedNotes = loadedNotes
-                .stream()
-                .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
-                        .reversed());
+            .stream()
+            .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
+                .reversed());
 
         List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
@@ -83,16 +90,20 @@ public class NoteService {
         throw new CustomException(NOTE_NOT_FOUNDED);
     }
 
+    public Integer loadNoteCountByProductPost(ProductPost productPost) {
+        return noteRepository.findByProductPost(productPost).size();
+    }
+
     private Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
         Note note = Note.builder()
-                .productPost(productPost)
-                .creatingUser(creatingRequestUser)
-                .creatingUserNickname(creatingRequestUser.getNickname())
-                .creatingUserUnreadCount(0)
-                .opponentUser(opponentUser)
-                .opponentUserNickname(opponentUser.getNickname())
-                .opponentUserUnreadCount(0)
-                .build();
+            .productPost(productPost)
+            .creatingUser(creatingRequestUser)
+            .creatingUserNickname(creatingRequestUser.getNickname())
+            .creatingUserUnreadCount(0)
+            .opponentUser(opponentUser)
+            .opponentUserNickname(opponentUser.getNickname())
+            .opponentUserUnreadCount(0)
+            .build();
         noteRepository.save(note);
         return note;
     }

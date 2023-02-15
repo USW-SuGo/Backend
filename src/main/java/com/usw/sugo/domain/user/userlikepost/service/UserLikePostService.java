@@ -5,7 +5,7 @@ import static com.usw.sugo.global.apiresult.ApiResultFactory.getLikeFlag;
 import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.LikePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
@@ -53,7 +53,6 @@ public class UserLikePostService {
         return getDisLikeFlag();
     }
 
-
     public boolean isAlreadyLike(Long userId, Long productPostId) {
         return userLikePostRepository.checkUserLikeStatusForPost(userId, productPostId);
     }
@@ -61,6 +60,10 @@ public class UserLikePostService {
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
         List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
         for (LikePosting likePosting : likePostings) {
+            likePosting.setLikeCount(productPostService.loadLikeCountByProductPost(
+                productPostService.loadProductPostById(likePosting.getProductPostId())));
+            likePosting.setNoteCount(productPostService.loadNoteCountByProductPost(
+                productPostService.loadProductPostById(likePosting.getProductPostId())));
             String imageLink = likePosting.getImageLink()
                 .split(",")[0]
                 .replace("[", "")
@@ -73,5 +76,9 @@ public class UserLikePostService {
     @Transactional
     public void deleteByUser(User user) {
         userLikePostRepository.deleteByUser(user);
+    }
+
+    public Integer loadLikeCountByProductPost(ProductPost productPost) {
+        return userLikePostRepository.findByProductPost(productPost).size();
     }
 }

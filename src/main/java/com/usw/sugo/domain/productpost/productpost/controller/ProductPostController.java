@@ -2,16 +2,16 @@ package com.usw.sugo.domain.productpost.productpost.controller;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.ClosePostRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.DeleteContentRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PostingRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.PutContentRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostRequestDto.UpPostingRequest;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.ClosePosting;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.DetailPostResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MainPageResponse;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.MyPosting;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.SearchResultResponse;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.ClosePostRequest;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.DeleteContentRequest;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.PostingRequest;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.PutContentRequest;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.UpPostingRequest;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.ClosePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.DetailPostResponse;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.MainPageResponse;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.MyPosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
 import java.io.IOException;

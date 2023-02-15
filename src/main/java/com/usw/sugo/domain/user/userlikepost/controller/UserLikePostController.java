@@ -2,7 +2,7 @@ package com.usw.sugo.domain.user.userlikepost.controller;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.LikePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.userlikepost.dto.UserLikePostRequestDto.LikePostRequest;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;

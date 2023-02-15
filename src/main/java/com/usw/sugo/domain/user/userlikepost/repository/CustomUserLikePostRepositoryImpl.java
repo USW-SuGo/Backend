@@ -4,8 +4,8 @@ import static com.usw.sugo.domain.productpost.productpost.QProductPost.productPo
 import static com.usw.sugo.domain.user.userlikepost.QUserLikePost.userLikePost;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.LikePosting;
-import com.usw.sugo.domain.productpost.productpost.dto.QPostResponseDto_LikePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.QPostResponseDto_LikePosting;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import java.util.List;
 import javax.transaction.Transactional;

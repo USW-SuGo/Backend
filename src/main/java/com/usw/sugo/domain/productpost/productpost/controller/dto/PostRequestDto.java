@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.productpost.productpost.dto;
+package com.usw.sugo.domain.productpost.productpost.controller.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.userlikepost.repository;
 
 
-import com.usw.sugo.domain.productpost.productpost.dto.PostResponseDto.LikePosting;
+import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
