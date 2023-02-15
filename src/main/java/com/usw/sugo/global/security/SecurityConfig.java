@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
+import com.usw.sugo.global.jwt.JwtValidator;
 import com.usw.sugo.global.security.filter.JwtFilter;
 import com.usw.sugo.global.security.filter.LoginFilter;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtGenerator jwtGenerator;
     private final JwtResolver jwtResolver;
+    private final JwtValidator jwtValidator;
     private final ObjectMapper mapper;
 
     private final List<String> whiteListURI = List.of(
@@ -80,7 +82,7 @@ public class SecurityConfig {
     }
 
     public JwtFilter jwtFilter() {
-        return new JwtFilter(whiteListURI, jwtResolver, userDetailsService);
+        return new JwtFilter(whiteListURI, jwtResolver, jwtValidator, userDetailsService);
     }
 
     @Bean
