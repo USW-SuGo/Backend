@@ -5,7 +5,6 @@ import static com.usw.sugo.global.exception.ExceptionType.ALREADY_UP_POSTING;
 import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
 import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 
-import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.PostingRequest;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.ClosePosting;
@@ -17,7 +16,7 @@ import com.usw.sugo.domain.productpost.productpost.repository.ProductPostReposit
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
-import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
+import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,11 +34,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class ProductPostService {
 
-    private final UserServiceUtility userServiceUtility;
     private final ProductPostRepository productPostRepository;
+    private final UserServiceUtility userServiceUtility;
+    private final UserLikePostAndNoteService userLikePostAndNoteService;
     private final ProductPostFileService productPostFileService;
-    private final UserLikePostService userLikePostService;
-    private final NoteService noteService;
+
 
     public List<MainPageResponse> mainPage(Pageable pageable, String category) {
         List<MainPageResponse> mainPageResponses =
@@ -138,6 +137,8 @@ public class ProductPostService {
         }
         detailPostResponse.setLikeCount(
             loadLikeCountByProductPost(loadProductPostById(detailPostResponse.getProductPostId())));
+        detailPostResponse.setNoteCount(
+            loadNoteCountByProductPost(loadProductPostById(detailPostResponse.getProductPostId())));
         return detailPostResponse;
     }
 
@@ -168,6 +169,11 @@ public class ProductPostService {
             productPostRepository.loadClosePost(requestUser, pageable);
         String imageLink;
         for (ClosePosting closePosting : closePostings) {
+            closePosting.setLikeCount(loadLikeCountByProductPost(
+                loadProductPostById(closePosting.getProductPostId())));
+            closePosting.setNoteCount(
+                loadNoteCountByProductPost(
+                    loadProductPostById(closePosting.getProductPostId())));
             imageLink = closePosting.getImageLink()
                 .split(",")[0]
                 .replace("[", "")
@@ -264,11 +270,11 @@ public class ProductPostService {
         throw new CustomException(ALREADY_UP_POSTING);
     }
 
-    public Integer loadLikeCountByProductPost(ProductPost productPost) {
-        return userLikePostService.loadLikeCountByProductPost(productPost);
+    private Integer loadLikeCountByProductPost(ProductPost productPost) {
+        return userLikePostAndNoteService.loadLikeCountByProductPost(productPost);
     }
 
-    public Integer loadNoteCountByProductPost(ProductPost productPost) {
-        return noteService.loadNoteCountByProductPost(productPost);
+    private Integer loadNoteCountByProductPost(ProductPost productPost) {
+        return userLikePostAndNoteService.loadNoteCountByProductPost(productPost);
     }
 }

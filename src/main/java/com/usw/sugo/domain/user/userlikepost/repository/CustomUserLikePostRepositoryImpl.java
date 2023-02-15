@@ -4,6 +4,7 @@ import static com.usw.sugo.domain.productpost.productpost.QProductPost.productPo
 import static com.usw.sugo.domain.user.userlikepost.QUserLikePost.userLikePost;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.QPostResponseDto_LikePosting;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
@@ -58,6 +59,15 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
             .orderBy(productPost.updatedAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
+            .fetch();
+    }
+
+    @Override
+    public List<UserLikePost> findByProductPost(ProductPost productPost) {
+        return queryFactory
+            .select(userLikePost)
+            .from(userLikePost)
+            .where(userLikePost.productPost.eq(productPost))
             .fetch();
     }
 }

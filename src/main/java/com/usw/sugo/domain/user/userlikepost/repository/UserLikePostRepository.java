@@ -12,6 +12,4 @@ public interface UserLikePostRepository extends JpaRepository<UserLikePost, Long
     CustomUserLikePostRepository {
 
     void deleteByUser(User user);
-
-    List<UserLikePost> findByProductPost(ProductPost productPost);
 }

@@ -13,6 +13,7 @@ import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import com.usw.sugo.domain.user.userlikepost.repository.UserLikePostRepository;
+import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,14 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class UserLikePostService {
 
     private final UserLikePostRepository userLikePostRepository;
     private final UserServiceUtility userServiceUtility;
+    private final UserLikePostAndNoteService userLikePostAndNoteService;
     private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
 
+    @Transactional
     public Map<String, Boolean> executeLikeUnlikePost(Long userId, Long productPostId) {
         User user = userServiceUtility.loadUserById(userId);
         ProductPost productPost = productPostService.loadProductPostById(productPostId);
@@ -60,9 +63,9 @@ public class UserLikePostService {
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
         List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
         for (LikePosting likePosting : likePostings) {
-            likePosting.setLikeCount(productPostService.loadLikeCountByProductPost(
+            likePosting.setLikeCount(userLikePostAndNoteService.loadLikeCountByProductPost(
                 productPostService.loadProductPostById(likePosting.getProductPostId())));
-            likePosting.setNoteCount(productPostService.loadNoteCountByProductPost(
+            likePosting.setNoteCount(userLikePostAndNoteService.loadNoteCountByProductPost(
                 productPostService.loadProductPostById(likePosting.getProductPostId())));
             String imageLink = likePosting.getImageLink()
                 .split(",")[0]
@@ -76,9 +79,5 @@ public class UserLikePostService {
     @Transactional
     public void deleteByUser(User user) {
         userLikePostRepository.deleteByUser(user);
-    }
-
-    public Integer loadLikeCountByProductPost(ProductPost productPost) {
-        return userLikePostRepository.findByProductPost(productPost).size();
     }
 }

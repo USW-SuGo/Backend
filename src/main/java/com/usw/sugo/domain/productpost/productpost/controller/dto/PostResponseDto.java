@@ -3,9 +3,11 @@ package com.usw.sugo.domain.productpost.productpost.controller.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class PostResponseDto {
@@ -112,6 +114,8 @@ public class PostResponseDto {
     @Getter
     @Setter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MyPosting {
 
         private Long productPostId;
@@ -143,6 +147,8 @@ public class PostResponseDto {
     @Getter
     @Setter
     @Builder(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class LikePosting {
 
         private Long productPostId;
@@ -174,6 +180,8 @@ public class PostResponseDto {
     @Getter
     @Setter
     @Builder(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ClosePosting {
 
         private Long productPostId;
