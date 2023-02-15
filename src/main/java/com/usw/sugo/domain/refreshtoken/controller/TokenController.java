@@ -4,12 +4,10 @@ import static com.usw.sugo.global.exception.ExceptionType.JWT_MALFORMED_EXCEPTIO
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.refreshtoken.RefreshToken;
-import com.usw.sugo.domain.refreshtoken.repository.RefreshTokenRepository;
-import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
+import com.usw.sugo.global.apiresult.ApiResultFactory;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtValidator;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,39 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TokenController {
 
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtGenerator jwtGenerator;
     private final JwtValidator jwtValidator;
+    private final RefreshTokenService refreshTokenService;
 
-    // 토큰 갱신 (RefreshToken 을 매개변수로 받는다.)
+    @ResponseStatus(OK)
     @PostMapping
     public ResponseEntity<Object> updateToken(@RequestHeader String authorization) {
-
         String requestRefreshToken = authorization.substring(7);
-
-        // RefreshToken 검증이 끝나면, 토큰 재발급
-        if (jwtValidator.validateToken(requestRefreshToken) &&
-            refreshTokenRepository.findByPayload(requestRefreshToken).isPresent()) {
-
-            RefreshToken requestRefreshTokenDomain = refreshTokenRepository.findByPayload(
-                requestRefreshToken).get();
-
-            User requestUser = requestRefreshTokenDomain.getUser();
-
-            String accessToken = jwtGenerator.generateAccessToken(requestUser);
-            String refreshToken = jwtGenerator.updateRefreshToken(requestUser);
-            Map<String, String> result = jwtGenerator.wrapTokenPair(accessToken, refreshToken);
-
+        if (jwtValidator.validateToken(requestRefreshToken)) {
+            RefreshToken refreshToken = refreshTokenService.loadRefreshTokenByPayload(
+                requestRefreshToken);
+            Map<String, String> result = refreshTokenService.reIssueToken(refreshToken);
             HttpHeaders response = new HttpHeaders();
             response.set("Authorization", result.toString());
-
-            return ResponseEntity.status(OK)
+            return ResponseEntity
+                .status(OK)
                 .headers(response)
-                .body(new HashMap<>() {{
-                    put("Success", true);
-                }});
+                .body(ApiResultFactory.getSuccessFlag());
         }
-        // 해당 리프레시 토큰이 DB에 없으면 에러
         throw new CustomException(JWT_MALFORMED_EXCEPTION);
     }
 }

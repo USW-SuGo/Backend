@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     private final List<String> whiteListURI = List.of(
         "/user/check-email", "/user/check-loginId", "/user/auth", "/user/join", "/user/login",
-        "/user/find-id", "/user/find-pw", "/post/all");
+        "/user/find-id", "/user/find-pw", "/post/all", "/token");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
