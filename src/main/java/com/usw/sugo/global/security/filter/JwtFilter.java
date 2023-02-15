@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // WhiteList에 포함되어있지 않으면 조건문 들어감
         if (!isRequestURIWhiteList(request)) {
             if (isNotContainedToken(request, response)) {
-                setExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
+                setRequiredTokenExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
                 response.flushBuffer();
                 return;
             }
@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 jwtValidator.validateToken(token);
             } catch (CustomException customException) {
-                setExceptionResponseForm(response, customException);
+                setAccessTokenExpiredExceptionResponseForm(response, customException);
                 response.flushBuffer();
                 return;
             }
@@ -72,7 +72,21 @@ public class JwtFilter extends OncePerRequestFilter {
             !request.getHeader("Authorization").startsWith("Bearer ");
     }
 
-    private void setExceptionResponseForm(HttpServletResponse response,
+    private void setRequiredTokenExceptionResponseForm(HttpServletResponse response,
+        CustomException customException) {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(400);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("Exception", customException.getExceptionType());
+        jsonResponse.put("Message", customException.getMessage());
+        try {
+            response.getWriter().print(jsonResponse);
+        } catch (IOException e) {
+            throw new InternalError(e);
+        }
+    }
+
+    private void setAccessTokenExpiredExceptionResponseForm(HttpServletResponse response,
         CustomException customException) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
