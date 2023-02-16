@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.note.note.service;
 
+import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF;
 import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 
 import com.usw.sugo.domain.note.note.Note;
@@ -12,7 +13,6 @@ import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileSe
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,13 +35,23 @@ public class NoteService {
     private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
 
-    public Map<String, Long> executeCreatingRoom(Long creatingRequestUserId, Long opponentUserId,
-        Long productPostId) {
+    public Map<String, Long> executeCreatingRoom(
+        Long creatingRequestUserId, Long opponentUserId, Long productPostId) {
+
+        if (validateNoteCreateRequest(creatingRequestUserId, opponentUserId, productPostId)) {
+            Long alreadyNoteId = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
+                creatingRequestUserId, opponentUserId, productPostId).get().getId();
+            return new HashMap<>() {{
+                put("noteId", alreadyNoteId);
+            }};
+        }
+
         User validatedCreatingRequestUser = userServiceUtility.loadUserById(creatingRequestUserId);
         User validatedOpponentUser = userServiceUtility.loadUserById(opponentUserId);
         ProductPost validatedProductPost = productPostService.loadProductPostById(productPostId);
         validatedCreatingRequestUser.addCountTradeAttempt();
         validatedOpponentUser.addCountTradeAttempt();
+
         Note note = saveNote(validatedProductPost, validatedCreatingRequestUser,
             validatedOpponentUser);
         return new HashMap<>() {{
@@ -59,7 +69,6 @@ public class NoteService {
         List<LoadNoteListForm> loadedNotes = new ArrayList<>();
         loadedNotes.addAll(notes.get(0));
         loadedNotes.addAll(notes.get(1));
-
 
         List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
@@ -112,7 +121,7 @@ public class NoteService {
         throw new CustomException(NOTE_NOT_FOUNDED);
     }
 
-    public Integer loadNoteCountByProductPost(ProductPost productPost) {
+    private Integer loadNoteCountByProductPost(ProductPost productPost) {
         return noteRepository.findByProductPost(productPost).size();
     }
 
@@ -151,5 +160,16 @@ public class NoteService {
 
     public void deleteNoteByNoteId(Long noteId) {
         noteRepository.deleteById(noteId);
+    }
+
+    private boolean validateNoteCreateRequest(
+        Long creatingUserId, Long opponentUserId, Long productPostId) {
+        if (creatingUserId.equals(opponentUserId)) {
+            throw new CustomException(DO_NOT_CREATE_YOURSELF);
+        }
+
+        Optional<Note> findNote = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
+            creatingUserId, opponentUserId, productPostId);
+        return findNote.isPresent();
     }
 }
