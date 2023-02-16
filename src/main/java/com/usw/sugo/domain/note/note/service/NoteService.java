@@ -42,7 +42,7 @@ public class NoteService {
             Long alreadyNoteId = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
                 creatingRequestUserId, opponentUserId, productPostId).get().getId();
             return new HashMap<>() {{
-                put("noteId", alreadyNoteId);
+                put("alreadyNoteId", alreadyNoteId);
             }};
         }
 
