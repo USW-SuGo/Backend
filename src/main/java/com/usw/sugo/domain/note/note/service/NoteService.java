@@ -52,8 +52,8 @@ public class NoteService {
         validatedCreatingRequestUser.addCountTradeAttempt();
         validatedOpponentUser.addCountTradeAttempt();
 
-        Note note = saveNote(validatedProductPost, validatedCreatingRequestUser,
-            validatedOpponentUser);
+        Note note = saveNote(
+            validatedProductPost, validatedCreatingRequestUser, validatedOpponentUser);
         return new HashMap<>() {{
             put("noteId", note.getId());
         }};
