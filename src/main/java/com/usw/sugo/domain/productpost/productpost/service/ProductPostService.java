@@ -18,6 +18,7 @@ import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,11 +37,11 @@ public class ProductPostService {
 
     private final ProductPostRepository productPostRepository;
     private final UserServiceUtility userServiceUtility;
+    private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final UserLikePostAndNoteService userLikePostAndNoteService;
     private final ProductPostFileService productPostFileService;
 
-
-    public List<MainPageResponse> mainPage(Pageable pageable, String category) {
+    public List<MainPageResponse> executeLoadMainPage(Pageable pageable, String category) {
         List<MainPageResponse> mainPageResponses =
             productPostRepository.loadMainPagePostList(pageable, category);
         for (MainPageResponse mainPageResponse : mainPageResponses) {
@@ -48,55 +49,38 @@ public class ProductPostService {
                 loadProductPostById(mainPageResponse.getProductPostId())));
             mainPageResponse.setNoteCount(loadNoteCountByProductPost(
                 loadProductPostById(mainPageResponse.getProductPostId())));
-            if (mainPageResponse.getImageLink() == null) {
-                mainPageResponse.setImageLink("");
-            } else {
-                String imageLink = mainPageResponse.getImageLink()
-                    .replace("[", "")
-                    .replace("]", "");
-                mainPageResponse.setImageLink(imageLink);
-            }
+            mainPageResponse = imageLinkCharacterFilter.filterImageLink(mainPageResponse);
         }
         return mainPageResponses;
     }
 
-    public List<MyPosting> loadMyPosting(User user, Long userId, Pageable pageable) {
+    public List<MyPosting> executeLoadMyPosting(User user, Long userId, Pageable pageable) {
         // 마이 페이지
         if (user.getId().equals(userId)) {
             List<MyPosting> myPostings = productPostRepository.loadWrittenPost(user, pageable);
-            String imageLink;
             for (MyPosting myPosting : myPostings) {
                 myPosting.setLikeCount(
                     loadLikeCountByProductPost(loadProductPostById(myPosting.getProductPostId())));
                 myPosting.setNoteCount(
                     loadNoteCountByProductPost(loadProductPostById(myPosting.getProductPostId())));
-                imageLink = myPosting.getImageLink()
-                    .split(",")[0]
-                    .replace("[", "")
-                    .replace("]", "");
-                myPosting.setImageLink(imageLink);
+                myPosting = imageLinkCharacterFilter.filterImageLink(myPosting);
             }
             return myPostings;
         }
         // 다른 유저 페이지
         User otherUser = userServiceUtility.loadUserById(userId);
         List<MyPosting> myPostings = productPostRepository.loadWrittenPost(otherUser, pageable);
-        String imageLink;
         for (MyPosting myPosting : myPostings) {
             myPosting.setLikeCount(
                 loadLikeCountByProductPost(loadProductPostById(myPosting.getProductPostId())));
             myPosting.setNoteCount(
                 loadNoteCountByProductPost(loadProductPostById(myPosting.getProductPostId())));
-            imageLink = myPosting.getImageLink()
-                .split(",")[0]
-                .replace("[", "")
-                .replace("]", "");
-            myPosting.setImageLink(imageLink);
+            myPosting = imageLinkCharacterFilter.filterImageLink(myPosting);
         }
         return myPostings;
     }
 
-    public List<SearchResultResponse> searchPostings(String value, String category) {
+    public List<SearchResultResponse> executeSearchPostings(String value, String category) {
         List<SearchResultResponse> searchResultResponses = productPostRepository.searchPost(value,
             validateCategory(category));
         for (SearchResultResponse searchResultResponse : searchResultResponses) {
@@ -104,46 +88,21 @@ public class ProductPostService {
                 loadProductPostById(searchResultResponse.getProductPostId())));
             searchResultResponse.setNoteCount(loadNoteCountByProductPost(
                 loadProductPostById(searchResultResponse.getProductPostId())));
-            if (searchResultResponse.getImageLink() == null) {
-                searchResultResponse.setImageLink("");
-            } else {
-                String imageLink = searchResultResponse.getImageLink()
-                    .replace("[", "")
-                    .replace("]", "");
-                searchResultResponse.setImageLink(imageLink);
-            }
+            searchResultResponse = imageLinkCharacterFilter.filterImageLink(searchResultResponse);
         }
         return searchResultResponses;
     }
 
-    public ProductPost loadProductPostById(Long productPostId) {
-        Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
-        if (productPost.isPresent()) {
-            return productPost.get();
-        }
-        throw new CustomException(POST_NOT_FOUND);
-    }
-
-    public DetailPostResponse loadDetailProductPost(Long productPostId, Long userId) {
+    public DetailPostResponse executeLoadDetailProductPost(Long productPostId, Long userId) {
         DetailPostResponse detailPostResponse =
             productPostRepository.loadDetailPost(productPostId, userId);
-        if (detailPostResponse.getImageLink() == null) {
-            detailPostResponse.setImageLink("");
-        } else {
-            String imageLink = detailPostResponse.getImageLink()
-                .replace("[", "")
-                .replace("]", "");
-            detailPostResponse.setImageLink(imageLink);
-        }
         detailPostResponse.setLikeCount(
             loadLikeCountByProductPost(loadProductPostById(detailPostResponse.getProductPostId())));
         detailPostResponse.setNoteCount(
             loadNoteCountByProductPost(loadProductPostById(detailPostResponse.getProductPostId())));
-        return detailPostResponse;
-    }
+        detailPostResponse = imageLinkCharacterFilter.filterImageLink(detailPostResponse);
 
-    public List<ProductPost> loadAllProductPostByUser(User user) {
-        return productPostRepository.findAllByUser(user);
+        return detailPostResponse;
     }
 
     public List<ClosePosting> loadClosePosting(User user, Long userId, Pageable pageable) {
@@ -156,11 +115,7 @@ public class ProductPostService {
                 closePosting.setNoteCount(
                     loadNoteCountByProductPost(
                         loadProductPostById(closePosting.getProductPostId())));
-                imageLink = closePosting.getImageLink()
-                    .split(",")[0]
-                    .replace("[", "")
-                    .replace("]", "");
-                closePosting.setImageLink(imageLink);
+                closePosting = imageLinkCharacterFilter.filterImageLink(closePosting);
             }
             return closePostings;
         }
@@ -174,11 +129,7 @@ public class ProductPostService {
             closePosting.setNoteCount(
                 loadNoteCountByProductPost(
                     loadProductPostById(closePosting.getProductPostId())));
-            imageLink = closePosting.getImageLink()
-                .split(",")[0]
-                .replace("[", "")
-                .replace("]", "");
-            closePosting.setImageLink(imageLink);
+            closePosting = imageLinkCharacterFilter.filterImageLink(closePosting);
         }
         return closePostings;
     }
@@ -261,6 +212,18 @@ public class ProductPostService {
             return category;
         }
         throw new CustomException(CATEGORY_NOT_FOUND);
+    }
+
+    public List<ProductPost> loadAllProductPostByUser(User user) {
+        return productPostRepository.findAllByUser(user);
+    }
+
+    public ProductPost loadProductPostById(Long productPostId) {
+        Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
+        if (productPost.isPresent()) {
+            return productPost.get();
+        }
+        throw new CustomException(POST_NOT_FOUND);
     }
 
     private boolean validateUpPostIsAvailable(User user) {

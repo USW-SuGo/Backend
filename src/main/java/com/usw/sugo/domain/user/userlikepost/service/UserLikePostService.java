@@ -15,6 +15,7 @@ import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import com.usw.sugo.domain.user.userlikepost.repository.UserLikePostRepository;
 import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class UserLikePostService {
 
     private final UserLikePostRepository userLikePostRepository;
     private final UserServiceUtility userServiceUtility;
+    private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final UserLikePostAndNoteService userLikePostAndNoteService;
     private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
@@ -67,11 +69,7 @@ public class UserLikePostService {
                 productPostService.loadProductPostById(likePosting.getProductPostId())));
             likePosting.setNoteCount(userLikePostAndNoteService.loadNoteCountByProductPost(
                 productPostService.loadProductPostById(likePosting.getProductPostId())));
-            String imageLink = likePosting.getImageLink()
-                .split(",")[0]
-                .replace("[", "")
-                .replace("]", "");
-            likePosting.setImageLink(imageLink);
+            likePosting = imageLinkCharacterFilter.filterImageLink(likePosting);
         }
         return likePostings;
     }

@@ -7,9 +7,12 @@ import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
+import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
+import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final UserServiceUtility userServiceUtility;
     private final ProductPostService productPostService;
+    private final ProductPostFileService productPostFileService;
 
     public Map<String, Long> executeCreatingRoom(Long creatingRequestUserId, Long opponentUserId,
         Long productPostId) {
@@ -47,28 +51,46 @@ public class NoteService {
 
     public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
-        List<List<LoadNoteListForm>> noteListResult = noteRepository.loadNoteListByUserId(
-            requestUser.getId(), pageable);
+        List<List<LoadNoteListForm>> notes =
+            noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
 
-        List<LoadNoteListForm> loadNoteListFormRequestUserIsCreatingNote = noteListResult.get(0);
-        List<LoadNoteListForm> loadNoteListFormsRequestUserIsCreatedNote = noteListResult.get(1);
+        setThumbnailImageLink(notes);
 
         List<LoadNoteListForm> loadedNotes = new ArrayList<>();
-        loadedNotes.addAll(loadNoteListFormRequestUserIsCreatingNote);
-        loadedNotes.addAll(loadNoteListFormsRequestUserIsCreatedNote);
+        loadedNotes.addAll(notes.get(0));
+        loadedNotes.addAll(notes.get(1));
 
-        Stream<LoadNoteListForm> sortedNotes = loadedNotes
-            .stream()
-            .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
-                .reversed());
 
         List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
             put("requestUserId", user.getId());
         }});
-        result.add(sortedNotes);
+        result.add(sortLoadNoteListForm(loadedNotes));
 
         return result;
+    }
+
+    private List<List<LoadNoteListForm>> setThumbnailImageLink(List<List<LoadNoteListForm>> notes) {
+        for (List<LoadNoteListForm> note : notes) {
+            for (LoadNoteListForm loadNoteListForm : note) {
+                ProductPost productPost =
+                    productPostService.loadProductPostById(loadNoteListForm.getProductPostId());
+                ProductPostFile productPostFile =
+                    productPostFileService.loadProductPostFileByProductPost(productPost);
+                String[] split = productPostFile.getImageLink().split(",");
+
+                loadNoteListForm.setImageLink(
+                    split[0].replace("[", "").replace("]", ""));
+            }
+        }
+        return notes;
+    }
+
+    private Stream<LoadNoteListForm> sortLoadNoteListForm(List<LoadNoteListForm> loadedNotes) {
+        return loadedNotes
+            .stream()
+            .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
+                .reversed());
     }
 
     public Note loadNoteByNoteId(Long noteId) {

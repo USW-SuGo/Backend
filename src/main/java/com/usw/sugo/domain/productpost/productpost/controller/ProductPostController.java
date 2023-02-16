@@ -44,33 +44,33 @@ public class ProductPostController {
     @GetMapping("/search")
     public List<SearchResultResponse> searchPost(@RequestParam String value,
         @RequestParam String category) {
-        return productPostService.searchPostings(value, category);
+        return productPostService.executeSearchPostings(value, category);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/all")
     public List<MainPageResponse> loadMainPage(@RequestParam String category, Pageable pageable) {
-        return productPostService.mainPage(pageable, category);
+        return productPostService.executeLoadMainPage(pageable, category);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/{productPostId}")
     public DetailPostResponse loadDetailPost(@PathVariable Long productPostId,
         @AuthenticationPrincipal User user) {
-        return productPostService.loadDetailProductPost(productPostId, user.getId());
+        return productPostService.executeLoadDetailProductPost(productPostId, user.getId());
     }
 
     @ResponseStatus(OK)
     @GetMapping("/my-post")
     public List<MyPosting> loadUserPost(@AuthenticationPrincipal User user, Pageable pageable) {
-        return productPostService.loadMyPosting(user, user.getId(), pageable);
+        return productPostService.executeLoadMyPosting(user, user.getId(), pageable);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/my-post/{userId}")
     public List<MyPosting> loadOtherUserPost(@AuthenticationPrincipal User user,
         @PathVariable Long userId, Pageable pageable) {
-        return productPostService.loadMyPosting(user, userId, pageable);
+        return productPostService.executeLoadMyPosting(user, userId, pageable);
     }
 
     @ResponseStatus(OK)

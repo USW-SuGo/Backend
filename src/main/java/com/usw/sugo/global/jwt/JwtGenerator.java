@@ -50,7 +50,6 @@ public class JwtGenerator {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    //AccessToken 생성
     public String generateAccessToken(User user) {
         Date now = new Date();
         Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
@@ -73,11 +72,9 @@ public class JwtGenerator {
     }
 
     public String generateRefreshToken(User user) {
-        // DB에 존재하는 리프레시 토큰 꺼내 담기
         Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(
             user.getId());
 
-        // 리프레시 토큰이 DB에 있는 상황
         if (findRefreshTokenByUserId.isPresent()) {
             String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get()
                 .getPayload();
@@ -85,32 +82,26 @@ public class JwtGenerator {
             if (jwtValidator.refreshTokenIsExpired(refreshToken)) {
                 return updateRefreshToken(user);
             }
-            // 리프레시 토큰이 DB에 있고, 만료되지 않았으며, 갱신은 필요로 할 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
                 && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return updateRefreshToken(user);
             }
-            // 리프레시 토큰이 DB에 있고, 만료되지 않았으며 갱신을 필요로 하지 않을 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
                 && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return "Bearer " + refreshToken;
             }
         }
-        // 리프레시 토큰이 DB에 없는 상황에는 신규 생성 (Bearer 포함)
         return createRefreshToken(user);
     }
 
-    // RefreshToken 신규 생성 후 DB에 저장
     @Transactional
     public String createRefreshToken(User user) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
-        //페이로드에 남길 정보들 (Id, loginId, role, restricted)
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
-        // Access Token 생성
         String stringRefreshToken = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
@@ -124,11 +115,9 @@ public class JwtGenerator {
             .build();
 
         refreshTokenRepository.save(entityFormRefreshToken);
-
         return "Bearer " + stringRefreshToken;
     }
 
-    // RefreshToken 업데이트 후 DB에 갱신
     public String updateRefreshToken(User user) {
         Date now = new Date();
         Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
@@ -145,7 +134,6 @@ public class JwtGenerator {
             .compact();
 
         refreshTokenRepository.refreshPayload(user.getId(), updatedRefreshToken);
-
         return "Bearer " + updatedRefreshToken;
     }
 
