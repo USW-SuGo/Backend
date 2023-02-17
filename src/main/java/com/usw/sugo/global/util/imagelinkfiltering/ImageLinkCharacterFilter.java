@@ -1,5 +1,7 @@
 package com.usw.sugo.global.util.imagelinkfiltering;
 
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.ClosePosting;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.DetailPostResponse;
@@ -82,5 +84,17 @@ public class ImageLinkCharacterFilter {
             likePosting.setImageLink(imageLink);
         }
         return likePosting;
+    }
+
+    public LoadNoteAllContentForm filterImageLink(LoadNoteAllContentForm loadNoteAllContentForm) {
+        if (loadNoteAllContentForm.getImageLink() == null) {
+            loadNoteAllContentForm.setImageLink("");
+        } else {
+            String imageLink = loadNoteAllContentForm.getImageLink().split(",")[0]
+                .replace("[", "")
+                .replace("]", "");
+            loadNoteAllContentForm.setImageLink(imageLink);
+        }
+        return loadNoteAllContentForm;
     }
 }

@@ -92,8 +92,7 @@ public class ProductPostController {
     public Map<String, Boolean> savePost(
         PostingRequest postingRequest,
         @RequestBody MultipartFile[] multipartFileList,
-        @AuthenticationPrincipal User user,
-        HttpServletRequest request) throws IOException {
+        @AuthenticationPrincipal User user) throws IOException {
         return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
     }
 

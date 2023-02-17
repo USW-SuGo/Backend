@@ -20,17 +20,14 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(Long noteId,
-        Pageable pageable) {
+    public List<LoadNoteAllContentForm> loadAllNoteContentByNoteId(Long noteId, Pageable pageable) {
         return queryFactory
             .select(new QNoteResponseDto_LoadNoteAllContentForm(
-                noteContent.note.productPost.id, noteContent.id, noteContent.message,
-                noteContent.sender.id, noteContent.receiver.id, noteContent.createdAt,
-                noteFile.id, noteFile.imageLink, noteFile.sender.id,
-                noteFile.receiver.id, noteFile.createdAt))
+                noteContent.note.productPost.id,
+                noteContent.id, noteContent.message, noteContent.sender.id, noteContent.receiver.id,
+                noteContent.createdAt
+            ))
             .from(noteContent)
-            .leftJoin(noteFile)
-            .on(noteContent.note.eq(noteFile.note))
             .where(noteContent.note.id.eq(noteId))
             .orderBy(noteContent.createdAt.desc())
             .offset(pageable.getOffset())

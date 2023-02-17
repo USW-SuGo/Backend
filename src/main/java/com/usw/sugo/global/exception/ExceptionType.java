@@ -39,7 +39,8 @@ public enum ExceptionType {
     JWT_MALFORMED_EXCEPTION(BAD_REQUEST, "JWT_MALFORMED_EXCEPTION"),
     JWT_EXPIRED_EXCEPTION(FORBIDDEN, "토큰이 만료되었습니다."),
     REQUIRE_TOKEN(UNAUTHORIZED, "해당 요청은 토큰이 필요합니다."),
-    INTERNAL_UPLOAD_EXCEPTION(INTERNAL_SERVER_ERROR, "이미지 업로드 중 문제가 발생했습니다.");
+    INTERNAL_UPLOAD_EXCEPTION(INTERNAL_SERVER_ERROR, "이미지 업로드 중 문제가 발생했습니다."),
+    INTERNAL_PUSH_SERVER_EXCEPTION(INTERNAL_SERVER_ERROR, "푸쉬 서버에 문제가 발생했습니다.");
 
     private final HttpStatus status;
     private final String message;

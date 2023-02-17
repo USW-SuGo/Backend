@@ -7,7 +7,6 @@ import com.usw.sugo.domain.note.notefile.controller.dto.NoteFileRequestDto.SendN
 import com.usw.sugo.domain.note.notefile.service.NoteFileService;
 import com.usw.sugo.domain.user.user.User;
 import java.util.Map;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,15 +24,15 @@ public class NoteFileController {
     private final NoteFileService noteFileService;
 
     @ResponseStatus(OK)
-    @PostMapping("/")
-    public Map<String, Boolean> sendNoteContent(
+    @PostMapping
+    public Map<String, Boolean> sendNoteFile(
         SendNoteFileForm sendNoteFileForm,
-        @RequestBody MultipartFile[] multipartForms,
+        @RequestBody MultipartFile[] multipartFileList,
         @AuthenticationPrincipal User user) {
         return noteFileService.saveNoteFile(
             sendNoteFileForm.getNoteId(),
             user.getId(),
             sendNoteFileForm.getReceiverId(),
-            multipartForms);
+            multipartFileList);
     }
 }

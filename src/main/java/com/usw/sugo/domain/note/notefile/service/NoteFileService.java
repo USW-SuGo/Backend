@@ -4,6 +4,7 @@ import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 
 import com.usw.sugo.domain.note.note.Note;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notefile.NoteFile;
 import com.usw.sugo.domain.note.notefile.repository.NoteFileRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,8 +42,11 @@ public class NoteFileService {
     @Transactional
     public Map<String, Boolean> saveNoteFile(
         Long noteId, Long senderId, Long receiverId, MultipartFile[] multipartFiles) {
-        List<String> imageLinks = null;
-        imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, noteId);
+        System.out.println("noteId = " + noteId);
+        System.out.println("senderId = " + senderId);
+        System.out.println("receiverId = " + receiverId);
+        System.out.println("multipartFiles = " + multipartFiles);
+        List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, noteId);
         NoteFile noteFile = NoteFile.builder()
             .note(noteService.loadNoteByNoteId(noteId))
             .sender(userServiceUtility.loadUserById(senderId))
@@ -57,5 +62,9 @@ public class NoteFileService {
     public void deleteByNote(Note note) {
         awsS3ServiceNote.deleteS3ByNoteFile(loadNoteFileByNote(note));
         noteFileRepository.deleteByNote(note);
+    }
+
+    public List<LoadNoteAllContentForm> loadAllNoteFileByNoteId(Long noteId, Pageable pageable) {
+        return noteFileRepository.loadNoteRoomAllContentByRoomId(noteId, pageable);
     }
 }

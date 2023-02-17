@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NoteService {
 
@@ -35,6 +35,7 @@ public class NoteService {
     private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
 
+    @Transactional
     public Map<String, Long> executeCreatingRoom(
         Long creatingRequestUserId, Long opponentUserId, Long productPostId) {
 
@@ -59,6 +60,7 @@ public class NoteService {
         }};
     }
 
+    @Transactional
     public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
         List<List<LoadNoteListForm>> notes =
@@ -98,8 +100,7 @@ public class NoteService {
     private Stream<LoadNoteListForm> sortLoadNoteListForm(List<LoadNoteListForm> loadedNotes) {
         return loadedNotes
             .stream()
-            .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate)
-                .reversed());
+            .sorted(Comparator.comparing(LoadNoteListForm::getRecentChattingDate).reversed());
     }
 
     public Note loadNoteByNoteId(Long noteId) {
@@ -147,7 +148,7 @@ public class NoteService {
         note.updateUserUnreadCount(user);
     }
 
-    // 쪽지 방 읽음 처리
+    @Transactional
     public void updateReadNoteRoom(Long noteId, User user) {
         Note note = loadNoteByNoteId(noteId);
         note.resetUserUnreadCount(user);

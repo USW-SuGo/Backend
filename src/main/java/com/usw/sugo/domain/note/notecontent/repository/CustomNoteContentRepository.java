@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomNoteContentRepository {
 
-    List<LoadNoteAllContentForm> loadNoteRoomAllContentByRoomId(Long noteId, Pageable pageable);
+    List<LoadNoteAllContentForm> loadAllNoteContentByNoteId(Long noteId, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com.usw.sugo.domain.note.note.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +45,7 @@ public class NoteResponseDto {
     }
 
     @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     public static class LoadNoteAllContentForm {
@@ -64,21 +66,34 @@ public class NoteResponseDto {
         @QueryProjection
         public LoadNoteAllContentForm(
             Long productPostId, Long noteContentId, String message,
-            Long messageSenderId, Long messageReceiverId, LocalDateTime messageCreatedAt,
-            Long noteFileId, String imageLink, Long fileSenderId, Long fileReceiverId,
-            LocalDateTime fileCreatedAt) {
+            Long messageSenderId, Long messageReceiverId, LocalDateTime messageCreatedAt) {
             this.productPostId = productPostId;
             this.noteContentId = noteContentId;
             this.message = message;
             this.messageSenderId = messageSenderId;
             this.messageReceiverId = messageReceiverId;
             this.messageCreatedAt = messageCreatedAt;
+        }
+
+        @QueryProjection
+        public LoadNoteAllContentForm(
+            Long noteFileId, String imageLink, Long fileSenderId, Long fileReceiverId,
+            LocalDateTime fileCreatedAt) {
             this.noteFileId = noteFileId;
             this.imageLink = imageLink;
             this.fileSenderId = fileSenderId;
             this.fileReceiverId = fileReceiverId;
             this.fileCreatedAt = fileCreatedAt;
         }
+
+        static Comparator<LoadNoteAllContentForm> customComparator = new Comparator<LoadNoteAllContentForm>() {
+            @Override
+            public int compare(LoadNoteAllContentForm o1, LoadNoteAllContentForm o2) {
+                LocalDateTime o1Time = o1.getMessageCreatedAt() != null ? o1.getMessageCreatedAt() : o1.getFileCreatedAt();
+                LocalDateTime o2Time = o2.getMessageCreatedAt() != null ? o2.getMessageCreatedAt() : o2.getFileCreatedAt();
+                return o1Time.compareTo(o2Time);
+            }
+        };
 
         public void setRequestUserId(Long requestUserId) {
             this.requestUserId = requestUserId;

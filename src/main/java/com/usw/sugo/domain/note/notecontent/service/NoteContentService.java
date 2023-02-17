@@ -2,11 +2,18 @@ package com.usw.sugo.domain.note.notecontent.service;
 
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
+import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
+import com.usw.sugo.domain.note.notefile.service.NoteFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,22 +28,26 @@ import static com.usw.sugo.global.apiresult.ApiResult.SUCCESS;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class NoteContentService {
 
     private final NoteContentRepository noteContentRepository;
     private final NoteService noteService;
+    private final NoteFileService noteFileService;
     private final UserServiceUtility userServiceUtility;
+    private final ImageLinkCharacterFilter imageLinkCharacterFilter;
 
     private final Map<String, Boolean> successFlag = new HashMap<>() {{
         put(SUCCESS.getResult(), true);
     }};
 
+    @Transactional
     public List<LoadNoteAllContentForm> executeLoadAllContentsByNoteId(User requestUser, Long noteId, Pageable pageable) {
         noteService.updateReadNoteRoom(noteId, requestUser);
         return loadNoteAllContentForms(noteId, pageable, requestUser);
     }
 
+    @Transactional
     public Map<String, Boolean> executeSendNoteContent(Long noteId, String message, Long senderId, Long receiverId) {
         User sender = userServiceUtility.loadUserById(senderId);
         User receiver = userServiceUtility.loadUserById(receiverId);
@@ -48,12 +59,42 @@ public class NoteContentService {
     }
 
     private List<LoadNoteAllContentForm> loadNoteAllContentForms(Long noteId, Pageable pageable, User requestUser) {
-        List<LoadNoteAllContentForm> loadNoteAllContentForms =
-                noteContentRepository.loadNoteRoomAllContentByRoomId(noteId, pageable);
-        for (LoadNoteAllContentForm loadNoteAllContentForm : loadNoteAllContentForms) {
+        List<LoadNoteAllContentForm> loadAllNoteContentByNoteId =
+                noteContentRepository.loadAllNoteContentByNoteId(noteId, pageable);
+
+        List<LoadNoteAllContentForm> loadAllNoteFileByNoteId =
+            noteFileService.loadAllNoteFileByNoteId(noteId, pageable);
+
+        List<LoadNoteAllContentForm> results = new ArrayList<>();
+        results.addAll(loadAllNoteContentByNoteId);
+        results.addAll(loadAllNoteFileByNoteId);
+
+        results.sort(makeCustomComparator());
+
+        for (LoadNoteAllContentForm loadNoteAllContentForm : loadAllNoteContentByNoteId) {
             loadNoteAllContentForm.setRequestUserId(requestUser.getId());
+            loadNoteAllContentForm = imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
         }
-        return loadNoteAllContentForms;
+
+        for (LoadNoteAllContentForm loadNoteAllContentForm : loadAllNoteFileByNoteId) {
+            loadNoteAllContentForm.setRequestUserId(requestUser.getId());
+            loadNoteAllContentForm = imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
+        }
+
+        Collections.reverse(results);
+
+        return results;
+    }
+
+    private Comparator<LoadNoteAllContentForm> makeCustomComparator() {
+       return new Comparator<LoadNoteAllContentForm>() {
+            @Override
+            public int compare(LoadNoteAllContentForm o1, LoadNoteAllContentForm o2) {
+                LocalDateTime o1Time = o1.getMessageCreatedAt() != null ? o1.getMessageCreatedAt() : o1.getFileCreatedAt();
+                LocalDateTime o2Time = o2.getMessageCreatedAt() != null ? o2.getMessageCreatedAt() : o2.getFileCreatedAt();
+                return o1Time.compareTo(o2Time);
+            }
+        };
     }
 
     private void saveNoteContent(Note note, String message, User sender, User receiver) {
