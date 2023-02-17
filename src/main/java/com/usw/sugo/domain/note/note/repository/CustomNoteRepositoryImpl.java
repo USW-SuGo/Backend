@@ -33,7 +33,8 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     @Override
-    public List<List<LoadNoteListForm>> loadNoteListByUserId(Long requestUserId, Pageable pageable) {
+    public List<List<LoadNoteListForm>> loadNoteListByUserId(Long requestUserId,
+        Pageable pageable) {
         List<List<LoadNoteListForm>> finalResult = new ArrayList<>();
 
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
@@ -48,11 +49,12 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        List<LoadNoteListForm> loadNoteListResultByNoteCreatedUser =
+
+        List<LoadNoteListForm> loadNoteListResultByNoteOpponentUser =
             queryFactory
                 .select(new QNoteResponseDto_LoadNoteListForm(
                     note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
-                    note.creatingUserNickname, note.recentContent, note.creatingUserUnreadCount,
+                    note.creatingUserNickname, note.recentContent, note.opponentUserUnreadCount,
                     note.updatedAt))
                 .from(note)
                 .where(note.opponentUser.id.eq(requestUserId))
@@ -62,7 +64,7 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .fetch();
 
         finalResult.add(loadNoteListResultByNoteCreatingUser);
-        finalResult.add(loadNoteListResultByNoteCreatedUser);
+        finalResult.add(loadNoteListResultByNoteOpponentUser);
         return finalResult;
     }
 

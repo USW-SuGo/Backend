@@ -57,19 +57,21 @@ public class Note extends BaseTimeEntity {
         this.recentContent = recentContent;
     }
 
-    public void updateUserUnreadCount(User user) {
-        if (this.creatingUser.equals(user)) {
-            this.creatingUserUnreadCount += 1;
-        } else if (this.opponentUser.equals(user)) {
-            this.opponentUserUnreadCount += 1;
+    public void updateUserUnreadCountBySendMessage(User messageSendingUser) {
+        if (messageSendingUser.getId().equals(creatingUser.getId())) {
+            creatingUserUnreadCount = 0;
+            opponentUserUnreadCount += 1;
+        } else if (messageSendingUser.getId().equals(opponentUser.getId())) {
+            creatingUserUnreadCount += 1;
+            opponentUserUnreadCount = 0;
         }
     }
 
-    public void resetUserUnreadCount(User user) {
-        if (this.creatingUser.equals(user)) {
-            this.creatingUserUnreadCount = 0;
-        } else if (this.opponentUser.equals(user)) {
-            this.opponentUserUnreadCount = 1;
+    public void updateUserUnreadCountByEnteredNote(User enteredNoteUser) {
+        if (enteredNoteUser.getId().equals(creatingUser.getId())) {
+            creatingUserUnreadCount = 0;
+        } else if (enteredNoteUser.getId().equals(opponentUser.getId())) {
+            opponentUserUnreadCount = 0;
         }
     }
 }

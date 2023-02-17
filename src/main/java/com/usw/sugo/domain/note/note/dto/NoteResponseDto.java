@@ -50,7 +50,6 @@ public class NoteResponseDto {
     @AllArgsConstructor
     public static class LoadNoteAllContentForm {
 
-        private Long requestUserId;
         private Long productPostId;
         private Long noteContentId;
         private String message;
@@ -94,9 +93,5 @@ public class NoteResponseDto {
                 return o1Time.compareTo(o2Time);
             }
         };
-
-        public void setRequestUserId(Long requestUserId) {
-            this.requestUserId = requestUserId;
-        }
     }
 }

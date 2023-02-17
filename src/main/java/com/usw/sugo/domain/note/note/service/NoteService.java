@@ -126,7 +126,8 @@ public class NoteService {
         return noteRepository.findByProductPost(productPost).size();
     }
 
-    private Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
+    @Transactional
+    protected Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
         Note note = Note.builder()
             .productPost(productPost)
             .creatingUser(creatingRequestUser)
@@ -140,25 +141,28 @@ public class NoteService {
         return note;
     }
 
+    @Transactional
     public void updateRecentContent(Note note, String message) {
         note.updateRecentContent(message);
     }
 
-    public void updateUnreadCountByNoteAndReceiver(Note note, User user) {
-        note.updateUserUnreadCount(user);
+    @Transactional
+    public void updateUserUnreadCountBySendMessage(Note note, User user) {
+        note.updateUserUnreadCountBySendMessage(user);
     }
 
     @Transactional
-    public void updateReadNoteRoom(Long noteId, User user) {
-        Note note = loadNoteByNoteId(noteId);
-        note.resetUserUnreadCount(user);
+    public void updateUserUnreadCountByEnteredNote(Note note, User user) {
+        note.updateUserUnreadCountByEnteredNote(user);
     }
 
+    @Transactional
     public void deleteNoteByUser(User user) {
         noteRepository.deleteByCreatingUser(user);
         noteRepository.deleteByOpponentUser(user);
     }
 
+    @Transactional
     public void deleteNoteByNoteId(Long noteId) {
         noteRepository.deleteById(noteId);
     }

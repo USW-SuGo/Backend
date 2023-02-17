@@ -2,7 +2,6 @@ package com.usw.sugo.domain.note.notecontent.service;
 
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteAllContentForm;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
@@ -13,7 +12,6 @@ import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,9 +40,14 @@ public class NoteContentService {
     }};
 
     @Transactional
-    public List<LoadNoteAllContentForm> executeLoadAllContentsByNoteId(User requestUser, Long noteId, Pageable pageable) {
-        noteService.updateReadNoteRoom(noteId, requestUser);
-        return loadNoteAllContentForms(noteId, pageable, requestUser);
+    public List<Object> executeLoadAllContentsByNoteId(User requestUser, Long noteId, Pageable pageable) {
+        noteService.updateUserUnreadCountByEnteredNote(noteService.loadNoteByNoteId(noteId), requestUser);
+        List<Object> result = new ArrayList<>();
+        result.add(new HashMap<>() {{
+            put("requestUserId", requestUser.getId());
+        }});
+        result.add(loadNoteAllContentForms(noteId, pageable, requestUser));
+        return result;
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class NoteContentService {
         Note note = noteService.loadNoteBySenderAndNoteId(sender, noteId);
         saveNoteContent(note, message, sender, receiver);
         noteService.updateRecentContent(note, message);
-        noteService.updateUnreadCountByNoteAndReceiver(note, receiver);
+        noteService.updateUserUnreadCountBySendMessage(note, receiver);
         return successFlag;
     }
 
@@ -72,12 +75,10 @@ public class NoteContentService {
         results.sort(makeCustomComparator());
 
         for (LoadNoteAllContentForm loadNoteAllContentForm : loadAllNoteContentByNoteId) {
-            loadNoteAllContentForm.setRequestUserId(requestUser.getId());
             loadNoteAllContentForm = imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
         }
 
         for (LoadNoteAllContentForm loadNoteAllContentForm : loadAllNoteFileByNoteId) {
-            loadNoteAllContentForm.setRequestUserId(requestUser.getId());
             loadNoteAllContentForm = imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
         }
 
