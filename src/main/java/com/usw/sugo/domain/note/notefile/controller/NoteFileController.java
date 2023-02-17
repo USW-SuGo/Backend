@@ -27,7 +27,7 @@ public class NoteFileController {
     @ResponseStatus(OK)
     @PostMapping("/")
     public Map<String, Boolean> sendNoteContent(
-        @Valid SendNoteFileForm sendNoteFileForm,
+        SendNoteFileForm sendNoteFileForm,
         @RequestBody MultipartFile[] multipartForms,
         @AuthenticationPrincipal User user) {
         return noteFileService.saveNoteFile(
