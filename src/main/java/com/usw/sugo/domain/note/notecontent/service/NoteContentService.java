@@ -39,10 +39,11 @@ public class NoteContentService {
     }};
 
     @Transactional
-    public List<Object> executeLoadAllContentsByNoteId(User requestUser, Long noteId,
-        Pageable pageable) {
-        noteService.updateUserUnreadCountByEnteredNote(noteService.loadNoteByNoteId(noteId),
-            requestUser);
+    public List<Object> executeLoadAllContentsByNoteId(
+        User requestUser, Long noteId, Pageable pageable) {
+
+        noteService.updateUserUnreadCountByEnteredNote(
+            noteService.loadNoteByNoteId(noteId), requestUser);
         List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
             put("requestUserId", requestUser.getId());
@@ -64,7 +65,12 @@ public class NoteContentService {
     }
 
     private List<LoadNoteAllContentForm> loadNoteAllContentForms(Long noteId, Pageable pageable) {
-        return noteContentRepository.loadAllNoteContentByNoteId(noteId, pageable);
+        List<LoadNoteAllContentForm> loadNoteAllContentForms =
+            noteContentRepository.loadAllNoteContentByNoteId(noteId, pageable);
+        for (LoadNoteAllContentForm loadNoteAllContentForm : loadNoteAllContentForms) {
+            imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
+        }
+        return loadNoteAllContentForms;
     }
 
 
