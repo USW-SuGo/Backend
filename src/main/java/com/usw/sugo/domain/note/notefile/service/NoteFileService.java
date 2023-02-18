@@ -42,10 +42,6 @@ public class NoteFileService {
     @Transactional
     public Map<String, Boolean> saveNoteFile(
         Long noteId, Long senderId, Long receiverId, MultipartFile[] multipartFiles) {
-        System.out.println("noteId = " + noteId);
-        System.out.println("senderId = " + senderId);
-        System.out.println("receiverId = " + receiverId);
-        System.out.println("multipartFiles = " + multipartFiles);
         List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, noteId);
         NoteFile noteFile = NoteFile.builder()
             .note(noteService.loadNoteByNoteId(noteId))
