@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.note.note.dto;
+package com.usw.sugo.domain.note.note.controller.dto;
 
 import javax.validation.constraints.NotNull;
 import lombok.Data;

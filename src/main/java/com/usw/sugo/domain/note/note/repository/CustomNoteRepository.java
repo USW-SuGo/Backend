@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.note.note.repository;
 
 import com.usw.sugo.domain.note.note.Note;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;

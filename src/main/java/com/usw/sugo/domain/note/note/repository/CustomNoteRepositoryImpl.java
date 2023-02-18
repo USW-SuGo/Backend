@@ -4,8 +4,8 @@ import static com.usw.sugo.domain.note.note.QNote.note;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.note.Note;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
-import com.usw.sugo.domain.note.note.dto.QNoteResponseDto_LoadNoteListForm;
+import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.controller.dto.QNoteResponseDto_LoadNoteListForm;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

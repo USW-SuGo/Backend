@@ -2,7 +2,7 @@ package com.usw.sugo.domain.note.note.controller;
 
 import static org.springframework.http.HttpStatus.OK;
 
-import com.usw.sugo.domain.note.note.dto.NoteRequestDto.CreateNoteRequestForm;
+import com.usw.sugo.domain.note.note.controller.dto.NoteRequestDto.CreateNoteRequestForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.user.user.User;
 import java.util.List;

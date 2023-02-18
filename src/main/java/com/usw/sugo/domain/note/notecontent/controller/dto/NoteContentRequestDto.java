@@ -1,7 +1,8 @@
-package com.usw.sugo.domain.note.notecontent.dto;
+package com.usw.sugo.domain.note.notecontent.controller.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,17 @@ public class NoteContentRequestDto {
 
         @NotNull
         private Long senderId;
+
+        @NotNull
+        private Long receiverId;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class SendNoteFileForm {
+
+        @NotNull
+        private Long noteId;
 
         @NotNull
         private Long receiverId;

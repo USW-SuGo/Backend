@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.usw.sugo.domain.note.notefile.NoteFile;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,12 +40,13 @@ public class AwsS3ServiceNote {
         return imagePathList;
     }
 
-    public void deleteS3ByNoteFile(NoteFile noteFile) {
-        String[] objectUrls = noteFile.getImageLink().split(",");
-        for (String objectUrl : objectUrls) {
-            objectUrl = filteringUrl(objectUrl);
-            amazonS3Client.deleteObject(bucketName, objectUrl);
-        }
+    public void deleteS3ByNoteFile() {
+//        String[] objectUrls = noteFile.getImageLink().split(",");
+//        for (String objectUrl : objectUrls) {
+//            objectUrl = filteringUrl(objectUrl);
+//            amazonS3Client.deleteObject(bucketName, objectUrl);
+//        }
+        return;
     }
 
     private String filteringUrl(String url) {

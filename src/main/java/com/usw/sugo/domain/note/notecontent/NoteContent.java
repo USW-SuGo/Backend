@@ -37,6 +37,9 @@ public class NoteContent {
     @Column
     private String message;
 
+    @Column
+    private String imageLink;
+
     @CreatedDate
     private LocalDateTime createdAt;
 }

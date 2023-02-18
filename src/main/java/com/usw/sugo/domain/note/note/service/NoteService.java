@@ -4,7 +4,7 @@ import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF
 import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 
 import com.usw.sugo.domain.note.note.Note;
-import com.usw.sugo.domain.note.note.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
