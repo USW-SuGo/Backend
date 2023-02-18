@@ -34,5 +34,9 @@ public class NoteContentResponseDto {
             this.receiverId = receiverId;
             this.createdAt = createdAt;
         }
+
+        public void setImageLink(String imageLink) {
+            this.imageLink = imageLink;
+        }
     }
 }
