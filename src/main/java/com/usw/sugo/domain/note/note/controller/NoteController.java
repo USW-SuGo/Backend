@@ -45,7 +45,7 @@ public class NoteController {
     }
 
     @ResponseStatus(OK)
-    @DeleteMapping("{noteId}")
+    @DeleteMapping("/{noteId}")
     public Map<String, Boolean> deleteNote(
         @PathVariable Long noteId,
         @AuthenticationPrincipal User user) {
