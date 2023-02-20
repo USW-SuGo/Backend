@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.QPostResponseDto_LikePosting;
+import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -69,5 +70,13 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
             .from(userLikePost)
             .where(userLikePost.productPost.eq(productPost))
             .fetch();
+    }
+
+    @Override
+    public void deleteByUser(User user) {
+        queryFactory
+            .delete(userLikePost)
+            .where(userLikePost.user.eq(user))
+            .execute();
     }
 }

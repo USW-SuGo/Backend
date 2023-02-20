@@ -3,6 +3,7 @@ package com.usw.sugo.domain.refreshtoken.repository;
 import static com.usw.sugo.domain.refreshtoken.QRefreshToken.refreshToken;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.user.user.User;
 import java.time.LocalDateTime;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,18 @@ public class CustomRefreshTokenRepositoryImpl implements CustomRefreshTokenRepos
     }
 
     @Override
-    public void deleteRefreshTokenInformation(Long userId) {
+    public void deleteByUserId(Long userId) {
         queryFactory
             .delete(refreshToken)
             .where(refreshToken.user.id.eq(userId))
+            .execute();
+    }
+
+    @Override
+    public void deleteByUser(User user) {
+        queryFactory
+            .delete(refreshToken)
+            .where(refreshToken.user.eq(user))
             .execute();
     }
 }

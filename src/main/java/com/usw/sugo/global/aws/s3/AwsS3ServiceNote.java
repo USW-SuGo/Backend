@@ -48,8 +48,10 @@ public class AwsS3ServiceNote {
 
     public void deleteS3ByNoteContents(List<NoteContent> noteContents) {
         for (NoteContent noteContent : noteContents) {
-            final String[] objectUrls = noteContent.getImageLink().split(",");
-            deleteObject(objectUrls);
+            if (noteContent.getImageLink() != null) {
+                final String[] objectUrls = noteContent.getImageLink().split(",");
+                deleteObject(objectUrls);
+            }
         }
     }
 

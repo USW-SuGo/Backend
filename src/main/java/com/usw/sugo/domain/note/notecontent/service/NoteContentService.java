@@ -113,4 +113,13 @@ public class NoteContentService {
         noteContentRepository.deleteByNote(note);
         awsS3ServiceNote.deleteS3ByNoteContents(loadAllNoteContentsByNote(note));
     }
+
+    @Transactional
+    public void deleteNoteContentsByUser(User user) {
+        List<NoteContent> noteContents = noteContentRepository.findByUser(user);
+        awsS3ServiceNote.deleteS3ByNoteContents(noteContents);
+        for (NoteContent noteContent : noteContents) {
+            noteContentRepository.deleteByNoteContent(noteContent);
+        }
+    }
 }

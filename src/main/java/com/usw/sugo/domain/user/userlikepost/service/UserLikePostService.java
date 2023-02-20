@@ -75,7 +75,7 @@ public class UserLikePostService {
     }
 
     @Transactional
-    public void deleteByUser(User user) {
+    public void deleteLikePostsByUser(User user) {
         userLikePostRepository.deleteByUser(user);
     }
 }

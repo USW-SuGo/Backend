@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CustomProductPostRepository {
 
-    // Spring Data JPA delete()를 사용하면 SELECT 쿼리가 한 번 더 나가는 것을 방지하기 위함
     void deleteByEntity(ProductPost requestProductPost);
 
     List<SearchResultResponse> searchPost(String searchValue, String category);

@@ -15,12 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtGenerator jwtGenerator;
 
+    @Transactional
     public void deleteByUser(User user) {
         refreshTokenRepository.deleteByUser(user);
     }
@@ -34,13 +35,11 @@ public class RefreshTokenService {
         throw new CustomException(JWT_MALFORMED_EXCEPTION);
     }
 
+    @Transactional
     public Map<String, String> reIssueToken(RefreshToken refreshToken) {
         User requestUser = refreshToken.getUser();
         String accessTokenPayload = jwtGenerator.generateAccessToken(requestUser);
         String refreshTokenPayload = jwtGenerator.updateRefreshToken(requestUser);
-
-        Map<String, String> result = jwtGenerator.wrapTokenPair(accessTokenPayload,
-            refreshTokenPayload);
-        return result;
+        return jwtGenerator.wrapTokenPair(accessTokenPayload, refreshTokenPayload);
     }
 }

@@ -168,8 +168,7 @@ public class NoteService {
 
     @Transactional
     public void deleteNotesByUser(User user) {
-        noteRepository.deleteByCreatingUser(user);
-        noteRepository.deleteByOpponentUser(user);
+        noteRepository.deleteByUser(user);
     }
 
     private boolean validateNoteCreateRequest(

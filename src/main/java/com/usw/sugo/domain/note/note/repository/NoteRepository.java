@@ -13,10 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long>, CustomNoteRepository {
 
-    void deleteByCreatingUser(User requestUser);
-
-    void deleteByOpponentUser(User requestUser);
-
     void deleteById(Long id);
 
     Optional<Note> findByCreatingUserAndId(User creatingUser, Long id);

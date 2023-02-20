@@ -177,7 +177,7 @@ public class ProductPostService {
         List<ProductPost> productPosts = loadAllProductPostByUser(user);
         for (ProductPost productPost : productPosts) {
             productPostFileService.deleteProductPostFileByProductPost(productPost);
-            productPostRepository.delete(productPost);
+            productPostRepository.deleteByEntity(productPost);
         }
     }
 

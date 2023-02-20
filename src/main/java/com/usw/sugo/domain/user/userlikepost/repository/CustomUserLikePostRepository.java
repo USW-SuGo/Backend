@@ -3,6 +3,7 @@ package com.usw.sugo.domain.user.userlikepost.repository;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
+import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.userlikepost.UserLikePost;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,5 @@ public interface CustomUserLikePostRepository {
 
     List<UserLikePost> findByProductPost(ProductPost productPost);
 
+    void deleteByUser(User user);
 }

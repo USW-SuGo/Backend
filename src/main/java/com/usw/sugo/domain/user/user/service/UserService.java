@@ -11,6 +11,7 @@ import static com.usw.sugo.global.exception.ExceptionType.PASSWORD_NOT_CORRECT;
 import static com.usw.sugo.global.exception.ExceptionType.PAYLOAD_NOT_VALID;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
+import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
 import com.usw.sugo.domain.user.user.User;
@@ -36,12 +37,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserServiceUtility userServiceUtility;
+    private final RefreshTokenService refreshTokenService;
     private final SendEmailServiceBySES sendEmailServiceBySES;
     private final UserEmailAuthService userEmailAuthService;
-    private final NoteService noteService;
     private final ProductPostService productPostService;
     private final UserLikePostService userLikePostService;
-    private final RefreshTokenService refreshTokenService;
+    private final NoteService noteService;
+    private final NoteContentService noteContentService;
 
     public Map<String, Boolean> executeIsLoginIdExist(String loginId) {
         if (userRepository.findByLoginId(loginId).isPresent()) {
@@ -112,8 +114,9 @@ public class UserService {
 
     public Map<String, Boolean> executeQuit(User user, String password) {
         if (userServiceUtility.matchingPassword(user.getId(), password)) {
+            noteContentService.deleteNoteContentsByUser(user);
             noteService.deleteNotesByUser(user);
-            userLikePostService.deleteByUser(user);
+            userLikePostService.deleteLikePostsByUser(user);
             productPostService.deleteByUser(user);
             refreshTokenService.deleteByUser(user);
             userServiceUtility.deleteUser(user);
