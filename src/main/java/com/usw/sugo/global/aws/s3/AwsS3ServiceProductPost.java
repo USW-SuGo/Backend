@@ -58,13 +58,6 @@ public class AwsS3ServiceProductPost {
         deleteObject(objectUrls);
     }
 
-    public void deleteS3ByNoteContents(List<NoteContent> noteContents) {
-        for (NoteContent noteContent : noteContents) {
-            final String[] objectUrls = noteContent.getImageLink().split(",");
-            deleteObject(objectUrls);
-        }
-    }
-
     private void deleteObject(String[] objectUrls) {
         for (String objectUrl : objectUrls) {
             objectUrl = filteringUrl(objectUrl);

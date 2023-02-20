@@ -5,11 +5,15 @@ import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPT
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
+import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,14 +49,22 @@ public class AwsS3ServiceNote {
     public void deleteS3ByNoteContents(List<NoteContent> noteContents) {
         for (NoteContent noteContent : noteContents) {
             final String[] objectUrls = noteContent.getImageLink().split(",");
-            System.out.println("objectUrls = " + Arrays.toString(objectUrls));
+            deleteObject(objectUrls);
+        }
+    }
 
-            for (String objectUrl : objectUrls) {
-                objectUrl = filteringUrl(objectUrl);
-                amazonS3Client.deleteObject(bucketName, objectUrl);
+    private void deleteObject(String[] objectUrls) {
+        for (String objectUrl : objectUrls) {
+            objectUrl = filteringUrl(objectUrl);
+            try {
+                URL url = new URL(objectUrl);
+                String bucketName = url.getHost().substring(0, 17);
+                String key = url.getPath().substring(1);
+                amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
+            } catch (MalformedURLException e) {
+                throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
             }
         }
-        return;
     }
 
     private String filteringUrl(String url) {

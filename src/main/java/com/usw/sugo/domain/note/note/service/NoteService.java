@@ -144,17 +144,6 @@ public class NoteService {
         return noteRepository.findByUser(userServiceUtility.loadUserById(userId));
     }
 
-    public Note loadNoteBySenderAndNoteId(User user, Long noteId) {
-        Optional<Note> creatingUserNote = noteRepository.findByCreatingUserAndId(user, noteId);
-        Optional<Note> opponentUserNote = noteRepository.findByOpponentUserAndId(user, noteId);
-        if (noteRepository.findByCreatingUserAndId(user, noteId).isPresent()) {
-            return creatingUserNote.get();
-        } else if (noteRepository.findByOpponentUserAndId(user, noteId).isPresent()) {
-            return opponentUserNote.get();
-        }
-        throw new CustomException(NOTE_NOT_FOUNDED);
-    }
-
     @Transactional
     protected Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
         Note note = Note.builder()
@@ -173,16 +162,6 @@ public class NoteService {
     }
 
     @Transactional
-    public void updateRecentContent(Note note, String message) {
-        note.updateRecentContent(message);
-    }
-
-    @Transactional
-    public void updateUserUnreadCountBySendMessage(Note note, User user) {
-        note.updateUserUnreadCountBySendMessage(user);
-    }
-
-    @Transactional
     public void updateUserUnreadCountByEnteredNote(Note note, User user) {
         note.updateUserUnreadCountByEnteredNote(user);
     }
@@ -191,11 +170,6 @@ public class NoteService {
     public void deleteNotesByUser(User user) {
         noteRepository.deleteByCreatingUser(user);
         noteRepository.deleteByOpponentUser(user);
-    }
-
-    @Transactional
-    protected void deleteNoteByNoteId(Long noteId) {
-        noteRepository.deleteById(noteId);
     }
 
     private boolean validateNoteCreateRequest(
