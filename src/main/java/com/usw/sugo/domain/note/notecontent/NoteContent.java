@@ -23,15 +23,15 @@ public class NoteContent {
     private Long id;
 
     @JoinColumn(name = "note_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Note note;
 
     @JoinColumn(name = "sender_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User sender;
 
     @JoinColumn(name = "receiver_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User receiver;
 
     @Column
