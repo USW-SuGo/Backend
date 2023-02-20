@@ -2,6 +2,8 @@ package com.usw.sugo.domain.productpost.productpost.controller;
 
 import static org.springframework.http.HttpStatus.OK;
 
+import com.usw.sugo.domain.note.note.service.NoteService;
+import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.ClosePostRequest;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.DeleteContentRequest;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostRequestDto.PostingRequest;
@@ -14,10 +16,10 @@ import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDt
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +40,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/post")
 public class ProductPostController {
 
+    private final UserServiceUtility userServiceUtility;
     private final ProductPostService productPostService;
+    private final NoteService noteService;
+    private final NoteContentService noteContentService;
 
     @ResponseStatus(OK)
     @GetMapping("/search")
@@ -128,8 +133,11 @@ public class ProductPostController {
 
     @ResponseStatus(OK)
     @DeleteMapping
-    public Map<String, Boolean> deleteProductPostAndImage(
-        @RequestBody DeleteContentRequest deleteContentRequest) {
+    public Map<String, Boolean> deleteProductPost(
+        @RequestBody DeleteContentRequest deleteContentRequest,
+        @AuthenticationPrincipal User user) {
+        noteContentService.deleteNoteContentsByNotes(noteService.loadNotesByUserId(user.getId()));
+        noteService.deleteNotesByUser(userServiceUtility.loadUserById(user.getId()));
         return productPostService.deleteByProductPostId(deleteContentRequest.getProductPostId());
     }
 }

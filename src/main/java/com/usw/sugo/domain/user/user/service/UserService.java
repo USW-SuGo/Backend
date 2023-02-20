@@ -108,7 +108,7 @@ public class UserService {
 
     public Map<String, Boolean> executeQuit(User user, String password) {
         if (userServiceUtility.matchingPassword(user.getId(), password)) {
-            noteService.deleteNoteByUser(user);
+            noteService.deleteNotesByUser(user);
             userLikePostService.deleteByUser(user);
             productPostService.deleteByUser(user);
             refreshTokenService.deleteByUser(user);

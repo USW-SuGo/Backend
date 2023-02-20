@@ -29,6 +29,7 @@ public class UserServiceUtility {
         if (userRepository.findById(userId).isPresent()) {
             return userRepository.findById(userId).get();
         }
+        System.out.println("userId = " + userId);
         throw new CustomException(USER_NOT_EXIST);
     }
 

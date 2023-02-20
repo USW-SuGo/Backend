@@ -1,7 +1,5 @@
 package com.usw.sugo.domain.note.notecontent.service;
 
-import static com.usw.sugo.global.apiresult.ApiResult.SUCCESS;
-
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentResponseDto.LoadNoteAllContentForm;
@@ -14,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -100,8 +97,18 @@ public class NoteContentService {
     }
 
     @Transactional
+    public void deleteNoteContentsByNotes(List<Note> notes) {
+        for (Note note : notes) {
+            noteContentRepository.deleteByNote(note);
+            awsS3ServiceNote.deleteS3ByNoteContents(loadAllNoteContentsByNote(note));
+        }
+    }
+
+    @Transactional
     public void deleteByNote(Note note) {
         noteContentRepository.deleteByNote(note);
         awsS3ServiceNote.deleteS3ByNoteContents(loadAllNoteContentsByNote(note));
+
     }
+
 }

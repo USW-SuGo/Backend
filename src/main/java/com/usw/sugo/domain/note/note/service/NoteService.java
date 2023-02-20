@@ -140,6 +140,10 @@ public class NoteService {
         throw new CustomException(NOTE_NOT_FOUNDED);
     }
 
+    public List<Note> loadNotesByUserId(Long userId) {
+        return noteRepository.findByUser(userServiceUtility.loadUserById(userId));
+    }
+
     public Note loadNoteBySenderAndNoteId(User user, Long noteId) {
         Optional<Note> creatingUserNote = noteRepository.findByCreatingUserAndId(user, noteId);
         Optional<Note> opponentUserNote = noteRepository.findByOpponentUserAndId(user, noteId);
@@ -182,7 +186,7 @@ public class NoteService {
     }
 
     @Transactional
-    public void deleteNoteByUser(User user) {
+    public void deleteNotesByUser(User user) {
         noteRepository.deleteByCreatingUser(user);
         noteRepository.deleteByOpponentUser(user);
     }
