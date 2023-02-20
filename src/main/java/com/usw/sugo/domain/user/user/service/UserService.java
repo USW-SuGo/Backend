@@ -6,6 +6,7 @@ import static com.usw.sugo.global.apiresult.ApiResultFactory.getNotExistFlag;
 import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_EVALUATION;
 import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_EMAIL;
+import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_LOGINID;
 import static com.usw.sugo.global.exception.ExceptionType.IS_SAME_PASSWORD;
 import static com.usw.sugo.global.exception.ExceptionType.PASSWORD_NOT_CORRECT;
 import static com.usw.sugo.global.exception.ExceptionType.PAYLOAD_NOT_VALID;
@@ -74,8 +75,10 @@ public class UserService {
     @Transactional
     public Map<String, Object> executeJoin(
         String loginId, String email, String password, String department) {
-        if (userServiceUtility.loadUserByEmail(email) != null) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATED_EMAIL);
+        } else if (userRepository.findByLoginId(loginId).isPresent()) {
+            throw new CustomException(DUPLICATED_LOGINID);
         }
         userServiceUtility.validateSuwonUniversityEmailForm(email);
         User requestUser = userServiceUtility.softJoin(loginId, email, password, department);
