@@ -45,6 +45,8 @@ public class NoteContentService {
         User sender = userServiceUtility.loadUserById(senderId);
         User receiver = userServiceUtility.loadUserById(receiverId);
         saveNoteContentByText(note, message, sender, receiver);
+        note.updateRecentContent(message);
+        note.updateUserUnreadCountBySendMessage(sender);
         return message;
     }
 
@@ -55,6 +57,8 @@ public class NoteContentService {
         User sender = userServiceUtility.loadUserById(senderId);
         User receiver = userServiceUtility.loadUserById(receiverId);
         saveNoteContentByFile(note, imageLinks, sender, receiver);
+        note.updateRecentContent(imageLinks.get(0));
+        note.updateUserUnreadCountBySendMessage(sender);
         return imageLinks.get(0);
     }
 

@@ -50,15 +50,13 @@ public class NoteContentController {
         @AuthenticationPrincipal User user) {
         User sender = userServiceUtility.loadUserById(user.getId());
         Note note = noteService.loadNoteByNoteId(sendNoteContentForm.getNoteId());
-        String recentNoteContent = noteContentService.executeSendNoteContent(
+        noteContentService.executeSendNoteContent(
             note,
             sendNoteContentForm.getMessage(),
             sender.getId(),
             sendNoteContentForm.getReceiverId()
         );
 
-        note.updateRecentContent(recentNoteContent);
-        note.updateUserUnreadCountBySendMessage(sender);
         return ApiResultFactory.getSuccessFlag();
     }
 
@@ -71,14 +69,12 @@ public class NoteContentController {
 
         User sender = userServiceUtility.loadUserById(user.getId());
         Note note = noteService.loadNoteByNoteId(sendNoteFileForm.getNoteId());
-        String recentNoteContent = noteContentService.executeSendNoteContentWithFile(
+        noteContentService.executeSendNoteContentWithFile(
             note,
             multipartFileList,
-            user.getId(),
+            sender.getId(),
             sendNoteFileForm.getReceiverId()
         );
-        note.updateRecentContent(recentNoteContent);
-        note.updateUserUnreadCountBySendMessage(sender);
         return ApiResultFactory.getSuccessFlag();
     }
 }
