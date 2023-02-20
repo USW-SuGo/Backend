@@ -53,6 +53,12 @@ public class Note extends BaseTimeEntity {
     @Column
     private Integer opponentUserUnreadCount;
 
+    @Column
+    private Boolean creatingUserStatus;
+
+    @Column
+    private Boolean opponentUserStatus;
+
     public void updateRecentContent(String recentContent) {
         this.recentContent = recentContent;
     }
@@ -73,5 +79,13 @@ public class Note extends BaseTimeEntity {
         } else if (enteredNoteUser.getId().equals(opponentUser.getId())) {
             opponentUserUnreadCount = 0;
         }
+    }
+
+    public void updateCreatingUserStatus() {
+        this.creatingUserStatus = false;
+    }
+
+    public void updateOpponentUserStatus() {
+        this.opponentUserStatus = false;
     }
 }

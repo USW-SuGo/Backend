@@ -2,10 +2,14 @@ package com.usw.sugo.domain.note.notecontent.controller;
 
 import static org.springframework.http.HttpStatus.OK;
 
+import com.usw.sugo.domain.note.note.Note;
+import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentRequestDto.SendNoteContentForm;
 import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentRequestDto.SendNoteFileForm;
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.apiresult.ApiResultFactory;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/note-content")
 public class NoteContentController {
 
-    private final NoteContentControllerValidator noteContentControllerValidator;
+    private final UserServiceUtility userServiceUtility;
     private final NoteContentService noteContentService;
+    private final NoteService noteService;
 
     @ResponseStatus(OK)
     @GetMapping("/{noteId}")
@@ -34,20 +39,27 @@ public class NoteContentController {
         @PathVariable Long noteId,
         Pageable pageable,
         @AuthenticationPrincipal User user) {
+        noteService.updateUserUnreadCountByEnteredNote(noteService.loadNoteByNoteId(noteId), user);
         return noteContentService.executeLoadAllContentsByNoteId(user, noteId, pageable);
     }
 
     @ResponseStatus(OK)
     @PostMapping("/text")
     public Map<String, Boolean> sendNoteContent(
-        @RequestBody SendNoteContentForm sendNoteContentForm) {
-        noteContentControllerValidator.validateUser(sendNoteContentForm.getSenderId());
-        noteContentControllerValidator.validateUser(sendNoteContentForm.getReceiverId());
-        return noteContentService.executeSendNoteContent(
-            sendNoteContentForm.getNoteId(),
+        @RequestBody SendNoteContentForm sendNoteContentForm,
+        @AuthenticationPrincipal User user) {
+        User sender = userServiceUtility.loadUserById(user.getId());
+        Note note = noteService.loadNoteByNoteId(sendNoteContentForm.getNoteId());
+        String recentNoteContent = noteContentService.executeSendNoteContent(
+            note,
             sendNoteContentForm.getMessage(),
-            sendNoteContentForm.getSenderId(),
-            sendNoteContentForm.getReceiverId());
+            sender.getId(),
+            sendNoteContentForm.getReceiverId()
+        );
+
+        note.updateRecentContent(recentNoteContent);
+        note.updateUserUnreadCountBySendMessage(sender);
+        return ApiResultFactory.getSuccessFlag();
     }
 
     @ResponseStatus(OK)
@@ -56,10 +68,17 @@ public class NoteContentController {
         SendNoteFileForm sendNoteFileForm,
         @RequestBody MultipartFile[] multipartFileList,
         @AuthenticationPrincipal User user) {
-        return noteContentService.saveNoteFile(
-            sendNoteFileForm.getNoteId(),
+
+        User sender = userServiceUtility.loadUserById(user.getId());
+        Note note = noteService.loadNoteByNoteId(sendNoteFileForm.getNoteId());
+        String recentNoteContent = noteContentService.executeSendNoteContentWithFile(
+            note,
+            multipartFileList,
             user.getId(),
-            sendNoteFileForm.getReceiverId(),
-            multipartFileList);
+            sendNoteFileForm.getReceiverId()
+        );
+        note.updateRecentContent(recentNoteContent);
+        note.updateUserUnreadCountBySendMessage(sender);
+        return ApiResultFactory.getSuccessFlag();
     }
 }

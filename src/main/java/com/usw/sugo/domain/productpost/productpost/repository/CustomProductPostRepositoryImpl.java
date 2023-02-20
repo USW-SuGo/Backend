@@ -35,7 +35,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     public void deleteByEntity(ProductPost requestProductPost) {
         queryFactory
             .delete(productPost)
-            .where(productPost.eq(requestProductPost))
+            .where(productPost.id.eq(requestProductPost.getId()))
             .execute();
     }
 

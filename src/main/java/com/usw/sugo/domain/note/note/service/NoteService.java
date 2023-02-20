@@ -6,12 +6,14 @@ import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
+import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.apiresult.ApiResultFactory;
 import com.usw.sugo.global.exception.CustomException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,6 +35,7 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final UserServiceUtility userServiceUtility;
     private final ProductPostService productPostService;
+    private final NoteContentService noteContentService;
     private final ProductPostFileService productPostFileService;
 
     @Transactional
@@ -81,6 +84,32 @@ public class NoteService {
         return result;
     }
 
+    @Transactional
+    public Map<String, Boolean> executeDeleteNote(User user, Long noteId) {
+        Note note = loadNoteByNoteId(noteId);
+        if (notRemainedUserInNote(note, user.getId())) {
+            noteContentService.deleteByNote(note);
+            return ApiResultFactory.getSuccessFlag();
+        }
+        if (note.getCreatingUserStatus().equals(user.getId())) {
+            note.updateCreatingUserStatus();
+            return ApiResultFactory.getSuccessFlag();
+        }
+        note.updateOpponentUserStatus();
+        return ApiResultFactory.getSuccessFlag();
+    }
+
+    private boolean notRemainedUserInNote(Note note, Long userId) {
+        if (note.getOpponentUser().getId().equals(userId)
+            && note.getCreatingUserStatus() == false) {
+            return true;
+        } else if (note.getCreatingUser().getId().equals(userId)
+            && note.getOpponentUserStatus() == false) {
+            return true;
+        }
+        return false;
+    }
+
     private List<List<LoadNoteListForm>> setThumbnailImageLink(List<List<LoadNoteListForm>> notes) {
         for (List<LoadNoteListForm> note : notes) {
             for (LoadNoteListForm loadNoteListForm : note) {
@@ -122,10 +151,6 @@ public class NoteService {
         throw new CustomException(NOTE_NOT_FOUNDED);
     }
 
-    private Integer loadNoteCountByProductPost(ProductPost productPost) {
-        return noteRepository.findByProductPost(productPost).size();
-    }
-
     @Transactional
     protected Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
         Note note = Note.builder()
@@ -163,7 +188,7 @@ public class NoteService {
     }
 
     @Transactional
-    public void deleteNoteByNoteId(Long noteId) {
+    protected void deleteNoteByNoteId(Long noteId) {
         noteRepository.deleteById(noteId);
     }
 

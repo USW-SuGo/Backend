@@ -26,12 +26,12 @@ public class ProductPostFileService {
     private final AwsS3ServiceProductPost awsS3ServiceProductPost;
 
     public ProductPostFile loadProductPostFileByProductPost(ProductPost productPost) {
-        Optional<ProductPostFile> productPostFile = productPostFileRepository.findByProductPost(
-            productPost);
+        Optional<ProductPostFile> productPostFile =
+            productPostFileRepository.findByProductPost(productPost);
         if (productPostFile.isPresent()) {
             return productPostFile.get();
         }
-        throw new CustomException(POST_NOT_FOUND);
+        return new ProductPostFile();
     }
 
     @Transactional
@@ -50,15 +50,14 @@ public class ProductPostFileService {
 
     @Transactional
     public void deleteProductPostFileByProductPost(ProductPost productPost) {
-        awsS3ServiceProductPost.deleteS3ProductPostFile(
-            loadProductPostFileByProductPost(productPost));
+        awsS3ServiceProductPost.deleteS3ProductPostFile(loadProductPostFileByProductPost(productPost));
         productPostFileRepository.deleteByProductPost(productPost);
     }
 
     @Transactional
     public void editProductPostFile(ProductPost productPost, MultipartFile[] multipartFiles) {
-        Optional<ProductPostFile> productPostFile = productPostFileRepository.findByProductPost(
-            productPost);
+        Optional<ProductPostFile> productPostFile
+            = productPostFileRepository.findByProductPost(productPost);
         if (productPostFileRepository.findByProductPost(productPost).isEmpty()) {
             throw new CustomException(POST_NOT_FOUND);
         }

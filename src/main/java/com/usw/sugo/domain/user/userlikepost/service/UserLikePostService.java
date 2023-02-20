@@ -40,8 +40,8 @@ public class UserLikePostService {
     public Map<String, Boolean> executeLikeUnlikePost(Long userId, Long productPostId) {
         User user = userServiceUtility.loadUserById(userId);
         ProductPost productPost = productPostService.loadProductPostById(productPostId);
-        ProductPostFile productPostFile = productPostFileService.loadProductPostFileByProductPost(
-            productPost);
+        ProductPostFile productPostFile
+            = productPostFileService.loadProductPostFileByProductPost(productPost);
         if (productPost.getUser().equals(user)) {
             throw new CustomException(DO_NOT_LIKE_YOURSELF);
         } else if (!isAlreadyLike(userId, productPostId)) {

@@ -3,14 +3,20 @@ package com.usw.sugo.global.aws.s3;
 import static com.usw.sugo.global.aws.s3.BucketDetailPath.PRODUCT_POST;
 import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +32,7 @@ public class AwsS3ServiceProductPost {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
     private final String defaultProductPostPath = PRODUCT_POST.getPath();
-    private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3Client;
 
     public List<String> uploadS3(MultipartFile[] multipartFiles, Long productPostId) {
         List<String> imagePathList = new ArrayList<>();
@@ -48,10 +54,28 @@ public class AwsS3ServiceProductPost {
     }
 
     public void deleteS3ProductPostFile(ProductPostFile productPostFile) {
-        String[] objectUrls = productPostFile.getImageLink().split(",");
+        final String[] objectUrls = productPostFile.getImageLink().split(",");
+        deleteObject(objectUrls);
+    }
+
+    public void deleteS3ByNoteContents(List<NoteContent> noteContents) {
+        for (NoteContent noteContent : noteContents) {
+            final String[] objectUrls = noteContent.getImageLink().split(",");
+            deleteObject(objectUrls);
+        }
+    }
+
+    private void deleteObject(String[] objectUrls) {
         for (String objectUrl : objectUrls) {
             objectUrl = filteringUrl(objectUrl);
-            amazonS3Client.deleteObject(bucketName, objectUrl);
+            try {
+                URL url = new URL(objectUrl);
+                String bucketName = url.getHost().substring(0, 17);
+                String key = url.getPath().substring(1);
+                amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
+            } catch (MalformedURLException e) {
+                throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
+            }
         }
     }
 
