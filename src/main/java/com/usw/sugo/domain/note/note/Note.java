@@ -81,11 +81,11 @@ public class Note extends BaseTimeEntity {
         }
     }
 
-    public void updateCreatingUserStatus() {
+    public void convertFalseCreatingUserStatus() {
         this.creatingUserStatus = false;
     }
 
-    public void updateOpponentUserStatus() {
+    public void convertFalseOpponentUserStatus() {
         this.opponentUserStatus = false;
     }
 }

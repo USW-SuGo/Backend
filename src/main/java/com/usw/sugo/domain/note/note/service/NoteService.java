@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.note.note.service;
 
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF;
 import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 
@@ -13,7 +14,6 @@ import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
-import com.usw.sugo.global.apiresult.ApiResultFactory;
 import com.usw.sugo.global.exception.CustomException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -89,14 +89,14 @@ public class NoteService {
         Note note = loadNoteByNoteId(noteId);
         if (notRemainedUserInNote(note, user.getId())) {
             noteContentService.deleteByNote(note);
-            return ApiResultFactory.getSuccessFlag();
+            noteRepository.deleteById(note.getId());
+            return getSuccessFlag();
+        } else if (note.getCreatingUser().getId().equals(user.getId())) {
+            note.convertFalseCreatingUserStatus();
+            return getSuccessFlag();
         }
-        if (note.getCreatingUserStatus().equals(user.getId())) {
-            note.updateCreatingUserStatus();
-            return ApiResultFactory.getSuccessFlag();
-        }
-        note.updateOpponentUserStatus();
-        return ApiResultFactory.getSuccessFlag();
+        note.convertFalseOpponentUserStatus();
+        return getSuccessFlag();
     }
 
     private boolean notRemainedUserInNote(Note note, Long userId) {
@@ -165,6 +165,8 @@ public class NoteService {
             .opponentUser(opponentUser)
             .opponentUserNickname(opponentUser.getNickname())
             .opponentUserUnreadCount(0)
+            .creatingUserStatus(true)
+            .opponentUserStatus(true)
             .build();
         noteRepository.save(note);
         return note;

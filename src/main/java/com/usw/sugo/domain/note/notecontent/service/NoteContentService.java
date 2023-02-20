@@ -112,7 +112,5 @@ public class NoteContentService {
     public void deleteByNote(Note note) {
         noteContentRepository.deleteByNote(note);
         awsS3ServiceNote.deleteS3ByNoteContents(loadAllNoteContentsByNote(note));
-
     }
-
 }
