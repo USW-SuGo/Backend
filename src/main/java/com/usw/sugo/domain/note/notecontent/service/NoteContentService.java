@@ -53,7 +53,7 @@ public class NoteContentService {
         note.updateRecentContent(message);
         note.updateUserUnreadCountBySendMessage(sender);
 
-        fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", message));
+        // fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", message));
         return message;
     }
 
@@ -69,9 +69,7 @@ public class NoteContentService {
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);
 
-        fcmPushService.sendPushNotification(
-            new FcmMessage(receiver, "SUGO", "사진을 보냈습니다.")
-        );
+        // fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", "사진을 보냈습니다."));
         return imageLinks.get(0);
     }
 
