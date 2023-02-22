@@ -32,6 +32,7 @@ public class NoteContentService {
     private final AwsS3ServiceNote awsS3ServiceNote;
 
     private final String fixedPushAlarmTitle = "SUGO";
+    private final String fixedPushAlarmBodyByImage = "사진을 보냈습니다.";
 
     @Transactional
     public List<Object> executeLoadAllContentsByNoteId(
@@ -74,7 +75,7 @@ public class NoteContentService {
         note.updateUserUnreadCountBySendMessage(sender);
 
         fcmPushService.sendPushNotification(
-            new FcmMessage(receiver, fixedPushAlarmTitle, "사진을 보냈습니다.")
+            new FcmMessage(receiver, fixedPushAlarmTitle, fixedPushAlarmBodyByImage)
         );
         return imageLinks.get(0);
     }
