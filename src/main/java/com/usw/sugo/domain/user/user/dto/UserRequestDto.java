@@ -34,6 +34,8 @@ public class UserRequestDto {
         private String password;
         @NotBlank
         private String department;
+        @NotNull
+        private Boolean pushAlarmStatus;
     }
 
     // 인증번호 DTO

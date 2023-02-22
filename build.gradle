@@ -71,6 +71,7 @@ dependencies {
 
 	//jackson2json에서 LocalDateTime을 handling 하기 위해
 	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.4'
+	implementation "com.fasterxml.jackson.core:jackson-databind:2.13.0"
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'

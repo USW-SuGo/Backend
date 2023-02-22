@@ -65,7 +65,9 @@ public class UserServiceUtility {
     }
 
     @Transactional
-    public User softJoin(String loginId, String email, String password, String department) {
+    public User softJoin(
+        String loginId, String email, String password, String department, Boolean pushAlarmStatus
+    ) {
         User user = User.builder()
             .loginId(loginId)
             .nickname(nicknameGenerator.generateNickname(department))
@@ -77,6 +79,7 @@ public class UserServiceUtility {
             .countTradeAttempt(0L)
             .mannerGrade(BigDecimal.ZERO)
             .status("NOT_AUTH")
+            .pushAlarmStatus(pushAlarmStatus)
             .build();
 
         userRepository.save(user);

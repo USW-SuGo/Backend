@@ -62,6 +62,12 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column
     private String status;
 
+    @Column
+    private Boolean pushAlarmStatus;
+
+    @Column
+    private String fcmToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

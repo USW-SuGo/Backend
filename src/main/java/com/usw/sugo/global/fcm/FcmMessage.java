@@ -1,28 +1,18 @@
 package com.usw.sugo.global.fcm;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.usw.sugo.domain.user.user.User;
 import lombok.Getter;
 
-@Builder
-@AllArgsConstructor
 @Getter
 public class FcmMessage {
 
-    private boolean validate_only;
-    private Message message;
+    private final User user;
+    private final String title;
+    private final String body;
 
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    public static class Message {
-        private Notification notification;
-        private String token;
-    }
-
-    public static class Notification {
-        private String title;
-        private String body;
-        private String image;
+    public FcmMessage(User user, String title, String body) {
+        this.user = user;
+        this.title = title;
+        this.body = body;
     }
 }

@@ -7,7 +7,7 @@ build/
 *yml
 /logs
 
-sugo-firebase-adminsdk.json
+firebase_key.json
 
 ### STS ###
 .apt_generated

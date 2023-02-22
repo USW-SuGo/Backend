@@ -74,14 +74,16 @@ public class UserService {
 
     @Transactional
     public Map<String, Object> executeJoin(
-        String loginId, String email, String password, String department) {
+        String loginId, String email, String password, String department, Boolean pushAlarmStatus) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATED_EMAIL);
         } else if (userRepository.findByLoginId(loginId).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
         }
         userServiceUtility.validateSuwonUniversityEmailForm(email);
-        User requestUser = userServiceUtility.softJoin(loginId, email, password, department);
+        User requestUser = userServiceUtility.softJoin(
+            loginId, email, password, department, pushAlarmStatus
+        );
         String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
 
