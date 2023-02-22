@@ -1,6 +1,7 @@
 package com.usw.sugo.global.fcm;
 
 import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_PUSH_SERVER_EXCEPTION;
+import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -45,6 +46,11 @@ public class FcmPushService {
 
     @Async
     public void sendPushNotification(FcmMessage fcmMessage) {
+        try {
+            extractUserTokenByPushAlarmAllowed(fcmMessage.getUser());
+        } catch (NullPointerException exception) {
+            throw new CustomException(INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE);
+        }
         MulticastMessage multicastMessage = MulticastMessage.builder()
             .setNotification(new Notification(fcmMessage.getTitle(), fcmMessage.getBody()))
             .addAllTokens(

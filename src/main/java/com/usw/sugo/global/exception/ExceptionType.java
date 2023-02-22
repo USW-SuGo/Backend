@@ -41,7 +41,8 @@ public enum ExceptionType {
     REQUIRE_TOKEN(UNAUTHORIZED, "해당 요청은 토큰이 필요합니다."),
     INTERNAL_UPLOAD_EXCEPTION(INTERNAL_SERVER_ERROR, "이미지 업로드 중 문제가 발생했습니다."),
     INTERNAL_SERVER_EXCEPTION(INTERNAL_SERVER_ERROR, "서버 내 문제가 발생했습니다."),
-    INTERNAL_PUSH_SERVER_EXCEPTION(INTERNAL_SERVER_ERROR, "푸쉬 서버에 문제가 발생했습니다.");
+    INTERNAL_PUSH_SERVER_EXCEPTION(INTERNAL_SERVER_ERROR, "푸쉬 서버에 문제가 발생했습니다."),
+    INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE(INTERNAL_SERVER_ERROR, "해당 토큰으로 푸쉬 요청을 할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
