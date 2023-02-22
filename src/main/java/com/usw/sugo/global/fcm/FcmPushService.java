@@ -1,7 +1,6 @@
 package com.usw.sugo.global.fcm;
 
 import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_PUSH_SERVER_EXCEPTION;
-import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -37,8 +36,8 @@ public class FcmPushService {
     private final String SEND_URL =
         "https://fcm.googleapis.com/v1/projects/" + projectId + "/messages:send";
 
-    private String getAccessToken() throws IOException { // 토큰 발급
-        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
+    private String getAccessToken() throws IOException {
+        final GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
             new ClassPathResource(CONFIG_PATH).getInputStream()).createScoped(List.of(AUTH_URL));
         googleCredentials.refreshIfExpired();
         return googleCredentials.getAccessToken().getTokenValue();
@@ -49,9 +48,10 @@ public class FcmPushService {
         try {
             extractUserTokenByPushAlarmAllowed(fcmMessage.getUser());
         } catch (NullPointerException exception) {
-            throw new CustomException(INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE);
+            return;
+            // throw new CustomException(INTERNAL_PUSH_SERVER_EXCEPTION_BY_TOKEN_NOT_ACCESSIBLE);
         }
-        MulticastMessage multicastMessage = MulticastMessage.builder()
+        final MulticastMessage multicastMessage = MulticastMessage.builder()
             .setNotification(new Notification(fcmMessage.getTitle(), fcmMessage.getBody()))
             .addAllTokens(
                 Collections.singletonList(extractUserTokenByPushAlarmAllowed(fcmMessage.getUser())))

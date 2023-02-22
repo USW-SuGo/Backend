@@ -36,7 +36,8 @@ public class NoteContentService {
     @Transactional
     public List<Object> executeLoadAllContentsByNoteId(
         User requestUser, Long noteId, Pageable pageable) {
-        List<Object> result = new ArrayList<>();
+
+        final List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
             put("requestUserId", requestUser.getId());
         }});
@@ -48,8 +49,8 @@ public class NoteContentService {
     public String executeSendNoteContent(
         Note note, String message, Long senderId, Long receiverId) {
 
-        User sender = userServiceUtility.loadUserById(senderId);
-        User receiver = userServiceUtility.loadUserById(receiverId);
+        final User sender = userServiceUtility.loadUserById(senderId);
+        final User receiver = userServiceUtility.loadUserById(receiverId);
 
         saveNoteContentByText(note, message, sender, receiver);
         note.updateRecentContent(message);
@@ -63,10 +64,11 @@ public class NoteContentService {
     public String executeSendNoteContentWithFile(
         Note note, MultipartFile[] multipartFiles, Long senderId, Long receiverId) {
 
-        User sender = userServiceUtility.loadUserById(senderId);
-        User receiver = userServiceUtility.loadUserById(receiverId);
+        final User sender = userServiceUtility.loadUserById(senderId);
+        final User receiver = userServiceUtility.loadUserById(receiverId);
 
-        List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, note.getId());
+        final List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles,
+            note.getId());
         saveNoteContentByFile(note, imageLinks, sender, receiver);
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);
@@ -78,7 +80,7 @@ public class NoteContentService {
     }
 
     private List<LoadNoteAllContentForm> loadNoteAllContentForm(Long noteId, Pageable pageable) {
-        List<LoadNoteAllContentForm> loadNoteAllContentsForm =
+        final List<LoadNoteAllContentForm> loadNoteAllContentsForm =
             noteContentRepository.loadAllNoteContentByNoteId(noteId, pageable);
         for (LoadNoteAllContentForm loadNoteAllContentForm : loadNoteAllContentsForm) {
             imageLinkCharacterFilter.filterImageLink(loadNoteAllContentForm);
@@ -94,7 +96,7 @@ public class NoteContentService {
     protected void saveNoteContentByText(
         Note note, String message, User sender, User receiver) {
 
-        NoteContent noteContent = NoteContent.builder()
+        final NoteContent noteContent = NoteContent.builder()
             .note(note)
             .message(message)
             .sender(sender)
@@ -108,7 +110,7 @@ public class NoteContentService {
     protected void saveNoteContentByFile(
         Note note, List<String> imageLinks, User sender, User receiver) {
 
-        NoteContent noteContent = NoteContent.builder()
+        final NoteContent noteContent = NoteContent.builder()
             .note(note)
             .sender(sender)
             .receiver(receiver)
@@ -134,7 +136,7 @@ public class NoteContentService {
 
     @Transactional
     public void deleteNoteContentsByUser(User user) {
-        List<NoteContent> noteContents = noteContentRepository.findByUser(user);
+        final List<NoteContent> noteContents = noteContentRepository.findByUser(user);
         awsS3ServiceNote.deleteS3ByNoteContents(noteContents);
         for (NoteContent noteContent : noteContents) {
             noteContentRepository.deleteByNoteContent(noteContent);
