@@ -42,6 +42,7 @@ public class JwtValidator {
         return true;
     }
 
+    // 리프레시 토큰 만료시 True
     public boolean refreshTokenIsExpired(String refreshToken) {
         try {
             Jwts.parserBuilder()

@@ -11,7 +11,6 @@ import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
@@ -72,9 +71,10 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-        HttpServletResponse response)
-        throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(
+        HttpServletRequest request, HttpServletResponse response)
+        throws AuthenticationException, IOException {
+
         if (validateURI(request)) {
             LoginRequestForm loginRequestForm = extractLoginRequestForm(request);
             String requestLoginId = loginRequestForm.getLoginId();
@@ -91,8 +91,8 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                 }
                 User user = userDetailsRepository.findByLoginId(userDetails.getUsername()).get();
 
-                Authentication authentication = createAuthenticationByLoginForm(user.getLoginId(),
-                    user.getPassword());
+                Authentication authentication = createAuthenticationByLoginForm(
+                    user.getLoginId(), user.getPassword());
 
                 String accessToken = jwtGenerator.generateAccessToken(user);
                 String refreshToken = jwtGenerator.generateRefreshToken(user);

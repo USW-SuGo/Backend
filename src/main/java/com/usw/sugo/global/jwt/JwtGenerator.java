@@ -41,19 +41,25 @@ public class JwtGenerator {
     private final long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
     private final long REFRESH_TOKEN_EXPIRE_TIME = 5 * 60 * 1000L; // 5분
 
-//    // 테스트 환경 JWT 만료기간 2
+    //    // 테스트 환경 JWT 만료기간 2
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
+
+    private final Date accessTokenExpiredIn = new Date(
+        new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME
+    );
+
+    private final Date refreshTokenExpiredIn = new Date(
+        new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME
+    );
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // 엑세스 토큰 발급
     public String generateAccessToken(User user) {
-        Date now = new Date();
-        Date accessTokenExpireIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
-
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", user.getId());
@@ -66,46 +72,47 @@ public class JwtGenerator {
         return "Bearer " + Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
-            .setExpiration(accessTokenExpireIn)
+            .setExpiration(accessTokenExpiredIn)
             .signWith(getSigningKey(), SignatureAlgorithm.HS512)
             .compact();
     }
 
+    @Transactional
     public String generateRefreshToken(User user) {
-        Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(
-            user.getId());
+        Optional<RefreshToken> findRefreshTokenByUserId =
+            refreshTokenRepository.findByUserId(user.getId());
 
+        // 이미 로그인해서 토큰을 발급 받은 적이 있는 유저일 때
         if (findRefreshTokenByUserId.isPresent()) {
-            String refreshToken = refreshTokenRepository.findByUserId(user.getId()).get()
-                .getPayload();
-
+            String refreshToken =
+                refreshTokenRepository.findByUserId(user.getId()).get().getPayload();
+            // 리프레시 토큰이 만료되었으면
             if (jwtValidator.refreshTokenIsExpired(refreshToken)) {
                 return updateRefreshToken(user);
             }
+            // 리프레시 토큰이 만료되진 않았으나 갱신이 필요할 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
                 && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return updateRefreshToken(user);
             }
+            // 리프레시 토큰이 만료되지 않았고 갱신 또한 필요하지 않을 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
                 && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
                 return "Bearer " + refreshToken;
             }
         }
-        return createRefreshToken(user);
+        return createNewRefreshToken(user);
     }
 
     @Transactional
-    public String createRefreshToken(User user) {
-        Date now = new Date();
-        Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
-
+    public String createNewRefreshToken(User user) {
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
         String stringRefreshToken = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
-            .setExpiration(refreshTokenExpireIn)
+            .setExpiration(refreshTokenExpiredIn)
             .signWith(getSigningKey(), SignatureAlgorithm.HS512)
             .compact();
 
@@ -118,10 +125,8 @@ public class JwtGenerator {
         return "Bearer " + stringRefreshToken;
     }
 
+    @Transactional
     public String updateRefreshToken(User user) {
-        Date now = new Date();
-        Date refreshTokenExpireIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
-
         Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
@@ -129,7 +134,7 @@ public class JwtGenerator {
         String updatedRefreshToken = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
-            .setExpiration(refreshTokenExpireIn)
+            .setExpiration(refreshTokenExpiredIn)
             .signWith(getSigningKey(), SignatureAlgorithm.HS512)
             .compact();
 

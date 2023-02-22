@@ -40,6 +40,7 @@ public class JwtResolver {
             .parseClaimsJws(token).getBody();
     }
 
+    // 갱신이 필요하면 True를 반환한다.
     public boolean isNeedToUpdateRefreshToken(String refreshToken) {
         Date claims = commonResolve(refreshToken).getExpiration();
         LocalDateTime localDateTimeClaims = claims.toInstant().atZone(ZoneId.systemDefault())
