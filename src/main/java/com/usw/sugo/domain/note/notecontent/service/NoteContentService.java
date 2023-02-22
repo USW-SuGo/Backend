@@ -31,6 +31,8 @@ public class NoteContentService {
     private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final AwsS3ServiceNote awsS3ServiceNote;
 
+    private final String fixedPushAlarmTitle = "SUGO";
+
     @Transactional
     public List<Object> executeLoadAllContentsByNoteId(
         User requestUser, Long noteId, Pageable pageable) {
@@ -53,7 +55,7 @@ public class NoteContentService {
         note.updateRecentContent(message);
         note.updateUserUnreadCountBySendMessage(sender);
 
-        // fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", message));
+        fcmPushService.sendPushNotification(new FcmMessage(receiver, fixedPushAlarmTitle, message));
         return message;
     }
 
@@ -69,7 +71,9 @@ public class NoteContentService {
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);
 
-        // fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", "사진을 보냈습니다."));
+        fcmPushService.sendPushNotification(
+            new FcmMessage(receiver, fixedPushAlarmTitle, "사진을 보냈습니다.")
+        );
         return imageLinks.get(0);
     }
 
@@ -87,7 +91,9 @@ public class NoteContentService {
     }
 
     @Transactional
-    protected void saveNoteContentByText(Note note, String message, User sender, User receiver) {
+    protected void saveNoteContentByText(
+        Note note, String message, User sender, User receiver) {
+
         NoteContent noteContent = NoteContent.builder()
             .note(note)
             .message(message)
@@ -99,8 +105,9 @@ public class NoteContentService {
     }
 
     @Transactional
-    protected void saveNoteContentByFile(Note note, List<String> imageLinks, User sender,
-        User receiver) {
+    protected void saveNoteContentByFile(
+        Note note, List<String> imageLinks, User sender, User receiver) {
+
         NoteContent noteContent = NoteContent.builder()
             .note(note)
             .sender(sender)
