@@ -36,6 +36,8 @@ public class UserRequestDto {
         private String department;
         @NotNull
         private Boolean pushAlarmStatus;
+        @NotBlank
+        private String fcmToken;
     }
 
     // 인증번호 DTO

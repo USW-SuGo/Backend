@@ -76,7 +76,8 @@ public class UserController {
             detailJoinRequestForm.getEmail(),
             detailJoinRequestForm.getPassword(),
             detailJoinRequestForm.getDepartment(),
-            detailJoinRequestForm.getPushAlarmStatus()
+            detailJoinRequestForm.getPushAlarmStatus(),
+            detailJoinRequestForm.getFcmToken()
         );
     }
 

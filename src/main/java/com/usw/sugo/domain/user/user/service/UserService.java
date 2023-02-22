@@ -74,7 +74,9 @@ public class UserService {
 
     @Transactional
     public Map<String, Object> executeJoin(
-        String loginId, String email, String password, String department, Boolean pushAlarmStatus) {
+        String loginId, String email, String password, String department, Boolean pushAlarmStatus,
+        String fcmToken
+    ) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATED_EMAIL);
         } else if (userRepository.findByLoginId(loginId).isPresent()) {
@@ -82,7 +84,7 @@ public class UserService {
         }
         userServiceUtility.validateSuwonUniversityEmailForm(email);
         User requestUser = userServiceUtility.softJoin(
-            loginId, email, password, department, pushAlarmStatus
+            loginId, email, password, department, pushAlarmStatus, fcmToken
         );
         String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
@@ -153,8 +155,9 @@ public class UserService {
             .build();
     }
 
-    public Map<String, Boolean> executeEvaluateManner(Long targetUserId, BigDecimal grade,
-        User user) {
+    public Map<String, Boolean> executeEvaluateManner(
+        Long targetUserId, BigDecimal grade, User user
+    ) {
         User requestUser = userServiceUtility.loadUserById(user.getId());
         if (userServiceUtility.isBeforeDay(requestUser.getRecentEvaluationManner())) {
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);

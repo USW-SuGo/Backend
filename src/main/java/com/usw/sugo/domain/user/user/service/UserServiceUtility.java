@@ -66,7 +66,8 @@ public class UserServiceUtility {
 
     @Transactional
     public User softJoin(
-        String loginId, String email, String password, String department, Boolean pushAlarmStatus
+        String loginId, String email, String password, String department, Boolean pushAlarmStatus,
+        String fcmToken
     ) {
         User user = User.builder()
             .loginId(loginId)
@@ -80,6 +81,7 @@ public class UserServiceUtility {
             .mannerGrade(BigDecimal.ZERO)
             .status("NOT_AUTH")
             .pushAlarmStatus(pushAlarmStatus)
+            .fcmToken(fcmToken)
             .build();
 
         userRepository.save(user);
