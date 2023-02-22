@@ -3,11 +3,12 @@ package com.usw.sugo.global.fcm;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
+import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class FcmConfig {
@@ -18,14 +19,17 @@ public class FcmConfig {
     @Value("${fcm.project-id}")
     private String projectId;
 
-    @PostConstruct
-    public FirebaseApp firebaseApp() throws IOException {
-        final FirebaseOptions firebaseOptions = FirebaseOptions.builder()
-            .setCredentials(
-                GoogleCredentials.fromStream(new ByteArrayInputStream(secretKey.getBytes())))
-            .setProjectId(projectId)
-            .build();
-
-        return FirebaseApp.initializeApp(firebaseOptions);
+    @Bean
+    public FirebaseApp firebaseApp() {
+        final ClassPathResource resource = new ClassPathResource(secretKey);
+        try (InputStream stream = resource.getInputStream()) {
+            final FirebaseOptions firebaseOptions = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(stream))
+                .setProjectId(projectId)
+                .build();
+            return FirebaseApp.initializeApp(firebaseOptions);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
