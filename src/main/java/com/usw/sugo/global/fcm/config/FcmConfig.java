@@ -1,4 +1,4 @@
-package com.usw.sugo.global.fcm;
+package com.usw.sugo.global.fcm.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

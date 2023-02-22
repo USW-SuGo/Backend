@@ -131,4 +131,8 @@ public class User extends BaseTimeEntity implements UserDetails {
     public void updateRecentEvaluationManner() {
         this.recentEvaluationManner = LocalDateTime.now();
     }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }
