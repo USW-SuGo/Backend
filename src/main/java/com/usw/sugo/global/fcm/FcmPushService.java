@@ -11,8 +11,8 @@ import com.google.firebase.messaging.Notification;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -37,8 +37,9 @@ public class FcmPushService {
         "https://fcm.googleapis.com/v1/projects/" + projectId + "/messages:send";
 
     private String getAccessToken() throws IOException {
-        final GoogleCredentials googleCredentials = GoogleCredentials.fromStream(
-            new ClassPathResource(CONFIG_PATH).getInputStream()).createScoped(List.of(AUTH_URL));
+        final ClassPathResource resource = new ClassPathResource(secretKey);
+        InputStream stream = resource.getInputStream();
+        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(stream);
         googleCredentials.refreshIfExpired();
         return googleCredentials.getAccessToken().getTokenValue();
     }
@@ -58,14 +59,19 @@ public class FcmPushService {
             .build();
         try {
             FirebaseMessaging.getInstance(firebaseApp).sendMulticast(multicastMessage);
-        } catch (FirebaseMessagingException e) {
+        } catch (FirebaseMessagingException firebaseMessagingException) {
             throw new CustomException(INTERNAL_PUSH_SERVER_EXCEPTION);
         }
     }
 
     private String extractUserTokenByPushAlarmAllowed(User user) {
         if (user.getPushAlarmStatus()) {
-            return user.getFcmToken();
+            try {
+                return getAccessToken();
+            } catch (IOException e) {
+                throw new NullPointerException();
+            }
+            // return user.getFcmToken();
         }
         return null;
     }
