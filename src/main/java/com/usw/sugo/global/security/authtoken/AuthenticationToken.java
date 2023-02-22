@@ -1,9 +1,7 @@
 package com.usw.sugo.global.security.authtoken;
 
-import lombok.EqualsAndHashCode;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-@EqualsAndHashCode
 public class AuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object principal;
