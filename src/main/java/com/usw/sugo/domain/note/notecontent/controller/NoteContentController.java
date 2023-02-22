@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.note.notecontent.controller;
 
+import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.note.note.Note;
@@ -9,7 +10,6 @@ import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentRequestDto
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
-import com.usw.sugo.global.apiresult.ApiResultFactory;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class NoteContentController {
             sendNoteContentForm.getReceiverId()
         );
 
-        return ApiResultFactory.getSuccessFlag();
+        return getSuccessFlag();
     }
 
     @ResponseStatus(OK)
@@ -75,6 +75,6 @@ public class NoteContentController {
             sender.getId(),
             sendNoteFileForm.getReceiverId()
         );
-        return ApiResultFactory.getSuccessFlag();
+        return getSuccessFlag();
     }
 }

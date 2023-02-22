@@ -7,6 +7,8 @@ import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.global.aws.s3.AwsS3ServiceNote;
+import com.usw.sugo.global.fcm.FcmMessage;
+import com.usw.sugo.global.fcm.FcmPushService;
 import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class NoteContentService {
 
+    private final FcmPushService fcmPushService;
     private final NoteContentRepository noteContentRepository;
     private final UserServiceUtility userServiceUtility;
     private final ImageLinkCharacterFilter imageLinkCharacterFilter;
@@ -42,23 +45,33 @@ public class NoteContentService {
     @Transactional
     public String executeSendNoteContent(
         Note note, String message, Long senderId, Long receiverId) {
+
         User sender = userServiceUtility.loadUserById(senderId);
         User receiver = userServiceUtility.loadUserById(receiverId);
+
         saveNoteContentByText(note, message, sender, receiver);
         note.updateRecentContent(message);
         note.updateUserUnreadCountBySendMessage(sender);
+
+        fcmPushService.sendPushNotification(new FcmMessage(receiver, "SUGO", message));
         return message;
     }
 
     @Transactional
     public String executeSendNoteContentWithFile(
         Note note, MultipartFile[] multipartFiles, Long senderId, Long receiverId) {
-        List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, note.getId());
+
         User sender = userServiceUtility.loadUserById(senderId);
         User receiver = userServiceUtility.loadUserById(receiverId);
+
+        List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles, note.getId());
         saveNoteContentByFile(note, imageLinks, sender, receiver);
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);
+
+        fcmPushService.sendPushNotification(
+            new FcmMessage(receiver, "SUGO", "사진을 보냈습니다.")
+        );
         return imageLinks.get(0);
     }
 
