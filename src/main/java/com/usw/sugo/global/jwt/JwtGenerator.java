@@ -45,22 +45,15 @@ public class JwtGenerator {
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 //    private final long REFRESH_TOKEN_EXPIRE_TIME = 15 * 24 * 60 * 60 * 1000L; // 15일
 
-    private final Date accessTokenExpiredIn = new Date(
-        new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME
-    );
-
-    private final Date refreshTokenExpiredIn = new Date(
-        new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME
-    );
-
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+        final byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // 엑세스 토큰 발급
     public String generateAccessToken(User user) {
-        Claims claims = Jwts.claims();
+        final Date accessTokenExpiredIn = new Date(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+        final Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
         claims.put("id", user.getId());
         claims.put("loginId", user.getLoginId());
@@ -79,7 +72,7 @@ public class JwtGenerator {
 
     @Transactional
     public String generateRefreshToken(User user) {
-        Optional<RefreshToken> findRefreshTokenByUserId =
+        final Optional<RefreshToken> findRefreshTokenByUserId =
             refreshTokenRepository.findByUserId(user.getId());
 
         // 이미 로그인해서 토큰을 발급 받은 적이 있는 유저일 때
@@ -106,10 +99,12 @@ public class JwtGenerator {
 
     @Transactional
     public String createNewRefreshToken(User user) {
-        Claims claims = Jwts.claims();
+        final Date refreshTokenExpiredIn = new Date(
+            new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        final Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
-        String stringRefreshToken = Jwts.builder()
+        final String stringRefreshToken = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
             .setExpiration(refreshTokenExpiredIn)
@@ -127,11 +122,12 @@ public class JwtGenerator {
 
     @Transactional
     public String updateRefreshToken(User user) {
-        Claims claims = Jwts.claims();
+        final Date refreshTokenExpiredIn = new Date(new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        final Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
         // RefreshToken Token 생성
-        String updatedRefreshToken = Jwts.builder()
+        final String updatedRefreshToken = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .setClaims(claims)
             .setExpiration(refreshTokenExpiredIn)
