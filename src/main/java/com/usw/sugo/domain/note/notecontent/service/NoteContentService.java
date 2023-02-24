@@ -31,7 +31,6 @@ public class NoteContentService {
     private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final AwsS3ServiceNote awsS3ServiceNote;
 
-    private final String fixedPushAlarmTitle = "SUGO";
     private final String fixedPushAlarmBodyByImage = "사진을 보냈습니다.";
 
     @Transactional
@@ -59,6 +58,8 @@ public class NoteContentService {
         note.updateRecentContent(message);
         note.updateUserUnreadCountBySendMessage(sender);
 
+        final String fixedPushAlarmTitle = sender.getNickname();
+
         fcmPushService.sendPushNotification(new FcmMessage(receiver, fixedPushAlarmTitle, message));
         return message;
     }
@@ -76,6 +77,8 @@ public class NoteContentService {
         saveNoteContentByFile(note, imageLinks, sender, receiver);
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);
+
+        final String fixedPushAlarmTitle = sender.getNickname();
 
         fcmPushService.sendPushNotification(
             new FcmMessage(receiver, fixedPushAlarmTitle, fixedPushAlarmBodyByImage)
