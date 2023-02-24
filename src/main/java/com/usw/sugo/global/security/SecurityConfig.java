@@ -35,11 +35,12 @@ public class SecurityConfig {
     private final JwtGenerator jwtGenerator;
     private final JwtResolver jwtResolver;
     private final JwtValidator jwtValidator;
-    private final ObjectMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    private final List<String> whiteListURI = List.of(
+    private final List<String> notNeededJwtURI = List.of(
         "/user/check-email", "/user/check-loginId", "/user/auth", "/user/join", "/user/login",
-        "/user/find-id", "/user/find-pw", "/post/all", "/token");
+        "/user/find-id", "/user/find-pw", "/post/all", "/token"
+    );
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,7 +54,7 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http
             .authorizeRequests()
-            .antMatchers(whiteListURI.toString()).permitAll()
+            .antMatchers(notNeededJwtURI.toString()).permitAll()
         ;
         http
             .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
@@ -75,15 +76,13 @@ public class SecurityConfig {
 
     public LoginFilter loginFilter() {
         return new LoginFilter(
-            customAuthenticationManager,
-            userDetailsRepository,
-            userDetailsService,
-            bCryptPasswordEncoder(),
-            jwtGenerator, mapper);
+            customAuthenticationManager, userDetailsRepository, userDetailsService,
+            bCryptPasswordEncoder(), jwtGenerator, objectMapper
+        );
     }
 
     public JwtFilter jwtFilter() {
-        return new JwtFilter(whiteListURI, jwtResolver, jwtValidator, userDetailsService);
+        return new JwtFilter(notNeededJwtURI, jwtResolver, jwtValidator, userDetailsService);
     }
 
     @Bean
