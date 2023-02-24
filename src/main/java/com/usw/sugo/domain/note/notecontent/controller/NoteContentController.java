@@ -53,7 +53,7 @@ public class NoteContentController {
         noteContentService.executeSendNoteContent(
             note,
             sendNoteContentForm.getMessage(),
-            sender.getId(),
+            sendNoteContentForm.getSenderId(),
             sendNoteContentForm.getReceiverId()
         );
 
@@ -72,7 +72,7 @@ public class NoteContentController {
         noteContentService.executeSendNoteContentWithFile(
             note,
             multipartFileList,
-            sender.getId(),
+            user.getId(),
             sendNoteFileForm.getReceiverId()
         );
         return getSuccessFlag();
