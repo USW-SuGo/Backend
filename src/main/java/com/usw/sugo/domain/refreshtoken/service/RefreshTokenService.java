@@ -23,7 +23,6 @@ public class RefreshTokenService {
     private final JwtGenerator jwtGenerator;
     private final JwtValidator jwtValidator;
 
-
     @Transactional
     public Map<String, String> executeReIssueToken(String requestRefreshToken) {
         if (jwtValidator.validateToken(requestRefreshToken)) {
@@ -34,7 +33,7 @@ public class RefreshTokenService {
     }
 
     public RefreshToken loadRefreshTokenByPayload(String requestRefreshToken) {
-        Optional<RefreshToken> refreshToken =
+        final Optional<RefreshToken> refreshToken =
             refreshTokenRepository.findByPayload(requestRefreshToken);
         if (refreshToken.isPresent()) {
             return refreshToken.get();
@@ -44,9 +43,9 @@ public class RefreshTokenService {
 
     @Transactional
     public Map<String, String> reIssueToken(RefreshToken refreshToken) {
-        User requestUser = refreshToken.getUser();
-        String accessTokenPayload = jwtGenerator.generateAccessToken(requestUser);
-        String refreshTokenPayload = jwtGenerator.updateRefreshToken(requestUser);
+        final User requestUser = refreshToken.getUser();
+        final String accessTokenPayload = jwtGenerator.generateAccessToken(requestUser);
+        final String refreshTokenPayload = jwtGenerator.updateRefreshToken(requestUser);
         return jwtGenerator.wrapTokenPair(accessTokenPayload, refreshTokenPayload);
     }
 

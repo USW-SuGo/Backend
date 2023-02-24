@@ -66,21 +66,24 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private LoginRequestForm extractLoginRequestForm(HttpServletRequest request)
         throws IOException {
-        return mapper.readValue(StreamUtils.copyToString(request.getInputStream(), UTF_8),
-            LoginRequestForm.class);
+        return mapper.readValue(
+            StreamUtils.copyToString(
+                request.getInputStream(), UTF_8
+            ), LoginRequestForm.class
+        );
     }
 
     @Override
     public Authentication attemptAuthentication(
-        HttpServletRequest request, HttpServletResponse response)
-        throws AuthenticationException, IOException {
+        HttpServletRequest request, HttpServletResponse response
+    ) throws AuthenticationException, IOException {
 
         if (validateURI(request)) {
-            LoginRequestForm loginRequestForm = extractLoginRequestForm(request);
-            String requestLoginId = loginRequestForm.getLoginId();
-            String requestPassword = loginRequestForm.getPassword();
+            final LoginRequestForm loginRequestForm = extractLoginRequestForm(request);
+            final String requestLoginId = loginRequestForm.getLoginId();
+            final String requestPassword = loginRequestForm.getPassword();
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(requestLoginId);
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(requestLoginId);
 
             // 비밀번호가 일치할 때
             if (bCryptPasswordEncoder.matches(requestPassword, userDetails.getPassword())) {
@@ -89,18 +92,24 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                     response.flushBuffer();
                     return null;
                 }
-                User user = userDetailsRepository.findByLoginId(userDetails.getUsername()).get();
+                final User user = userDetailsRepository.findByLoginId(
+                    userDetails.getUsername()
+                ).get();
 
-                Authentication authentication = createAuthenticationByLoginForm(
-                    user.getLoginId(), user.getPassword());
+                final Authentication authentication = createAuthenticationByLoginForm(
+                    user.getLoginId(), user.getPassword()
+                );
 
-                String accessToken = jwtGenerator.generateAccessToken(user);
-                String refreshToken = jwtGenerator.generateRefreshToken(user);
+                final String accessToken = jwtGenerator.generateAccessToken(user);
+                final String refreshToken = jwtGenerator.generateRefreshToken(user);
 
                 setSuccessResponseForm(response);
-                registContextHolderForAuthentication(authentication);
-                response.setHeader("Authorization",
-                    jwtGenerator.wrapTokenPair(accessToken, refreshToken).toString());
+                enrollContextHolderForAuthentication(authentication);
+                response.setHeader(
+                    "Authorization", jwtGenerator.wrapTokenPair(
+                        accessToken, refreshToken
+                    ).toString()
+                );
                 response.flushBuffer();
                 return authentication;
             } else {
@@ -114,18 +123,18 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private Authentication createAuthenticationByLoginForm(String loginId, String password) {
         return customAuthenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginId, password));
+            new UsernamePasswordAuthenticationToken(loginId, password)
+        );
     }
 
-    private void registContextHolderForAuthentication(Authentication authentication) {
+    private void enrollContextHolderForAuthentication(Authentication authentication) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void setExceptionResponseForm(HttpServletResponse response,
-        CustomException customException) {
+    private void setExceptionResponseForm(HttpServletResponse response, CustomException customException) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(400);
-        JSONObject jsonResponse = new JSONObject();
+        final JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("Exception", customException.getExceptionType());
         jsonResponse.put("Message", customException.getMessage());
 

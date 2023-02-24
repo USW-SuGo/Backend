@@ -42,7 +42,7 @@ public class ProductPostService {
     private final ProductPostFileService productPostFileService;
 
     public List<MainPageResponse> executeLoadMainPage(Pageable pageable, String category) {
-        List<MainPageResponse> mainPageResponses =
+        final List<MainPageResponse> mainPageResponses =
             productPostRepository.loadMainPagePostList(pageable, category);
         for (MainPageResponse mainPageResponse : mainPageResponses) {
             mainPageResponse.setLikeCount(loadLikeCountByProductPost(
@@ -68,8 +68,10 @@ public class ProductPostService {
             return myPostings;
         }
         // 다른 유저 페이지
-        User otherUser = userServiceUtility.loadUserById(userId);
-        List<MyPosting> myPostings = productPostRepository.loadWrittenPost(otherUser, pageable);
+        final User otherUser = userServiceUtility.loadUserById(userId);
+        final List<MyPosting> myPostings = productPostRepository.loadWrittenPost(
+            otherUser, pageable
+        );
         for (MyPosting myPosting : myPostings) {
             myPosting.setLikeCount(
                 loadLikeCountByProductPost(loadProductPostById(myPosting.getProductPostId())));
@@ -81,8 +83,10 @@ public class ProductPostService {
     }
 
     public List<SearchResultResponse> executeSearchPostings(String value, String category) {
-        List<SearchResultResponse> searchResultResponses = productPostRepository.searchPost(value,
-            validateCategory(category));
+        final List<SearchResultResponse> searchResultResponses = productPostRepository.searchPost(
+            value,
+            validateCategory(category)
+        );
         for (SearchResultResponse searchResultResponse : searchResultResponses) {
             searchResultResponse.setLikeCount(loadLikeCountByProductPost(
                 loadProductPostById(searchResultResponse.getProductPostId())));
@@ -107,8 +111,9 @@ public class ProductPostService {
 
     public List<ClosePosting> loadClosePosting(User user, Long userId, Pageable pageable) {
         if (user.getId().equals(userId)) {
-            List<ClosePosting> closePostings = productPostRepository.loadClosePost(user, pageable);
-            String imageLink;
+            final List<ClosePosting> closePostings = productPostRepository.loadClosePost(
+                user, pageable
+            );
             for (ClosePosting closePosting : closePostings) {
                 closePosting.setLikeCount(loadLikeCountByProductPost(
                     loadProductPostById(closePosting.getProductPostId())));
@@ -119,10 +124,9 @@ public class ProductPostService {
             }
             return closePostings;
         }
-        User requestUser = userServiceUtility.loadUserById(userId);
-        List<ClosePosting> closePostings =
+        final User requestUser = userServiceUtility.loadUserById(userId);
+        final List<ClosePosting> closePostings =
             productPostRepository.loadClosePost(requestUser, pageable);
-        String imageLink;
         for (ClosePosting closePosting : closePostings) {
             closePosting.setLikeCount(loadLikeCountByProductPost(
                 loadProductPostById(closePosting.getProductPostId())));
@@ -136,10 +140,11 @@ public class ProductPostService {
 
     // S3 버킷 객체 생성
     @Transactional
-    public Map<String, Boolean> savePosting(Long userId, PostingRequest postingRequest,
-        MultipartFile[] multipartFiles) throws IOException {
-        User requestUser = userServiceUtility.loadUserById(userId);
-        ProductPost productPost = ProductPost.builder()
+    public Map<String, Boolean> savePosting(
+        Long userId, PostingRequest postingRequest, MultipartFile[] multipartFiles
+    ) throws IOException {
+        final User requestUser = userServiceUtility.loadUserById(userId);
+        final ProductPost productPost = ProductPost.builder()
             .user(requestUser)
             .title(postingRequest.getTitle())
             .content(postingRequest.getContent())
@@ -157,8 +162,9 @@ public class ProductPostService {
 
     @Transactional
     public Map<String, Boolean> editPosting(
-        ProductPost productPost, String title, String content,
-        Integer price, String contactPlace, String category, MultipartFile[] multipartFile) {
+        ProductPost productPost, String title, String content, Integer price, String contactPlace,
+        String category, MultipartFile[] multipartFile
+    ) {
         productPost.updateProductPost(title, content, price, contactPlace, category);
         productPostFileService.editProductPostFile(productPost, multipartFile);
         return getSuccessFlag();
@@ -166,7 +172,7 @@ public class ProductPostService {
 
     @Transactional
     public Map<String, Boolean> deleteByProductPostId(Long productPostId) {
-        ProductPost productPost = loadProductPostById(productPostId);
+        final ProductPost productPost = loadProductPostById(productPostId);
         productPostFileService.deleteProductPostFileByProductPost(productPost);
         productPostRepository.deleteByEntity(productPost);
         return getSuccessFlag();
@@ -174,7 +180,7 @@ public class ProductPostService {
 
     @Transactional
     public void deleteByUser(User user) {
-        List<ProductPost> productPosts = loadAllProductPostByUser(user);
+        final List<ProductPost> productPosts = loadAllProductPostByUser(user);
         for (ProductPost productPost : productPosts) {
             productPostFileService.deleteProductPostFileByProductPost(productPost);
             productPostRepository.deleteByEntity(productPost);
@@ -184,7 +190,7 @@ public class ProductPostService {
     @Transactional
     public Map<String, Boolean> upPost(User user, ProductPost productPost) {
         if (validateUpPostIsAvailable(user)) {
-            User requestUser = userServiceUtility.loadUserById(user.getId());
+            final User requestUser = userServiceUtility.loadUserById(user.getId());
             requestUser.updateRecentUpPost();
             productPost.updateUpdatedAt();
         }
@@ -219,7 +225,7 @@ public class ProductPostService {
     }
 
     public ProductPost loadProductPostById(Long productPostId) {
-        Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
+        final Optional<ProductPost> productPost = productPostRepository.findById(productPostId);
         if (productPost.isPresent()) {
             return productPost.get();
         }

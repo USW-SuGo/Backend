@@ -22,7 +22,7 @@ public class JwtValidator {
     private String secretKey;
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+        final byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -34,7 +34,8 @@ public class JwtValidator {
                 .build()
                 .parseClaimsJws(token);
         } catch (NoSuchElementException | BadCredentialsException |
-                 MalformedJwtException | IllegalArgumentException exception) {
+                 MalformedJwtException | IllegalArgumentException exception
+        ) {
             throw new CustomException(JWT_MALFORMED_EXCEPTION);
         } catch (ExpiredJwtException exception) {
             throw new CustomException(JWT_EXPIRED_EXCEPTION);
@@ -50,7 +51,8 @@ public class JwtValidator {
                 .build()
                 .parseClaimsJws(refreshToken);
         } catch (NoSuchElementException | BadCredentialsException |
-                 MalformedJwtException | IllegalArgumentException exception) {
+                 MalformedJwtException | IllegalArgumentException exception
+        ) {
             throw new CustomException(JWT_MALFORMED_EXCEPTION);
         } catch (ExpiredJwtException exception) {
             return true;

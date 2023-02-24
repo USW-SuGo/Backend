@@ -4,19 +4,16 @@ import static com.usw.sugo.global.aws.s3.BucketDetailPath.PRODUCT_POST;
 import static com.usw.sugo.global.exception.ExceptionType.INTERNAL_UPLOAD_EXCEPTION;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,14 +32,16 @@ public class AwsS3ServiceProductPost {
     private final AmazonS3 amazonS3Client;
 
     public List<String> uploadS3(MultipartFile[] multipartFiles, Long productPostId) {
-        List<String> imagePathList = new ArrayList<>();
+        final List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String filename = multipartFile.getOriginalFilename();
-            String finalUrl = generateURLByProductPostId(productPostId);
+            final String filename = multipartFile.getOriginalFilename();
+            final String finalUrl = generateURLByProductPostId(productPostId);
             try {
                 amazonS3Client.putObject(
                     generatePutObjectRequest(finalUrl + filename, multipartFile,
-                        initObjectMetaData(multipartFile)));
+                        initObjectMetaData(multipartFile)
+                    )
+                );
                 imagePathList.add(amazonS3Client.getUrl(
                     bucketName,
                     finalUrl + filename).toString());
@@ -62,9 +61,9 @@ public class AwsS3ServiceProductPost {
         for (String objectUrl : objectUrls) {
             objectUrl = filteringUrl(objectUrl);
             try {
-                URL url = new URL(objectUrl);
-                String bucketName = url.getHost().substring(0, 17);
-                String key = url.getPath().substring(1);
+                final URL url = new URL(objectUrl);
+                final String bucketName = url.getHost().substring(0, 17);
+                final String key = url.getPath().substring(1);
                 amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, key));
             } catch (MalformedURLException e) {
                 throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
@@ -84,18 +83,18 @@ public class AwsS3ServiceProductPost {
     }
 
     private ObjectMetadata initObjectMetaData(MultipartFile multipartFile) {
-        long size = multipartFile.getSize();
-        ObjectMetadata objectMetaData = new ObjectMetadata();
+        final long size = multipartFile.getSize();
+        final ObjectMetadata objectMetaData = new ObjectMetadata();
         objectMetaData.setContentType(multipartFile.getContentType());
         objectMetaData.setContentLength(size);
         return objectMetaData;
     }
 
     private PutObjectRequest generatePutObjectRequest(
-        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata)
-        throws IOException {
-        return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
-            objectMetadata)
-            .withCannedAcl(CannedAccessControlList.PublicRead);
+        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata
+    ) throws IOException {
+        return new PutObjectRequest(
+            bucketName, fileName, multipartFile.getInputStream(), objectMetadata
+        ).withCannedAcl(CannedAccessControlList.PublicRead);
     }
 }

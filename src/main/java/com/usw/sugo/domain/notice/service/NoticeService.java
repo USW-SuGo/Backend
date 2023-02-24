@@ -28,7 +28,7 @@ public class NoticeService {
     }
 
     public Notice loadNoticeById(Long noticeId) {
-        Optional<Notice> notice = noticeRepository.findById(noticeId);
+        final Optional<Notice> notice = noticeRepository.findById(noticeId);
         if (noticeRepository.findById(noticeId).isEmpty()) {
             throw new CustomException(POST_NOT_FOUND);
         }
@@ -48,7 +48,7 @@ public class NoticeService {
 
     public Map<String, Boolean> edit(User user, Long noticeId, String title, String content) {
         validateUser(user);
-        Notice notice = validateNotice(noticeId);
+        final Notice notice = validateNotice(noticeId);
         notice.updateTitle(title);
         notice.updateContent(content);
         notice.updateUpdatedAt();
@@ -71,7 +71,7 @@ public class NoticeService {
     }
 
     private Notice validateNotice(Long noticeId) {
-        Optional<Notice> notice = noticeRepository.findById(noticeId);
+        final Optional<Notice> notice = noticeRepository.findById(noticeId);
         if (notice.isEmpty()) {
             throw new CustomException(POST_NOT_FOUND);
         }

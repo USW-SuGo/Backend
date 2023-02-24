@@ -40,7 +40,8 @@ public class NoteService {
 
     @Transactional
     public Map<String, Long> executeCreatingRoom(
-        Long creatingRequestUserId, Long opponentUserId, Long productPostId) {
+        Long creatingRequestUserId, Long opponentUserId, Long productPostId
+    ) {
 
         if (validateNoteCreateRequest(creatingRequestUserId, opponentUserId, productPostId)) {
             Long alreadyNoteId = noteRepository.findNoteByRequestUserAndTargetUserAndProductPost(
@@ -50,13 +51,15 @@ public class NoteService {
             }};
         }
 
-        User validatedCreatingRequestUser = userServiceUtility.loadUserById(creatingRequestUserId);
-        User validatedOpponentUser = userServiceUtility.loadUserById(opponentUserId);
-        ProductPost validatedProductPost = productPostService.loadProductPostById(productPostId);
+        final User validatedCreatingRequestUser = userServiceUtility.loadUserById(
+            creatingRequestUserId);
+        final User validatedOpponentUser = userServiceUtility.loadUserById(opponentUserId);
+        final ProductPost validatedProductPost = productPostService.loadProductPostById(
+            productPostId);
         validatedCreatingRequestUser.addCountTradeAttempt();
         validatedOpponentUser.addCountTradeAttempt();
 
-        Note note = saveNote(
+        final Note note = saveNote(
             validatedProductPost, validatedCreatingRequestUser, validatedOpponentUser);
         return new HashMap<>() {{
             put("noteId", note.getId());
@@ -65,17 +68,16 @@ public class NoteService {
 
     @Transactional
     public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
-        User requestUser = userServiceUtility.loadUserById(user.getId());
-        List<List<LoadNoteListForm>> notes =
+        final User requestUser = userServiceUtility.loadUserById(user.getId());
+        final List<List<LoadNoteListForm>> notes =
             noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
-
         setThumbnailImageLink(notes);
 
-        List<LoadNoteListForm> loadedNotes = new ArrayList<>();
+        final List<LoadNoteListForm> loadedNotes = new ArrayList<>();
         loadedNotes.addAll(notes.get(0));
         loadedNotes.addAll(notes.get(1));
 
-        List<Object> result = new ArrayList<>();
+        final List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
             put("requestUserId", user.getId());
         }});
@@ -86,7 +88,7 @@ public class NoteService {
 
     @Transactional
     public Map<String, Boolean> executeDeleteNote(User user, Long noteId) {
-        Note note = loadNoteByNoteId(noteId);
+        final Note note = loadNoteByNoteId(noteId);
         if (notRemainedUserInNote(note, user.getId())) {
             noteContentService.deleteByNote(note);
             noteRepository.deleteById(note.getId());
@@ -113,11 +115,11 @@ public class NoteService {
     private List<List<LoadNoteListForm>> setThumbnailImageLink(List<List<LoadNoteListForm>> notes) {
         for (List<LoadNoteListForm> note : notes) {
             for (LoadNoteListForm loadNoteListForm : note) {
-                ProductPost productPost =
+                final ProductPost productPost =
                     productPostService.loadProductPostById(loadNoteListForm.getProductPostId());
-                ProductPostFile productPostFile =
+                final ProductPostFile productPostFile =
                     productPostFileService.loadProductPostFileByProductPost(productPost);
-                String[] split = productPostFile.getImageLink().split(",");
+                final String[] split = productPostFile.getImageLink().split(",");
 
                 loadNoteListForm.setImageLink(
                     split[0].replace("[", "").replace("]", ""));
@@ -133,7 +135,7 @@ public class NoteService {
     }
 
     public Note loadNoteByNoteId(Long noteId) {
-        Optional<Note> note = noteRepository.findById(noteId);
+        final Optional<Note> note = noteRepository.findById(noteId);
         if (note.isPresent()) {
             return note.get();
         }
@@ -146,7 +148,7 @@ public class NoteService {
 
     @Transactional
     protected Note saveNote(ProductPost productPost, User creatingRequestUser, User opponentUser) {
-        Note note = Note.builder()
+        final Note note = Note.builder()
             .productPost(productPost)
             .creatingUser(creatingRequestUser)
             .creatingUserNickname(creatingRequestUser.getNickname())
@@ -172,7 +174,8 @@ public class NoteService {
     }
 
     private boolean validateNoteCreateRequest(
-        Long creatingUserId, Long opponentUserId, Long productPostId) {
+        Long creatingUserId, Long opponentUserId, Long productPostId
+    ) {
         if (creatingUserId.equals(opponentUserId)) {
             throw new CustomException(DO_NOT_CREATE_YOURSELF);
         }

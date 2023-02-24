@@ -28,8 +28,9 @@ public class FcmController {
         @RequestBody UpdateFcmTokenForm updateFcmTokenForm,
         @AuthenticationPrincipal User user
     ) {
-        User loadedUser = userServiceUtility.loadUserById(user.getId());
-        loadedUser.updateFcmToken(updateFcmTokenForm.getFcmToken());
+        userServiceUtility.loadUserById(
+            user.getId()
+        ).updateFcmToken(updateFcmTokenForm.getFcmToken());
         return getSuccessFlag();
     }
 }

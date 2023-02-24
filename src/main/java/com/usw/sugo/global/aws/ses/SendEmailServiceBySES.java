@@ -20,14 +20,14 @@ public class SendEmailServiceBySES {
 
     public void sendStudentAuthContent(String receivers, String link) {
 
-        Destination destination = new Destination().withToAddresses(receivers);
+        final Destination destination = new Destination().withToAddresses(receivers);
 
-        Message message = new Message()
+        final Message message = new Message()
             .withSubject(createContent(emailForm.setStudentAuthFormSubject()))
             .withBody(new Body()
                 .withHtml(createContent(emailForm.buildStudentAuthForm(link))));
 
-        SendEmailRequest buildingRequest = new SendEmailRequest()
+        final SendEmailRequest buildingRequest = new SendEmailRequest()
             .withSource("sugousw@gmail.com")
             .withDestination(destination)
             .withMessage(message);
@@ -37,9 +37,9 @@ public class SendEmailServiceBySES {
 
     public void sendFindLoginIdResult(String receivers, String loginId) {
 
-        Destination destination = new Destination().withToAddresses(receivers);
+        final Destination destination = new Destination().withToAddresses(receivers);
 
-        Message message = new Message()
+        final Message message = new Message()
             .withSubject(createContent(emailForm.setStudentFindLoginIdSubject()))
             .withBody(new Body()
                 .withHtml(createContent(emailForm.buildFindLoginIdForm(loginId))));
@@ -48,18 +48,20 @@ public class SendEmailServiceBySES {
             .withSource("sugousw@gmail.com")
             .withDestination(destination)
             .withMessage(message);
+
+        amazonSimpleEmailService.sendEmail(buildingRequest);
     }
 
-    public void sendFindPasswordResult(String receivers, String newPassowrd) {
+    public void sendFindPasswordResult(String receivers, String newPassword) {
 
-        Destination destination = new Destination().withToAddresses(receivers);
+        final Destination destination = new Destination().withToAddresses(receivers);
 
-        Message message = new Message()
+        final Message message = new Message()
             .withSubject(createContent(emailForm.setStudentFindPasswordSubject()))
             .withBody(new Body()
-                .withHtml(createContent(emailForm.buildFindPasswordForm(newPassowrd))));
+                .withHtml(createContent(emailForm.buildFindPasswordForm(newPassword))));
 
-        SendEmailRequest buildingRequest = new SendEmailRequest()
+        final SendEmailRequest buildingRequest = new SendEmailRequest()
             .withSource("sugousw@gmail.com")
             .withDestination(destination)
             .withMessage(message);

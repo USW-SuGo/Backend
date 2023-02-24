@@ -29,18 +29,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain)
-        throws ServletException, IOException {
+    protected void doFilterInternal(
+        HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
+    ) throws ServletException, IOException {
 
         // WhiteList에 포함되어있지 않으면 조건문 들어감
         if (!isRequestURIWhiteList(request)) {
-            if (isNotContainedToken(request, response)) {
+            if (isNotContainedToken(request)) {
                 setRequiredTokenExceptionResponseForm(response, new CustomException(REQUIRE_TOKEN));
                 response.flushBuffer();
                 return;
             }
-            String token = request.getHeader("Authorization").substring(7);
+            final String token = request.getHeader("Authorization").substring(7);
             try {
                 jwtValidator.validateToken(token);
             } catch (CustomException customException) {
@@ -54,8 +54,10 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String loginId) {
-        UserDetails user = userDetailsService.loadUserByUsername(loginId);
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        final UserDetails user = userDetailsService.loadUserByUsername(loginId);
+        return new UsernamePasswordAuthenticationToken(
+            user, null, user.getAuthorities()
+        );
     }
 
     private void registContextHolderForAuthentication(String loginId) {
@@ -67,16 +69,17 @@ public class JwtFilter extends OncePerRequestFilter {
         return whiteListURI.contains(request.getRequestURI());
     }
 
-    private boolean isNotContainedToken(HttpServletRequest request, HttpServletResponse response) {
-        return request.getHeader("Authorization") == null ||
-            !request.getHeader("Authorization").startsWith("Bearer ");
+    private boolean isNotContainedToken(HttpServletRequest request) {
+        return request.getHeader("Authorization") == null
+            || !request.getHeader("Authorization").startsWith("Bearer ");
     }
 
-    private void setRequiredTokenExceptionResponseForm(HttpServletResponse response,
-        CustomException customException) {
+    private void setRequiredTokenExceptionResponseForm(
+        HttpServletResponse response, CustomException customException
+    ) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(400);
-        JSONObject jsonResponse = new JSONObject();
+        final JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("Exception", customException.getExceptionType());
         jsonResponse.put("Message", customException.getMessage());
         try {
@@ -86,11 +89,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setAccessTokenExpiredExceptionResponseForm(HttpServletResponse response,
-        CustomException customException) {
+    private void setAccessTokenExpiredExceptionResponseForm(
+        HttpServletResponse response, CustomException customException
+    ) {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(401);
-        JSONObject jsonResponse = new JSONObject();
+        final JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("Exception", customException.getExceptionType());
         jsonResponse.put("Message", customException.getMessage());
         try {

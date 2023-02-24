@@ -13,12 +13,15 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     @Override
-    public Authentication authenticate(Authentication authentication)
-        throws AuthenticationException {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            authentication.getPrincipal(), authentication.getCredentials());
+    public Authentication authenticate(
+        Authentication authentication
+    ) throws AuthenticationException {
+        final UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(
+                authentication.getPrincipal(), authentication.getCredentials()
+            );
 
-        ArrayList<GrantedAuthority> grantedAuths = new ArrayList<>();
+        final ArrayList<GrantedAuthority> grantedAuths = new ArrayList<>();
         grantedAuths.add(new SimpleGrantedAuthority("ROLE_AVAILABLE"));
 
         return new UsernamePasswordAuthenticationToken(

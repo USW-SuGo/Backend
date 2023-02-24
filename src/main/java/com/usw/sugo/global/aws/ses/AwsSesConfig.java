@@ -19,10 +19,11 @@ public class AwsSesConfig {
 
     @Bean
     public AmazonSimpleEmailService amazonSimpleEmailService() {
-        final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey,
-            secretKey);
-        final AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(
-            basicAWSCredentials);
+        final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(
+            accessKey, secretKey
+        );
+        final AWSStaticCredentialsProvider awsStaticCredentialsProvider =
+            new AWSStaticCredentialsProvider(basicAWSCredentials);
 
         return AmazonSimpleEmailServiceClientBuilder.standard()
             .withCredentials(awsStaticCredentialsProvider)

@@ -9,13 +9,11 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
-import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,14 +32,16 @@ public class AwsS3ServiceNote {
     private final AmazonS3Client amazonS3Client;
 
     public List<String> uploadS3ByNote(MultipartFile[] multipartFiles, Long noteId) {
-        List<String> imagePathList = new ArrayList<>();
+        final List<String> imagePathList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             final String filename = multipartFile.getOriginalFilename();
             final String finalUrl = generateURLByProductPostId(noteId);
             amazonS3Client.putObject(
                 generatePutObjectRequest(finalUrl + filename, multipartFile,
                     initObjectMetaData(multipartFile)));
-            imagePathList.add(amazonS3Client.getUrl(bucketName, finalUrl + filename).toString());
+            imagePathList.add(
+                amazonS3Client.getUrl(bucketName, finalUrl + filename).toString()
+            );
         }
         return imagePathList;
     }
@@ -77,8 +77,8 @@ public class AwsS3ServiceNote {
     }
 
     private ObjectMetadata initObjectMetaData(MultipartFile multipartFile) {
-        long size = multipartFile.getSize();
-        ObjectMetadata objectMetaData = new ObjectMetadata();
+        final long size = multipartFile.getSize();
+        final ObjectMetadata objectMetaData = new ObjectMetadata();
         objectMetaData.setContentType(multipartFile.getContentType());
         objectMetaData.setContentLength(size);
         return objectMetaData;
@@ -89,11 +89,12 @@ public class AwsS3ServiceNote {
     }
 
     private PutObjectRequest generatePutObjectRequest(
-        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata) {
+        String fileName, MultipartFile multipartFile, ObjectMetadata objectMetadata
+    ) {
         try {
-            return new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(),
-                objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead);
+            return new PutObjectRequest(
+                bucketName, fileName, multipartFile.getInputStream(), objectMetadata
+            ).withCannedAcl(CannedAccessControlList.PublicRead);
         } catch (IOException e) {
             throw new CustomException(INTERNAL_UPLOAD_EXCEPTION);
         }

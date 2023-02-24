@@ -72,25 +72,32 @@ public class JwtGenerator {
 
     @Transactional
     public String generateRefreshToken(User user) {
-        final Optional<RefreshToken> findRefreshTokenByUserId =
-            refreshTokenRepository.findByUserId(user.getId());
+        final Optional<RefreshToken> findRefreshTokenByUserId = refreshTokenRepository.findByUserId(
+            user.getId()
+        );
 
         // 이미 로그인해서 토큰을 발급 받은 적이 있는 유저일 때
         if (findRefreshTokenByUserId.isPresent()) {
             String refreshToken =
-                refreshTokenRepository.findByUserId(user.getId()).get().getPayload();
+                refreshTokenRepository.findByUserId(
+                        user.getId()
+                    )
+                    .get()
+                    .getPayload();
             // 리프레시 토큰이 만료되었으면
             if (jwtValidator.refreshTokenIsExpired(refreshToken)) {
                 return updateRefreshToken(user);
             }
             // 리프레시 토큰이 만료되진 않았으나 갱신이 필요할 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
-                && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+                && jwtResolver.isNeedToUpdateRefreshToken(refreshToken)
+            ) {
                 return updateRefreshToken(user);
             }
             // 리프레시 토큰이 만료되지 않았고 갱신 또한 필요하지 않을 때
             else if (!jwtValidator.refreshTokenIsExpired(refreshToken)
-                && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)) {
+                && !jwtResolver.isNeedToUpdateRefreshToken(refreshToken)
+            ) {
                 return "Bearer " + refreshToken;
             }
         }
@@ -122,7 +129,9 @@ public class JwtGenerator {
 
     @Transactional
     public String updateRefreshToken(User user) {
-        final Date refreshTokenExpiredIn = new Date(new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        final Date refreshTokenExpiredIn = new Date(
+            new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME
+        );
         final Claims claims = Jwts.claims();
         claims.setSubject("USW-SUGO-BY-KDH");
 
@@ -134,7 +143,9 @@ public class JwtGenerator {
             .signWith(getSigningKey(), SignatureAlgorithm.HS512)
             .compact();
 
-        refreshTokenRepository.refreshPayload(user.getId(), updatedRefreshToken);
+        refreshTokenRepository.refreshPayload(
+            user.getId(), updatedRefreshToken
+        );
         return "Bearer " + updatedRefreshToken;
     }
 

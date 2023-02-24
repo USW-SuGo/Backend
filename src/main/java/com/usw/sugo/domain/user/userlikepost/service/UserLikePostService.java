@@ -38,14 +38,14 @@ public class UserLikePostService {
 
     @Transactional
     public Map<String, Boolean> executeLikeUnlikePost(Long userId, Long productPostId) {
-        User user = userServiceUtility.loadUserById(userId);
-        ProductPost productPost = productPostService.loadProductPostById(productPostId);
-        ProductPostFile productPostFile
+        final User user = userServiceUtility.loadUserById(userId);
+        final ProductPost productPost = productPostService.loadProductPostById(productPostId);
+        final ProductPostFile productPostFile
             = productPostFileService.loadProductPostFileByProductPost(productPost);
         if (productPost.getUser().equals(user)) {
             throw new CustomException(DO_NOT_LIKE_YOURSELF);
         } else if (!isAlreadyLike(userId, productPostId)) {
-            UserLikePost userLikePost = UserLikePost.builder()
+            final UserLikePost userLikePost = UserLikePost.builder()
                 .user(user)
                 .productPost(productPost)
                 .productPostFile(productPostFile)
@@ -63,7 +63,7 @@ public class UserLikePostService {
     }
 
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
-        List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
+        final List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
         for (LikePosting likePosting : likePostings) {
             likePosting.setLikeCount(userLikePostAndNoteService.loadLikeCountByProductPost(
                 productPostService.loadProductPostById(likePosting.getProductPostId())));

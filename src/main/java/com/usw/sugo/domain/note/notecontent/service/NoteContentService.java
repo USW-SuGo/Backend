@@ -36,7 +36,8 @@ public class NoteContentService {
 
     @Transactional
     public List<Object> executeLoadAllContentsByNoteId(
-        User requestUser, Long noteId, Pageable pageable) {
+        User requestUser, Long noteId, Pageable pageable
+    ) {
 
         final List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
@@ -48,7 +49,8 @@ public class NoteContentService {
 
     @Transactional
     public String executeSendNoteContent(
-        Note note, String message, Long senderId, Long receiverId) {
+        Note note, String message, Long senderId, Long receiverId
+    ) {
 
         final User sender = userServiceUtility.loadUserById(senderId);
         final User receiver = userServiceUtility.loadUserById(receiverId);
@@ -63,7 +65,8 @@ public class NoteContentService {
 
     @Transactional
     public String executeSendNoteContentWithFile(
-        Note note, MultipartFile[] multipartFiles, Long senderId, Long receiverId) {
+        Note note, MultipartFile[] multipartFiles, Long senderId, Long receiverId
+    ) {
 
         final User sender = userServiceUtility.loadUserById(senderId);
         final User receiver = userServiceUtility.loadUserById(receiverId);
@@ -95,7 +98,8 @@ public class NoteContentService {
 
     @Transactional
     protected void saveNoteContentByText(
-        Note note, String message, User sender, User receiver) {
+        Note note, String message, User sender, User receiver
+    ) {
 
         final NoteContent noteContent = NoteContent.builder()
             .note(note)
@@ -109,7 +113,8 @@ public class NoteContentService {
 
     @Transactional
     protected void saveNoteContentByFile(
-        Note note, List<String> imageLinks, User sender, User receiver) {
+        Note note, List<String> imageLinks, User sender, User receiver
+    ) {
 
         final NoteContent noteContent = NoteContent.builder()
             .note(note)

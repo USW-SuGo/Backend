@@ -67,7 +67,7 @@ public class UserService {
     }
 
     public Map<String, Boolean> executeFindPassword(String email, User user) {
-        String newPassword = userServiceUtility.initPassword(user);
+        final String newPassword = userServiceUtility.initPassword(user);
         sendEmailServiceBySES.sendFindPasswordResult(email, newPassword);
         return getSuccessFlag();
     }
@@ -83,10 +83,10 @@ public class UserService {
             throw new CustomException(DUPLICATED_LOGINID);
         }
         userServiceUtility.validateSuwonUniversityEmailForm(email);
-        User requestUser = userServiceUtility.softJoin(
+        final User requestUser = userServiceUtility.softJoin(
             loginId, email, password, department, pushAlarmStatus, fcmToken
         );
-        String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
+        final String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
 
         return new HashMap<>() {{
@@ -96,10 +96,11 @@ public class UserService {
     }
 
     public Map<String, Boolean> executeAuthEmailPayload(String payload, Long userId) {
-        UserEmailAuth requestUserEmailAuth = userEmailAuthService.loadUserEmailAuthByUser(
-            userServiceUtility.loadUserById(userId));
+        final UserEmailAuth requestUserEmailAuth = userEmailAuthService.loadUserEmailAuthByUser(
+            userServiceUtility.loadUserById(userId)
+        );
         if (requestUserEmailAuth.getPayload().equals(payload)) {
-            User requestUser = requestUserEmailAuth.getUser();
+            final User requestUser = requestUserEmailAuth.getUser();
             requestUserEmailAuth.confirmToken();
             requestUser.encryptPassword(requestUser.getPassword());
             requestUser.modifyingStatusToAvailable();
@@ -110,9 +111,10 @@ public class UserService {
     }
 
     public Map<String, Boolean> executeEditPassword(User user, String newPassword) {
-        User requestUser = userServiceUtility.loadUserById(user.getId());
+        final User requestUser = userServiceUtility.loadUserById(user.getId());
         if (BCryptPasswordFactory.getBCryptPasswordEncoder()
-            .matches(newPassword, requestUser.getPassword())) {
+            .matches(newPassword, requestUser.getPassword())
+        ) {
             throw new CustomException(IS_SAME_PASSWORD);
         }
         requestUser.encryptPassword(newPassword);
@@ -144,7 +146,7 @@ public class UserService {
                 .countTradeAttempt(user.getCountTradeAttempt())
                 .build();
         }
-        User otherUser = userServiceUtility.loadUserById(userId);
+        final User otherUser = userServiceUtility.loadUserById(userId);
         return UserPageResponseForm.builder()
             .userId(userId)
             .email(otherUser.getEmail())
@@ -158,7 +160,7 @@ public class UserService {
     public Map<String, Boolean> executeEvaluateManner(
         Long targetUserId, BigDecimal grade, User user
     ) {
-        User requestUser = userServiceUtility.loadUserById(user.getId());
+        final User requestUser = userServiceUtility.loadUserById(user.getId());
         if (userServiceUtility.isBeforeDay(requestUser.getRecentEvaluationManner())) {
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);
             requestUser.updateRecentEvaluationManner();

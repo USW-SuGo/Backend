@@ -22,6 +22,9 @@ public class UserEmailAuthService {
 
     private final UserServiceUtility userServiceUtility;
     private final UserEmailAuthRepository userEmailAuthRepository;
+    private final List<Character> charNumberSet = UserServiceUtility.charNumberSet;
+    private final int numberLen = charNumberSet.size();
+
 
     public UserEmailAuth loadUserEmailAuthByUser(User user) {
         if (userEmailAuthRepository.findByUser(user).isPresent()) {
@@ -31,7 +34,7 @@ public class UserEmailAuthService {
     }
 
     public String saveUserEmailAuth(User user) {
-        UserEmailAuth userEmailAuth = UserEmailAuth.builder()
+        final UserEmailAuth userEmailAuth = UserEmailAuth.builder()
             .payload(createEmailAuthPayload(user.getId()))
             .createdAt(LocalDateTime.now())
             .user(user)
@@ -43,19 +46,15 @@ public class UserEmailAuthService {
 
     private String createEmailAuthPayload(Long userId) {
         User user = userServiceUtility.loadUserById(userId);
-        StringBuilder payload = new StringBuilder();
-        SecureRandom sr = new SecureRandom();
-        sr.setSeed(new Date().getTime());
+        final StringBuilder payload = new StringBuilder();
+        final SecureRandom secureRandom = new SecureRandom();
+        secureRandom.setSeed(new Date().getTime());
 
-        char[] charNumberSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-        int idx = 0;
-        int numberLen = charNumberSet.length;
-
+        int index = 0;
         // 인증번호는 8자리로 이루어져있다.
         for (int i = 0; i < 8; i++) {
-            idx = sr.nextInt(numberLen);
-            payload.append(charNumberSet[idx]);
+            index = secureRandom.nextInt(numberLen);
+            payload.append(charNumberSet.get(index));
         }
         return payload.toString();
     }
@@ -74,7 +73,7 @@ public class UserEmailAuthService {
     // 리팩터링 필요
     // @Scheduled(cron = "0 * * * * *")
     public void deleteNotAuthenticatedUserAndToken() {
-        List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();
+        final List<UserEmailAuth> loadedNotAuthenticatedUser = getNotAuthenticatedUserEmailAuth();
         for (UserEmailAuth userEmailAuth : loadedNotAuthenticatedUser) {
             userEmailAuthRepository.deleteByUserId(userEmailAuth.getUser().getId());
             userServiceUtility.deleteUser(userEmailAuth.getUser());

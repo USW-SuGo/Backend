@@ -28,7 +28,7 @@ public class JwtResolver {
     private final UserDetailsService userDetailsService;
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+        final byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -42,15 +42,17 @@ public class JwtResolver {
 
     // 갱신이 필요하면 True를 반환한다.
     public boolean isNeedToUpdateRefreshToken(String refreshToken) {
-        Date claims = commonResolve(refreshToken).getExpiration();
-        LocalDateTime localDateTimeClaims = claims.toInstant().atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
+        final Date claims = commonResolve(refreshToken).getExpiration();
+        final LocalDateTime localDateTimeClaims = claims.toInstant()
+            .atZone(
+                ZoneId.systemDefault()
+            ).toLocalDateTime();
         LocalDateTime subDetractedDateTime = LocalDateTime.now().plusSeconds(604800);
         return localDateTimeClaims.isBefore(subDetractedDateTime);
     }
 
     public Long jwtResolveToUserId(String token) {
-        Object claims = Jwts.parserBuilder()
+        final Object claims = Jwts.parserBuilder()
             .setSigningKey(getSigningKey())
             .build()
             .parseClaimsJws(token).getBody().get("id");
@@ -59,8 +61,10 @@ public class JwtResolver {
     }
 
     public Authentication getAuthentication(String loginId) {
-        UserDetails user = userDetailsService.loadUserByUsername(loginId);
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        final UserDetails user = userDetailsService.loadUserByUsername(loginId);
+        return new UsernamePasswordAuthenticationToken(
+            user, null, user.getAuthorities()
+        );
     }
 
     public String jwtResolveToUserEmail(String token) {
@@ -74,7 +78,7 @@ public class JwtResolver {
 
     // AccessToken 에서 loginId 꺼내기
     public String jwtResolveToUserLoginId(String token) {
-        Object claims = Jwts.parserBuilder()
+        final Object claims = Jwts.parserBuilder()
             .setSigningKey(getSigningKey())
             .build()
             .parseClaimsJws(token).getBody().get("loginId");
@@ -84,7 +88,7 @@ public class JwtResolver {
 
     // AccessToken 에서 Nickname 꺼내기
     public String jwtResolveToUserNickname(String token) {
-        Object claims = Jwts.parserBuilder()
+        final Object claims = Jwts.parserBuilder()
             .setSigningKey(getSigningKey())
             .build()
             .parseClaimsJws(token).getBody().get("nickname");
@@ -93,7 +97,7 @@ public class JwtResolver {
 
     // AccessToken 에서 Status 꺼내기
     public String jwtResolveToUserStatus(String token) {
-        Object claims = Jwts.parserBuilder()
+        final Object claims = Jwts.parserBuilder()
             .setSigningKey(getSigningKey())
             .build()
             .parseClaimsJws(token).getBody().get("status");
