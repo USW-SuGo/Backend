@@ -13,12 +13,13 @@ public class AsyncConfig implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(30);
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(30);
+        executor.setQueueCapacity(90);
         executor.setThreadNamePrefix("SUGO-DIGER-ASYNC-");
         executor.initialize();
 
         return executor;
     }
 }
+
