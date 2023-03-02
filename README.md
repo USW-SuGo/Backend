@@ -12,15 +12,17 @@
 
 ---
 
-# ERD (Ver. 22/11/21)
+# ERD (Ver. 23/03/03)
 
-![](src/main/resources/erd/SUGO%20ERD-6.png)
+[ERDCloud](https://www.erdcloud.com/d/rmkTkvu4WE7kTM53X)
+
+![img.png](erd.png)
 
 ---
 
-# API 명세서 (Ver. 22/11/21)
+# API 명세서 (Ver. 23/03/03)
 
-[API 명세서 (Ver. 22/11/05)](https://diger.gitbook.io/untitled-1/)
+[API 명세서 (Ver. 23/03/03)](https://diger.gitbook.io/untitled-1/)
 
 ---
 
