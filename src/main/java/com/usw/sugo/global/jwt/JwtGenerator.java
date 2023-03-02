@@ -34,12 +34,12 @@ public class JwtGenerator {
     private String secretKey;
 
     //배포 환경 JWT 만료 기간
-//    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
-//    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
+    private final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 60 * 1000L; // 60분
+    private final long REFRESH_TOKEN_EXPIRE_TIME = 30 * 24 * 60 * 60 * 1000L; // 30일
 
     // 테스트 환경 JWT 만료기간
-    private final Long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
-    private final Long REFRESH_TOKEN_EXPIRE_TIME = 2 * 60 * 1000L; // 2분
+//    private final Long ACCESS_TOKEN_EXPIRE_TIME = 1 * 60 * 1000L; // 1분
+//    private final Long REFRESH_TOKEN_EXPIRE_TIME = 2 * 60 * 1000L; // 2분
 
     //    // 테스트 환경 JWT 만료기간 2
 //    private final long ACCESS_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
