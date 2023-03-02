@@ -16,7 +16,7 @@ public interface CustomProductPostRepository {
 
     void deleteByEntity(ProductPost requestProductPost);
 
-    List<SearchResultResponse> searchPost(String searchValue, String category);
+    List<SearchResultResponse> searchPost(String searchValue, String category, Pageable pageable);
 
     List<MainPageResponse> loadMainPagePostList(Pageable pageable, String category);
 

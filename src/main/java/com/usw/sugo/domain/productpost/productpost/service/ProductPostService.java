@@ -82,11 +82,13 @@ public class ProductPostService {
         return myPostings;
     }
 
-    public List<SearchResultResponse> executeSearchPostings(String value, String category) {
-        final List<SearchResultResponse> searchResultResponses = productPostRepository.searchPost(
-            value,
-            validateCategory(category)
-        );
+    public List<SearchResultResponse> executeSearchPostings(
+        String value, String category, Pageable pageable
+    ) {
+        final List<SearchResultResponse> searchResultResponses =
+            productPostRepository.searchPost(
+                value, validateCategory(category), pageable
+            );
         for (SearchResultResponse searchResultResponse : searchResultResponses) {
             searchResultResponse.setLikeCount(loadLikeCountByProductPost(
                 loadProductPostById(searchResultResponse.getProductPostId())));

@@ -47,9 +47,11 @@ public class ProductPostController {
 
     @ResponseStatus(OK)
     @GetMapping("/search")
-    public List<SearchResultResponse> searchPost(@RequestParam String value,
-        @RequestParam String category) {
-        return productPostService.executeSearchPostings(value, category);
+    public List<SearchResultResponse> searchPost(
+        @RequestParam String value,
+        @RequestParam String category,
+        Pageable pageable) {
+        return productPostService.executeSearchPostings(value, category, pageable);
     }
 
     @ResponseStatus(OK)

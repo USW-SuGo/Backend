@@ -40,7 +40,7 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
     }
 
     @Override
-    public List<SearchResultResponse> searchPost(String value, String category) {
+    public List<SearchResultResponse> searchPost(String value, String category, Pageable pageable) {
         List<SearchResultResponse> response;
         if (category.equals("")) {
             response = queryFactory
@@ -56,6 +56,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                 .where(productPost.title.contains(value)
                     .and(productPost.status.isTrue()))
                 .orderBy(productPost.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
         } else {
             response = queryFactory
@@ -72,6 +74,8 @@ public class CustomProductPostRepositoryImpl implements CustomProductPostReposit
                     .and(productPost.category.eq(category))
                     .and(productPost.status.isTrue()))
                 .orderBy(productPost.updatedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
         }
         return response;

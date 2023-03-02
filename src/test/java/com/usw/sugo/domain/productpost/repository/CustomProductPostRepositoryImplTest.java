@@ -157,9 +157,4 @@ class CustomProductPostRepositoryImplTest {
         productPostRepository.save(productPost9);
         productPostRepository.save(productPost10);
     }
-
-    @Test
-    public void testMethod() {
-        productPostRepository.searchPost("", "");
-    }
 }
