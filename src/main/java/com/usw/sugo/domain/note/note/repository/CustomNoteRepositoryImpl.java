@@ -42,10 +42,10 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
     }
 
     @Override
-    public List<List<LoadNoteListForm>> loadNoteListByUserId(Long requestUserId,
-        Pageable pageable) {
+    public List<List<LoadNoteListForm>> loadNoteListByUserId(
+        Long requestUserId, Pageable pageable
+    ) {
         List<List<LoadNoteListForm>> finalResult = new ArrayList<>();
-
         List<LoadNoteListForm> loadNoteListResultByNoteCreatingUser =
             queryFactory
                 .select(new QNoteResponseDto_LoadNoteListForm(
@@ -53,27 +53,14 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                     note.opponentUserNickname, note.recentContent, note.creatingUserUnreadCount,
                     note.updatedAt))
                 .from(note)
-                .where(note.creatingUser.id.eq(requestUserId))
-                .orderBy(note.updatedAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        List<LoadNoteListForm> loadNoteListResultByNoteOpponentUser =
-            queryFactory
-                .select(new QNoteResponseDto_LoadNoteListForm(
-                    note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
-                    note.creatingUserNickname, note.recentContent, note.opponentUserUnreadCount,
-                    note.updatedAt))
-                .from(note)
-                .where(note.opponentUser.id.eq(requestUserId))
+                .where(note.creatingUser.id.eq(requestUserId)
+                    .or(note.opponentUser.id.eq(requestUserId)))
                 .orderBy(note.updatedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         finalResult.add(loadNoteListResultByNoteCreatingUser);
-        finalResult.add(loadNoteListResultByNoteOpponentUser);
         return finalResult;
     }
 

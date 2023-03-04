@@ -73,9 +73,7 @@ public class NoteService {
             noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
         setThumbnailImageLink(notes);
 
-        final List<LoadNoteListForm> loadedNotes = new ArrayList<>();
-        loadedNotes.addAll(notes.get(0));
-        loadedNotes.addAll(notes.get(1));
+        final List<LoadNoteListForm> loadedNotes = new ArrayList<>(notes.get(0));
 
         final List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
