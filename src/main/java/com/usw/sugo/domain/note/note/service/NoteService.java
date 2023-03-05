@@ -9,7 +9,7 @@ import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteList
 import com.usw.sugo.domain.note.note.repository.NoteRepository;
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
-import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
+import com.usw.sugo.domain.productpost.productpost.service.ProductPostServiceUtility;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
@@ -32,9 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NoteService {
 
-    private final NoteRepository noteRepository;
     private final UserServiceUtility userServiceUtility;
-    private final ProductPostService productPostService;
+    private final ProductPostServiceUtility productPostServiceUtility;
+    private final NoteRepository noteRepository;
     private final NoteContentService noteContentService;
     private final ProductPostFileService productPostFileService;
 
@@ -54,7 +54,7 @@ public class NoteService {
         final User validatedCreatingRequestUser = userServiceUtility.loadUserById(
             creatingRequestUserId);
         final User validatedOpponentUser = userServiceUtility.loadUserById(opponentUserId);
-        final ProductPost validatedProductPost = productPostService.loadProductPostById(
+        final ProductPost validatedProductPost = productPostServiceUtility.loadProductPostById(
             productPostId);
         validatedCreatingRequestUser.addCountTradeAttempt();
         validatedOpponentUser.addCountTradeAttempt();
@@ -101,10 +101,10 @@ public class NoteService {
 
     private boolean notRemainedUserInNote(Note note, Long userId) {
         if (note.getOpponentUser().getId().equals(userId)
-            && note.getCreatingUserStatus() == false) {
+            && !note.getCreatingUserStatus()) {
             return true;
         } else if (note.getCreatingUser().getId().equals(userId)
-            && note.getOpponentUserStatus() == false) {
+            && !note.getOpponentUserStatus()) {
             return true;
         }
         return false;
@@ -114,13 +114,16 @@ public class NoteService {
         for (List<LoadNoteListForm> note : notes) {
             for (LoadNoteListForm loadNoteListForm : note) {
                 final ProductPost productPost =
-                    productPostService.loadProductPostById(loadNoteListForm.getProductPostId());
+                    productPostServiceUtility.loadProductPostById(
+                        loadNoteListForm.getProductPostId()
+                    );
                 final ProductPostFile productPostFile =
                     productPostFileService.loadProductPostFileByProductPost(productPost);
                 final String[] split = productPostFile.getImageLink().split(",");
-
                 loadNoteListForm.setImageLink(
-                    split[0].replace("[", "").replace("]", ""));
+                    split[0].replace(
+                        "[", "").replace("]", "")
+                );
             }
         }
         return notes;
@@ -169,6 +172,11 @@ public class NoteService {
     @Transactional
     public void deleteNotesByUser(User user) {
         noteRepository.deleteByUser(user);
+    }
+
+    @Transactional
+    public void deleteNotesByProductPost(ProductPost productPost) {
+        noteRepository.deleteByProductPost(productPost);
     }
 
     private boolean validateNoteCreateRequest(

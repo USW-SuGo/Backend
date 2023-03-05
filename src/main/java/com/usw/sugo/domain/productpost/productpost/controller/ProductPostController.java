@@ -15,6 +15,7 @@ import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDt
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.MyPosting;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.SearchResultResponse;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
+import com.usw.sugo.domain.productpost.productpost.service.ProductPostServiceUtility;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductPostController {
 
     private final UserServiceUtility userServiceUtility;
+    private final ProductPostServiceUtility productPostServiceUtility;
     private final ProductPostService productPostService;
     private final NoteService noteService;
     private final NoteContentService noteContentService;
@@ -84,14 +86,14 @@ public class ProductPostController {
     @GetMapping("/close-post")
     public List<ClosePosting> loadUserClosePost(@AuthenticationPrincipal User user,
         Pageable pageable) {
-        return productPostService.loadClosePosting(user, user.getId(), pageable);
+        return productPostService.executeLoadClosePosting(user, user.getId(), pageable);
     }
 
     @ResponseStatus(OK)
     @GetMapping("/close-post/{userId}")
     public List<ClosePosting> loadUserClosePost(@AuthenticationPrincipal User user,
         @PathVariable Long userId, Pageable pageable) {
-        return productPostService.loadClosePosting(user, userId, pageable);
+        return productPostService.executeLoadClosePosting(user, userId, pageable);
     }
 
     @ResponseStatus(OK)
@@ -109,7 +111,7 @@ public class ProductPostController {
         @RequestBody UpPostingRequest upPostingRequest,
         @AuthenticationPrincipal User user) {
         return productPostService.upPost(user,
-            productPostService.loadProductPostById(upPostingRequest.getProductPostId()));
+            productPostServiceUtility.loadProductPostById(upPostingRequest.getProductPostId()));
     }
 
     @ResponseStatus(OK)
@@ -117,7 +119,7 @@ public class ProductPostController {
     public Map<String, Boolean> changeStatus(
         @RequestBody ClosePostRequest closePostRequest) {
         return productPostService.closePost(
-            productPostService.loadProductPostById(closePostRequest.getProductPostId()));
+            productPostServiceUtility.loadProductPostById(closePostRequest.getProductPostId()));
     }
 
     @ResponseStatus(OK)
@@ -126,7 +128,7 @@ public class ProductPostController {
         PutContentRequest putContentRequest,
         @RequestBody MultipartFile[] multipartFileList) {
         return productPostService.editPosting(
-            productPostService.loadProductPostById(putContentRequest.getProductPostId()),
+            productPostServiceUtility.loadProductPostById(putContentRequest.getProductPostId()),
             putContentRequest.getTitle(), putContentRequest.getContent(),
             putContentRequest.getPrice(),
             putContentRequest.getContactPlace(), putContentRequest.getCategory(),
@@ -138,8 +140,8 @@ public class ProductPostController {
     public Map<String, Boolean> deleteProductPost(
         @RequestBody DeleteContentRequest deleteContentRequest,
         @AuthenticationPrincipal User user) {
-        noteContentService.deleteNoteContentsByNotes(noteService.loadNotesByUserId(user.getId()));
-        noteService.deleteNotesByUser(userServiceUtility.loadUserById(user.getId()));
+//        noteContentService.deleteNoteContentsByNotes(noteService.loadNotesByUserId(user.getId()));
+//        noteService.deleteNotesByUser(userServiceUtility.loadUserById(user.getId()));
         return productPostService.deleteByProductPostId(deleteContentRequest.getProductPostId());
     }
 }

@@ -2,6 +2,7 @@ package com.usw.sugo.domain.note.note.repository;
 
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
+import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.user.user.User;
 import java.util.List;
 import java.util.Optional;
@@ -21,4 +22,6 @@ public interface CustomNoteRepository {
 
     Optional<Note> findNoteByRequestUserAndTargetUserAndProductPost(Long noteRequestUserId,
         Long targetUserId, Long productPostId);
+
+    void deleteByProductPost(ProductPost productPost);
 }

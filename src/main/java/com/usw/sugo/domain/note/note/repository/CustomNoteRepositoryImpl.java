@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.note.controller.dto.NoteResponseDto.LoadNoteListForm;
 import com.usw.sugo.domain.note.note.controller.dto.QNoteResponseDto_LoadNoteListForm;
+import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.user.user.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -141,5 +142,13 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .and(note.opponentUser.id.eq(targetUserId))
                 .and(note.productPost.id.eq(productPostId)))
             .fetchOne());
+    }
+
+    @Override
+    public void deleteByProductPost(ProductPost productPost) {
+        queryFactory
+            .delete(note)
+            .where(note.productPost.eq(productPost))
+            .execute();
     }
 }
