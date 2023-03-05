@@ -6,7 +6,7 @@ import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDto.LikePosting;
-import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
+import com.usw.sugo.domain.productpost.productpost.service.ProductPostServiceUtility;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
@@ -31,15 +31,16 @@ public class UserLikePostService {
 
     private final UserLikePostRepository userLikePostRepository;
     private final UserServiceUtility userServiceUtility;
+    private final ProductPostServiceUtility productPostServiceUtility;
     private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final UserLikePostAndNoteService userLikePostAndNoteService;
-    private final ProductPostService productPostService;
     private final ProductPostFileService productPostFileService;
 
     @Transactional
     public Map<String, Boolean> executeLikeUnlikePost(Long userId, Long productPostId) {
         final User user = userServiceUtility.loadUserById(userId);
-        final ProductPost productPost = productPostService.loadProductPostById(productPostId);
+        final ProductPost productPost = productPostServiceUtility.loadProductPostById(
+            productPostId);
         final ProductPostFile productPostFile
             = productPostFileService.loadProductPostFileByProductPost(productPost);
         if (productPost.getUser().equals(user)) {
@@ -63,12 +64,13 @@ public class UserLikePostService {
     }
 
     public List<LikePosting> loadLikePosts(Long userId, Pageable pageable) {
-        final List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId, pageable);
+        final List<LikePosting> likePostings = userLikePostRepository.loadMyLikePosting(userId,
+            pageable);
         for (LikePosting likePosting : likePostings) {
             likePosting.setLikeCount(userLikePostAndNoteService.loadLikeCountByProductPost(
-                productPostService.loadProductPostById(likePosting.getProductPostId())));
+                productPostServiceUtility.loadProductPostById(likePosting.getProductPostId())));
             likePosting.setNoteCount(userLikePostAndNoteService.loadNoteCountByProductPost(
-                productPostService.loadProductPostById(likePosting.getProductPostId())));
+                productPostServiceUtility.loadProductPostById(likePosting.getProductPostId())));
             likePosting = imageLinkCharacterFilter.filterImageLink(likePosting);
         }
         return likePostings;
@@ -77,5 +79,10 @@ public class UserLikePostService {
     @Transactional
     public void deleteLikePostsByUser(User user) {
         userLikePostRepository.deleteByUser(user);
+    }
+
+    @Transactional
+    public void deleteLikePostsByProductPost(ProductPost productPost) {
+        userLikePostRepository.deleteByProductPost(productPost);
     }
 }

@@ -3,6 +3,7 @@ package com.usw.sugo.domain.note.notecontent.repository;
 import static com.usw.sugo.domain.note.notecontent.QNoteContent.noteContent;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.notecontent.controller.dto.QNoteContentResponseDto_LoadNoteAllContentForm;
@@ -41,6 +42,14 @@ public class CustomNoteContentRepositoryImpl implements CustomNoteContentReposit
         queryFactory
             .delete(noteContent)
             .where(noteContent.eq(inputNoteContent))
+            .execute();
+    }
+
+    @Override
+    public void deleteByNote(Note note) {
+        queryFactory
+            .delete(noteContent)
+            .where(noteContent.note.eq(note))
             .execute();
     }
 }

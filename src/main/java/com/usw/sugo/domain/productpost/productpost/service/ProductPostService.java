@@ -3,6 +3,7 @@ package com.usw.sugo.domain.productpost.productpost.service;
 import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_UP_POSTING;
 import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
+import static com.usw.sugo.global.exception.ExceptionType.NOT_ALLOWED;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
@@ -17,8 +18,10 @@ import com.usw.sugo.domain.productpost.productpost.repository.ProductPostReposit
 import com.usw.sugo.domain.productpost.productpostfile.service.ProductPostFileService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,6 +42,7 @@ public class ProductPostService {
     private final UserServiceUtility userServiceUtility;
     private final ImageLinkCharacterFilter imageLinkCharacterFilter;
     private final UserLikePostAndNoteService userLikePostAndNoteService;
+    private final UserLikePostService userLikePostService;
     private final ProductPostFileService productPostFileService;
     private final ProductPostServiceUtility productPostServiceUtility;
     private final NoteContentService noteContentService;
@@ -48,12 +52,16 @@ public class ProductPostService {
         final List<MainPageResponse> mainPageResponses =
             productPostRepository.loadMainPagePostList(pageable, category);
         for (MainPageResponse mainPageResponse : mainPageResponses) {
-            mainPageResponse.setLikeCount(loadLikeCountByProductPost(
-                productPostServiceUtility.loadProductPostById(
-                    mainPageResponse.getProductPostId())));
-            mainPageResponse.setNoteCount(loadNoteCountByProductPost(
-                productPostServiceUtility.loadProductPostById(
-                    mainPageResponse.getProductPostId())));
+            mainPageResponse.setLikeCount(
+                loadLikeCountByProductPost(
+                    productPostServiceUtility.loadProductPostById(
+                        mainPageResponse.getProductPostId()))
+            );
+            mainPageResponse.setNoteCount(
+                loadNoteCountByProductPost(
+                    productPostServiceUtility.loadProductPostById(
+                        mainPageResponse.getProductPostId()))
+            );
             mainPageResponse = imageLinkCharacterFilter.filterImageLink(mainPageResponse);
         }
         return mainPageResponses;
@@ -65,11 +73,15 @@ public class ProductPostService {
             List<MyPosting> myPostings = productPostRepository.loadWrittenPost(user, pageable);
             for (MyPosting myPosting : myPostings) {
                 myPosting.setLikeCount(
-                    loadLikeCountByProductPost(productPostServiceUtility.loadProductPostById(
-                        myPosting.getProductPostId())));
+                    loadLikeCountByProductPost(
+                        productPostServiceUtility.loadProductPostById(
+                            myPosting.getProductPostId()))
+                );
                 myPosting.setNoteCount(
-                    loadNoteCountByProductPost(productPostServiceUtility.loadProductPostById(
-                        myPosting.getProductPostId())));
+                    loadNoteCountByProductPost(
+                        productPostServiceUtility.loadProductPostById(
+                            myPosting.getProductPostId()))
+                );
                 myPosting = imageLinkCharacterFilter.filterImageLink(myPosting);
             }
             return myPostings;
@@ -82,10 +94,14 @@ public class ProductPostService {
         for (MyPosting myPosting : myPostings) {
             myPosting.setLikeCount(
                 loadLikeCountByProductPost(
-                    productPostServiceUtility.loadProductPostById(myPosting.getProductPostId())));
+                    productPostServiceUtility.loadProductPostById(
+                        myPosting.getProductPostId()))
+            );
             myPosting.setNoteCount(
                 loadNoteCountByProductPost(
-                    productPostServiceUtility.loadProductPostById(myPosting.getProductPostId())));
+                    productPostServiceUtility.loadProductPostById(
+                        myPosting.getProductPostId()))
+            );
             myPosting = imageLinkCharacterFilter.filterImageLink(myPosting);
         }
         return myPostings;
@@ -191,18 +207,26 @@ public class ProductPostService {
     }
 
     @Transactional
-    public Map<String, Boolean> deleteByProductPostId(Long productPostId) {
-        final ProductPost productPost = productPostServiceUtility.loadProductPostById(
-            productPostId
-        );
-        productPostFileService.deleteProductPostFileByProductPost(productPost);
-        productPostRepository.deleteByEntity(productPost);
+    public Map<String, Boolean> deleteByProductPostId(
+        Long productPostId, User user
+    ) {
+
+        final ProductPost productPost = productPostServiceUtility.loadProductPostById(productPostId);
+        final User writtenUser = productPost.getUser();
+
+        if (!user.getId().equals(writtenUser.getId())) {
+            throw new CustomException(NOT_ALLOWED);
+        }
+
+        userLikePostService.deleteLikePostsByProductPost(productPost);
         noteContentService.deleteNoteContentsByNotes(
-            noteService.loadNotesByUserId(productPost.getUser().getId())
+            noteService.loadNotesByUserId(writtenUser.getId())
         );
         noteService.deleteNotesByProductPost(
             productPostServiceUtility.loadProductPostById(productPostId)
         );
+        productPostFileService.deleteProductPostFileByProductPost(productPost);
+        productPostRepository.deleteByEntity(productPost);
         return getSuccessFlag();
     }
 
@@ -248,7 +272,7 @@ public class ProductPostService {
         throw new CustomException(CATEGORY_NOT_FOUND);
     }
 
-    public List<ProductPost> loadAllProductPostByUser(User user) {
+    private List<ProductPost> loadAllProductPostByUser(User user) {
         return productPostRepository.findAllByUser(user);
     }
 

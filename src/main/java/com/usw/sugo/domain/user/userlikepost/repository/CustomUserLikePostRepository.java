@@ -19,4 +19,6 @@ public interface CustomUserLikePostRepository {
     List<UserLikePost> findByProductPost(ProductPost productPost);
 
     void deleteByUser(User user);
+
+    void deleteByProductPost(ProductPost productPost);
 }

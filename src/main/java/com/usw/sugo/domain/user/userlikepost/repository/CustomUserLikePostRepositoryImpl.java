@@ -79,4 +79,12 @@ public class CustomUserLikePostRepositoryImpl implements CustomUserLikePostRepos
             .where(userLikePost.user.eq(user))
             .execute();
     }
+
+    @Override
+    public void deleteByProductPost(ProductPost productPost) {
+        queryFactory
+            .delete(userLikePost)
+            .where(userLikePost.productPost.eq(productPost))
+            .execute();
+    }
 }
