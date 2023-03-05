@@ -87,27 +87,19 @@ public class NoteService {
     @Transactional
     public Map<String, Boolean> executeDeleteNote(User user, Long noteId) {
         final Note note = loadNoteByNoteId(noteId);
-        if (notRemainedUserInNote(note, user.getId())) {
-            noteContentService.deleteByNote(note);
-            noteRepository.deleteById(note.getId());
-            return getSuccessFlag();
-        } else if (note.getCreatingUser().getId().equals(user.getId())) {
+        if (note.getCreatingUser().getId().equals(user.getId())) {
             note.convertFalseCreatingUserStatus();
             return getSuccessFlag();
+        } else if (note.getOpponentUser().getId().equals(user.getId())) {
+            note.convertFalseOpponentUserStatus();
+            return getSuccessFlag();
         }
-        note.convertFalseOpponentUserStatus();
-        return getSuccessFlag();
-    }
 
-    private boolean notRemainedUserInNote(Note note, Long userId) {
-        if (note.getOpponentUser().getId().equals(userId)
-            && !note.getCreatingUserStatus()) {
-            return true;
-        } else if (note.getCreatingUser().getId().equals(userId)
-            && !note.getOpponentUserStatus()) {
-            return true;
-        }
-        return false;
+        // 해당 유저의 쪽지방 나가기 요청을 수행한 후
+        // 쪽지 방에 남아있는 사람이 없게 된다면
+        noteContentService.deleteByNote(note);
+        noteRepository.deleteById(note.getId());
+        return getSuccessFlag();
     }
 
     private List<List<LoadNoteListForm>> setThumbnailImageLink(List<List<LoadNoteListForm>> notes) {
