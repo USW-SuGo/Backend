@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.notice.service;
 
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 
 import com.usw.sugo.domain.notice.Notice;

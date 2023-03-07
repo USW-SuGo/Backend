@@ -1,9 +1,9 @@
 package com.usw.sugo.domain.user.user.service;
 
-import static com.usw.sugo.global.apiresult.ApiResult.SUCCESS;
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getExistFlag;
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getNotExistFlag;
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResult.SUCCESS;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getExistFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getNotExistFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_EVALUATION;
 import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_EMAIL;
 import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_LOGINID;
@@ -21,7 +21,7 @@ import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
-import com.usw.sugo.global.aws.ses.SendEmailServiceBySES;
+import com.usw.sugo.global.infrastructure.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import java.math.BigDecimal;

@@ -48,6 +48,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     private BigDecimal mannerGrade;
 
     @Column
+    private BigDecimal mannerScore;
+
+    @Column
     private Long countMannerEvaluation;
 
     @Column
@@ -107,10 +110,6 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.countTradeAttempt += 1;
     }
 
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public void encryptPassword(String password) {
         this.password = BCryptPasswordFactory.getBCryptPasswordEncoder().encode(password);
     }
@@ -120,9 +119,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     }
 
     public void updateMannerGrade(BigDecimal grade) {
+        this.mannerScore = this.mannerScore.add(grade);
         this.countMannerEvaluation += 1;
-        this.mannerGrade = mannerGrade.add(grade)
-            .divide(
+        this.mannerGrade = mannerScore.divide(
                 BigDecimal.valueOf(this.countMannerEvaluation), RoundingMode.FLOOR
             );
     }

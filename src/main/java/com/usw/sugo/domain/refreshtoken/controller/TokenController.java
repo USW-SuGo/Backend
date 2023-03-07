@@ -3,7 +3,7 @@ package com.usw.sugo.domain.refreshtoken.controller;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
-import com.usw.sugo.global.apiresult.ApiResultFactory;
+import com.usw.sugo.global.valueobject.apiresult.ApiResultFactory;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

@@ -1,7 +1,7 @@
 package com.usw.sugo.domain.user.userlikepost.service;
 
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getDisLikeFlag;
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getLikeFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getDisLikeFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getLikeFlag;
 import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_LIKE_YOURSELF;
 
 import com.usw.sugo.domain.productpost.productpost.ProductPost;

@@ -6,9 +6,9 @@ import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentResponseDt
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
-import com.usw.sugo.global.aws.s3.AwsS3ServiceNote;
-import com.usw.sugo.global.fcm.FcmMessage;
-import com.usw.sugo.global.fcm.service.FcmPushService;
+import com.usw.sugo.global.infrastructure.aws.s3.AwsS3ServiceNote;
+import com.usw.sugo.global.infrastructure.fcm.FcmMessage;
+import com.usw.sugo.global.infrastructure.fcm.service.FcmPushService;
 import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.note.note.service;
 
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_CREATE_YOURSELF;
 import static com.usw.sugo.global.exception.ExceptionType.NOTE_NOT_FOUNDED;
 

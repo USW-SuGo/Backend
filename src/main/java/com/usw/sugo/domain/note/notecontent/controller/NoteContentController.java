@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.note.notecontent.controller;
 
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.note.note.Note;

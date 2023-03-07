@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.productpost.productpost.service;
 
-import static com.usw.sugo.global.apiresult.ApiResultFactory.getSuccessFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_UP_POSTING;
 import static com.usw.sugo.global.exception.ExceptionType.CATEGORY_NOT_FOUND;
 import static com.usw.sugo.global.exception.ExceptionType.NOT_ALLOWED;
@@ -21,7 +21,6 @@ import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
 import com.usw.sugo.domain.userlikepostnote.UserLikePostAndNoteService;
 import com.usw.sugo.global.exception.CustomException;
-import com.usw.sugo.global.exception.ExceptionType;
 import com.usw.sugo.global.util.imagelinkfiltering.ImageLinkCharacterFilter;
 import java.io.IOException;
 import java.time.LocalDateTime;

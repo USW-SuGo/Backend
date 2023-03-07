@@ -6,7 +6,7 @@ import static com.usw.sugo.global.exception.ExceptionType.POST_NOT_FOUND;
 import com.usw.sugo.domain.productpost.productpost.ProductPost;
 import com.usw.sugo.domain.productpost.productpostfile.ProductPostFile;
 import com.usw.sugo.domain.productpost.productpostfile.repository.ProductPostFileRepository;
-import com.usw.sugo.global.aws.s3.AwsS3ServiceProductPost;
+import com.usw.sugo.global.infrastructure.aws.s3.AwsS3ServiceProductPost;
 import com.usw.sugo.global.exception.CustomException;
 import java.io.IOException;
 import java.time.LocalDateTime;
