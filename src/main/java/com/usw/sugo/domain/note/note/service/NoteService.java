@@ -69,17 +69,21 @@ public class NoteService {
     @Transactional
     public List<Object> executeLoadAllNotes(User user, Pageable pageable) {
         final User requestUser = userServiceUtility.loadUserById(user.getId());
-        final List<List<LoadNoteListForm>> notes =
-            noteRepository.loadNoteListByUserId(requestUser.getId(), pageable);
+        final List<List<LoadNoteListForm>> notes = noteRepository.loadNoteListByUserId(
+            requestUser.getId(), pageable
+        );
+
         setThumbnailImageLink(notes);
 
-        final List<LoadNoteListForm> loadedNotes = new ArrayList<>(notes.get(0));
+        final List<LoadNoteListForm> allNotes = notes.get(0);
+        final List<LoadNoteListForm> loadNoteListForms = notes.get(1);
+        allNotes.addAll(loadNoteListForms);
 
         final List<Object> result = new ArrayList<>();
         result.add(new HashMap<>() {{
             put("requestUserId", user.getId());
         }});
-        result.add(sortLoadNoteListForm(loadedNotes));
+        result.add(sortLoadNoteListForm(allNotes));
 
         return result;
     }

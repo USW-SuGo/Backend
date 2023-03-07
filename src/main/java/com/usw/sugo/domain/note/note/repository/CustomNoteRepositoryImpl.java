@@ -60,18 +60,17 @@ public class CustomNoteRepositoryImpl implements CustomNoteRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<LoadNoteListForm> loadNoteListResultByNoteOpponentUser =
-            queryFactory
-                .select(new QNoteResponseDto_LoadNoteListForm(
-                    note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
-                    note.creatingUserNickname, note.recentContent, note.opponentUserUnreadCount,
-                    note.updatedAt))
-                .from(note)
-                .where(note.opponentUser.id.eq(requestUserId))
-                .orderBy(note.updatedAt.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        List<LoadNoteListForm> loadNoteListResultByNoteOpponentUser = queryFactory
+            .select(new QNoteResponseDto_LoadNoteListForm(
+                note.id, note.productPost.id, note.creatingUser.id, note.opponentUser.id,
+                note.creatingUserNickname, note.recentContent, note.opponentUserUnreadCount,
+                note.updatedAt))
+            .from(note)
+            .where(note.opponentUser.id.eq(requestUserId))
+            .orderBy(note.updatedAt.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
         finalResult.add(loadNoteListResultByNoteOpponentUser);
         finalResult.add(loadNoteListResultByNoteCreatingUser);
