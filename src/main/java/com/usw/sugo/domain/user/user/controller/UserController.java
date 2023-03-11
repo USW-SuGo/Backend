@@ -141,7 +141,7 @@ public class UserController {
     }
 
     @ResponseStatus(OK)
-    @PatchMapping
+    @PatchMapping("/alarm-status")
     public Map<String, Boolean> updatePushAlarmStatus(
         @Valid @RequestBody PushAlarmStatusRequestForm pushAlarmStatusRequestForm,
         @AuthenticationPrincipal User user
@@ -152,7 +152,7 @@ public class UserController {
     }
 
     @ResponseStatus(OK)
-    @PatchMapping
+    @PatchMapping("/fcm")
     public Map<String, Boolean> updateFcmToken(
         @Valid @RequestBody RegisterFcmTokenRequestForm registerFcmTokenRequestForm,
         @AuthenticationPrincipal User user
