@@ -3,16 +3,18 @@ package com.usw.sugo.domain.user.user.controller;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.AuthEmailPayloadForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.DetailJoinRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.EditPasswordRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.FindLoginIdRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.FindPasswordRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.IsEmailExistRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.IsLoginIdExistRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.MannerEvaluationRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserRequestDto.QuitRequestForm;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.AuthEmailPayloadForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.DetailJoinRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.EditPasswordRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.FindLoginIdRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.FindPasswordRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.IsEmailExistRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.IsLoginIdExistRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.MannerEvaluationRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.PushAlarmStatusRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.QuitRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.RegisterFcmTokenRequestForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,9 +78,7 @@ public class UserController {
             detailJoinRequestForm.getLoginId(),
             detailJoinRequestForm.getEmail(),
             detailJoinRequestForm.getPassword(),
-            detailJoinRequestForm.getDepartment(),
-            detailJoinRequestForm.getPushAlarmStatus(),
-            detailJoinRequestForm.getFcmToken()
+            detailJoinRequestForm.getDepartment()
         );
     }
 
@@ -136,6 +137,28 @@ public class UserController {
             mannerEvaluationRequestForm.getTargetUserId(),
             mannerEvaluationRequestForm.getGrade(),
             user
+        );
+    }
+
+    @ResponseStatus(OK)
+    @PatchMapping
+    public Map<String, Boolean> updatePushAlarmStatus(
+        @Valid @RequestBody PushAlarmStatusRequestForm pushAlarmStatusRequestForm,
+        @AuthenticationPrincipal User user
+    ) {
+        return userService.executeUpdatePushAlarmStatus(
+            pushAlarmStatusRequestForm.getPushAlarmStatus(), user
+        );
+    }
+
+    @ResponseStatus(OK)
+    @PatchMapping
+    public Map<String, Boolean> updateFcmToken(
+        @Valid @RequestBody RegisterFcmTokenRequestForm registerFcmTokenRequestForm,
+        @AuthenticationPrincipal User user
+    ) {
+        return userService.executeUpdateFcmToken(
+            registerFcmTokenRequestForm.getFcmToken(), user
         );
     }
 }

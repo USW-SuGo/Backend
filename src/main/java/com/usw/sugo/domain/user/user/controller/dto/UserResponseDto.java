@@ -1,4 +1,4 @@
-package com.usw.sugo.domain.user.user.dto;
+package com.usw.sugo.domain.user.user.controller.dto;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;

@@ -16,7 +16,7 @@ import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.user.dto.UserResponseDto.UserPageResponseForm;
+import com.usw.sugo.domain.user.user.controller.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
@@ -72,19 +72,19 @@ public class UserService {
         return getSuccessFlag();
     }
 
-    @Transactional
     public Map<String, Object> executeJoin(
-        String loginId, String email, String password, String department, Boolean pushAlarmStatus,
-        String fcmToken
+        String loginId, String email, String password, String department
     ) {
+
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATED_EMAIL);
         } else if (userRepository.findByLoginId(loginId).isPresent()) {
             throw new CustomException(DUPLICATED_LOGINID);
         }
+
         userServiceUtility.validateSuwonUniversityEmailForm(email);
         final User requestUser = userServiceUtility.softJoin(
-            loginId, email, password, department, pushAlarmStatus, fcmToken
+            loginId, email, password, department
         );
         final String authPayload = userEmailAuthService.saveUserEmailAuth(requestUser);
         sendEmailServiceBySES.sendStudentAuthContent(requestUser.getEmail(), authPayload);
@@ -157,6 +157,7 @@ public class UserService {
             .build();
     }
 
+
     public Map<String, Boolean> executeEvaluateManner(
         Long targetUserId, BigDecimal grade, User user
     ) {
@@ -167,5 +168,17 @@ public class UserService {
             return getSuccessFlag();
         }
         throw new CustomException(ALREADY_EVALUATION);
+    }
+
+    public Map<String, Boolean> executeUpdatePushAlarmStatus(Boolean status, User user) {
+        User requestUser = userServiceUtility.loadUserById(user.getId());
+        requestUser.updatePushAlarmStatus(status);
+        return getSuccessFlag();
+    }
+
+    public Map<String, Boolean> executeUpdateFcmToken(String fcmToken, User user) {
+        User requestUser = userServiceUtility.loadUserById(user.getId());
+        requestUser.updateFcmToken(fcmToken);
+        return getSuccessFlag();
     }
 }

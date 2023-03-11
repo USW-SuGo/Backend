@@ -134,6 +134,10 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.recentEvaluationManner = LocalDateTime.now();
     }
 
+    public void updatePushAlarmStatus(Boolean pushAlarmStatus) {
+        this.pushAlarmStatus = pushAlarmStatus;
+    }
+
     public void updateFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }

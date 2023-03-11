@@ -1,12 +1,11 @@
-package com.usw.sugo.domain.user.user.dto;
+package com.usw.sugo.domain.user.user.controller.dto;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
 
-// NotBlank는 String 타입에서만 가능
-// Integer, Long 은 Notnull가능
 public class UserRequestDto {
 
     @Data
@@ -34,10 +33,6 @@ public class UserRequestDto {
         private String password;
         @NotBlank
         private String department;
-        @NotNull
-        private Boolean pushAlarmStatus;
-        @NotBlank
-        private String fcmToken;
     }
 
     // 인증번호 DTO
@@ -103,5 +98,19 @@ public class UserRequestDto {
         private Long targetUserId;
         @NotNull
         private BigDecimal grade;
+    }
+
+    @Getter
+    public static class PushAlarmStatusRequestForm {
+
+        @NotNull
+        private Boolean pushAlarmStatus;
+    }
+
+    @Getter
+    public static class RegisterFcmTokenRequestForm {
+
+        @NotBlank
+        private String fcmToken;
     }
 }
