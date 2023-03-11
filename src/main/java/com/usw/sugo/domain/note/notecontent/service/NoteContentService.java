@@ -55,7 +55,7 @@ public class NoteContentService {
         final User receiver = userServiceUtility.loadUserById(receiverId);
 
         saveNoteContentByText(note, message, sender, receiver);
-        note.updateRecentContent(message);
+        note.updateRecentContent(fixedPushAlarmBodyByImage);
         note.updateUserUnreadCountBySendMessage(sender);
 
         final String fixedPushAlarmTitle = sender.getNickname();
@@ -72,8 +72,9 @@ public class NoteContentService {
         final User sender = userServiceUtility.loadUserById(senderId);
         final User receiver = userServiceUtility.loadUserById(receiverId);
 
-        final List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(multipartFiles,
-            note.getId());
+        final List<String> imageLinks = awsS3ServiceNote.uploadS3ByNote(
+            multipartFiles, note.getId()
+        );
         saveNoteContentByFile(note, imageLinks, sender, receiver);
         note.updateRecentContent(imageLinks.get(0));
         note.updateUserUnreadCountBySendMessage(sender);

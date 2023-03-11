@@ -109,8 +109,7 @@ public class NoteService {
     private List<List<LoadNoteListForm>> setThumbnailImageLink(List<List<LoadNoteListForm>> notes) {
         for (List<LoadNoteListForm> note : notes) {
             for (LoadNoteListForm loadNoteListForm : note) {
-                final ProductPost productPost =
-                    productPostServiceUtility.loadProductPostById(
+                final ProductPost productPost = productPostServiceUtility.loadProductPostById(
                         loadNoteListForm.getProductPostId()
                     );
                 final ProductPostFile productPostFile =
