@@ -55,7 +55,7 @@ public class NoteContentService {
         final User receiver = userServiceUtility.loadUserById(receiverId);
 
         saveNoteContentByText(note, message, sender, receiver);
-        note.updateRecentContent(fixedPushAlarmBodyByImage);
+        note.updateRecentContent(message);
         note.updateUserUnreadCountBySendMessage(sender);
 
         final String fixedPushAlarmTitle = sender.getNickname();
@@ -76,7 +76,7 @@ public class NoteContentService {
             multipartFiles, note.getId()
         );
         saveNoteContentByFile(note, imageLinks, sender, receiver);
-        note.updateRecentContent(imageLinks.get(0));
+        note.updateRecentContent(fixedPushAlarmBodyByImage);
         note.updateUserUnreadCountBySendMessage(sender);
 
         final String fixedPushAlarmTitle = sender.getNickname();

@@ -92,6 +92,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
                     response.flushBuffer();
                     return null;
                 }
+
                 final User user = userDetailsRepository.findByLoginId(
                     userDetails.getUsername()
                 ).get();
