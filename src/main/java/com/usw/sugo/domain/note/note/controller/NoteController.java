@@ -39,7 +39,8 @@ public class NoteController {
 
     @ResponseStatus(OK)
     @GetMapping("/list")
-    public List<Object> loadAllNoteListByUserId(Pageable pageable,
+    public List<Object> loadAllNoteListByUserId(
+        Pageable pageable,
         @AuthenticationPrincipal User user) {
         return noteService.executeLoadAllNotes(user, pageable);
     }

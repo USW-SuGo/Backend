@@ -3,10 +3,10 @@ package com.usw.sugo.global.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.usw.sugo.domain.user.user.repository.UserDetailsRepository;
 import com.usw.sugo.global.config.security.filter.JwtFilter;
+import com.usw.sugo.global.config.security.filter.LoginFilter;
 import com.usw.sugo.global.jwt.JwtGenerator;
 import com.usw.sugo.global.jwt.JwtResolver;
 import com.usw.sugo.global.jwt.JwtValidator;
-import com.usw.sugo.global.config.security.filter.LoginFilter;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,8 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http
             .authorizeRequests()
-            .antMatchers(notNeededJwtURI.toString()).permitAll()
+            .antMatchers(notNeededJwtURI.toArray(new String[0]))
+            .permitAll()
         ;
         http
             .addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
