@@ -55,10 +55,7 @@ public class NoteContentController {
         @AuthenticationPrincipal User user
     ) {
 
-        if (user.getId().equals(sendNoteContentForm.getSenderId()) &&
-            !user.getId().equals(sendNoteContentForm.getReceiverId())) {
-            throw new CustomException(DO_NOT_SEND_YOURSELF);
-        }
+        validateSendForm(user, sendNoteContentForm.getSenderId(), sendNoteContentForm.getReceiverId());
 
         User sender = userServiceUtility.loadUserById(user.getId());
         User receiver = userServiceUtility.loadUserById(sendNoteContentForm.getReceiverId());
@@ -81,10 +78,7 @@ public class NoteContentController {
         @AuthenticationPrincipal User user
     ) {
 
-        if (user.getId().equals(sendNoteFileForm.getSenderId()) &&
-            !user.getId().equals(sendNoteFileForm.getReceiverId())) {
-            throw new CustomException(DO_NOT_SEND_YOURSELF);
-        }
+        validateSendForm(user, sendNoteFileForm.getSenderId(), sendNoteFileForm.getReceiverId());
 
         User sender = userServiceUtility.loadUserById(user.getId());
         User receiver = userServiceUtility.loadUserById(sendNoteFileForm.getReceiverId());
@@ -96,5 +90,12 @@ public class NoteContentController {
             sendNoteFileForm.getReceiverId()
         );
         return getSuccessFlag();
+    }
+
+    private void validateSendForm(User user, Long senderId, Long receiverId) {
+        if (user.getId().equals(senderId) ||
+            !user.getId().equals(receiverId)) {
+            throw new CustomException(DO_NOT_SEND_YOURSELF);
+        }
     }
 }
