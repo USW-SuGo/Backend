@@ -35,6 +35,9 @@ public class NoteContentRequestDto {
         private Long noteId;
 
         @NotNull
+        private Long senderId;
+
+        @NotNull
         private Long receiverId;
     }
 }

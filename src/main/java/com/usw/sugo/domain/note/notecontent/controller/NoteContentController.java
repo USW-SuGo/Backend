@@ -55,11 +55,13 @@ public class NoteContentController {
         @AuthenticationPrincipal User user
     ) {
 
-        if (!Objects.equals(user.getId(), sendNoteContentForm.getSenderId())) {
+        if (user.getId().equals(sendNoteContentForm.getSenderId()) &&
+            !user.getId().equals(sendNoteContentForm.getReceiverId())) {
             throw new CustomException(DO_NOT_SEND_YOURSELF);
         }
 
         User sender = userServiceUtility.loadUserById(user.getId());
+        User receiver = userServiceUtility.loadUserById(sendNoteContentForm.getReceiverId());
         Note note = noteService.loadNoteByNoteId(sendNoteContentForm.getNoteId());
         noteContentService.executeSendNoteContent(
             note,
@@ -79,11 +81,13 @@ public class NoteContentController {
         @AuthenticationPrincipal User user
     ) {
 
-        if (!Objects.equals(user.getId(), sendNoteFileForm.getReceiverId())) {
+        if (user.getId().equals(sendNoteFileForm.getSenderId()) &&
+            !user.getId().equals(sendNoteFileForm.getReceiverId())) {
             throw new CustomException(DO_NOT_SEND_YOURSELF);
         }
 
         User sender = userServiceUtility.loadUserById(user.getId());
+        User receiver = userServiceUtility.loadUserById(sendNoteFileForm.getReceiverId());
         Note note = noteService.loadNoteByNoteId(sendNoteFileForm.getNoteId());
         noteContentService.executeSendNoteContentWithFile(
             note,
