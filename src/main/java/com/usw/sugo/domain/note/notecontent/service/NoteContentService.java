@@ -101,11 +101,11 @@ public class NoteContentService {
     }
 
     @Transactional
-    protected void saveNoteContentByText(
+    public void saveNoteContentByText(
         Note note, String message, User sender, User receiver
     ) {
 
-        final NoteContent noteContent = NoteContent.builder()
+        NoteContent noteContent = NoteContent.builder()
             .note(note)
             .message(message)
             .sender(sender)
@@ -116,11 +116,11 @@ public class NoteContentService {
     }
 
     @Transactional
-    protected void saveNoteContentByFile(
+    public void saveNoteContentByFile(
         Note note, List<String> imageLinks, User sender, User receiver
     ) {
 
-        final NoteContent noteContent = NoteContent.builder()
+        NoteContent noteContent = NoteContent.builder()
             .note(note)
             .sender(sender)
             .receiver(receiver)

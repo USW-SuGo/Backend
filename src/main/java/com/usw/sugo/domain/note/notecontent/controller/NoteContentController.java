@@ -12,6 +12,7 @@ import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,7 +47,7 @@ public class NoteContentController {
     @ResponseStatus(OK)
     @PostMapping("/text")
     public Map<String, Boolean> sendNoteContent(
-        @RequestBody SendNoteContentForm sendNoteContentForm,
+        @Valid @RequestBody SendNoteContentForm sendNoteContentForm,
         @AuthenticationPrincipal User user) {
         User sender = userServiceUtility.loadUserById(user.getId());
         Note note = noteService.loadNoteByNoteId(sendNoteContentForm.getNoteId());
@@ -63,7 +64,7 @@ public class NoteContentController {
     @ResponseStatus(OK)
     @PostMapping("/file")
     public Map<String, Boolean> sendNoteFile(
-        SendNoteFileForm sendNoteFileForm,
+        @Valid SendNoteFileForm sendNoteFileForm,
         @RequestBody MultipartFile[] multipartFileList,
         @AuthenticationPrincipal User user) {
 
