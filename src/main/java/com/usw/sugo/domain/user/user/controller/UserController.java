@@ -49,14 +49,16 @@ public class UserController {
     @ResponseStatus(OK)
     @PostMapping("/check-email")
     public Map<String, Boolean> checkEmail(
-        @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm) {
+        @Valid @RequestBody IsEmailExistRequestForm isEmailExistRequestForm
+    ) {
         return userService.executeIsEmailExist(isEmailExistRequestForm.getEmail());
     }
 
     @ResponseStatus(OK)
     @PostMapping("/find-id")
     public Map<String, Boolean> findId(
-        @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm) {
+        @Valid @RequestBody FindLoginIdRequestForm findLoginIdRequestForm
+    ) {
         return userService.executeFindLoginId(findLoginIdRequestForm.getEmail());
     }
 
@@ -64,7 +66,8 @@ public class UserController {
     @PostMapping("/find-pw")
     public Map<String, Boolean> sendPasswordEmail(
         @Valid @RequestBody FindPasswordRequestForm findPasswordRequestForm,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
         return userService.executeFindPassword(
             findPasswordRequestForm.getEmail(),
             user);
@@ -73,7 +76,8 @@ public class UserController {
     @ResponseStatus(OK)
     @PostMapping("/join")
     public Map<String, Object> detailJoin(
-        @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm) {
+        @Valid @RequestBody DetailJoinRequestForm detailJoinRequestForm
+    ) {
         return userService.executeJoin(
             detailJoinRequestForm.getLoginId(),
             detailJoinRequestForm.getEmail(),
@@ -84,7 +88,8 @@ public class UserController {
 
     @PostMapping("/auth")
     public Map<String, Boolean> confirmEmail(
-        @Valid @RequestBody AuthEmailPayloadForm authEmailPayloadForm) {
+        @Valid @RequestBody AuthEmailPayloadForm authEmailPayloadForm
+    ) {
         return userService.executeAuthEmailPayload(
             authEmailPayloadForm.getPayload(),
             authEmailPayloadForm.getUserId()
@@ -102,8 +107,10 @@ public class UserController {
 
     @ResponseStatus(OK)
     @DeleteMapping
-    public Map<String, Boolean> deleteUser(@Valid @RequestBody QuitRequestForm quitRequestForm,
-        @AuthenticationPrincipal User user) {
+    public Map<String, Boolean> deleteUser(
+        @Valid @RequestBody QuitRequestForm quitRequestForm,
+        @AuthenticationPrincipal User user
+    ) {
         return userService.executeQuit(user, quitRequestForm.getPassword());
     }
 
@@ -123,8 +130,10 @@ public class UserController {
 
     @ResponseStatus(OK)
     @GetMapping("/{userId}")
-    public UserPageResponseForm loadOtherUserPage(@PathVariable Long userId,
-        @AuthenticationPrincipal User user) {
+    public UserPageResponseForm loadOtherUserPage(
+        @PathVariable Long userId,
+        @AuthenticationPrincipal User user
+    ) {
         return userService.executeLoadUserPage(user, userId);
     }
 
@@ -132,7 +141,8 @@ public class UserController {
     @PostMapping("/manner")
     public Map<String, Boolean> evaluateManner(
         @Valid @RequestBody MannerEvaluationRequestForm mannerEvaluationRequestForm,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
         return userService.executeEvaluateManner(
             mannerEvaluationRequestForm.getTargetUserId(),
             mannerEvaluationRequestForm.getGrade(),

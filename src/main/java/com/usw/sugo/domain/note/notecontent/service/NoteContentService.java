@@ -1,11 +1,14 @@
 package com.usw.sugo.domain.note.notecontent.service;
 
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
+
 import com.usw.sugo.domain.note.note.Note;
 import com.usw.sugo.domain.note.notecontent.NoteContent;
 import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentResponseDto.LoadNoteAllContentForm;
 import com.usw.sugo.domain.note.notecontent.repository.NoteContentRepository;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.exception.CustomException;
 import com.usw.sugo.global.infrastructure.aws.s3.AwsS3ServiceNote;
 import com.usw.sugo.global.infrastructure.fcm.FcmMessage;
 import com.usw.sugo.global.infrastructure.fcm.service.FcmPushService;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

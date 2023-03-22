@@ -73,7 +73,7 @@ public class Note extends BaseTimeEntity {
         }
     }
 
-    public void updateUserUnreadCountByEnteredNote(User enteredNoteUser) {
+    public void initUserUnreadCountByEnteredNote(User enteredNoteUser) {
         if (enteredNoteUser.getId().equals(creatingUser.getId())) {
             creatingUserUnreadCount = 0;
         } else if (enteredNoteUser.getId().equals(opponentUser.getId())) {

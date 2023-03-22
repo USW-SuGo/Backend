@@ -160,8 +160,8 @@ public class NoteService {
     }
 
     @Transactional
-    public void updateUserUnreadCountByEnteredNote(Note note, User user) {
-        note.updateUserUnreadCountByEnteredNote(user);
+    public void initUserUnreadCountByEnteredNote(Note note, User user) {
+        note.initUserUnreadCountByEnteredNote(user);
     }
 
     @Transactional

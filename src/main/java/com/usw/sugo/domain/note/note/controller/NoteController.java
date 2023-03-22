@@ -7,6 +7,7 @@ import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.user.user.User;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,8 +30,9 @@ public class NoteController {
     @ResponseStatus(OK)
     @PostMapping
     public Map<String, Long> createRoom(
-        @RequestBody CreateNoteRequestForm createNoteRequestForm,
-        @AuthenticationPrincipal User user) {
+        @Valid @RequestBody CreateNoteRequestForm createNoteRequestForm,
+        @AuthenticationPrincipal User user
+    ) {
         return noteService.executeCreatingRoom(
             user.getId(),
             createNoteRequestForm.getOpponentUserId(),
@@ -41,7 +43,8 @@ public class NoteController {
     @GetMapping("/list")
     public List<Object> loadAllNoteListByUserId(
         Pageable pageable,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
         return noteService.executeLoadAllNotes(user, pageable);
     }
 
@@ -49,7 +52,8 @@ public class NoteController {
     @DeleteMapping("/{noteId}")
     public Map<String, Boolean> deleteNote(
         @PathVariable Long noteId,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
         return noteService.executeDeleteNote(user, noteId);
     }
 }

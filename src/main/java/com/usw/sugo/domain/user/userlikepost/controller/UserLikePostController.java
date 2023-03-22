@@ -29,7 +29,8 @@ public class UserLikePostController {
     @PostMapping
     public Map<String, Boolean> likePost(
         @RequestBody @Valid LikePostRequest likePostRequest,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
         return userLikePostService.executeLikeUnlikePost(user.getId(),
             likePostRequest.getProductPostId());
     }
@@ -38,7 +39,8 @@ public class UserLikePostController {
     @GetMapping
     public List<LikePosting> loadUserLikePost(
         @AuthenticationPrincipal User user,
-        Pageable pageable) {
+        Pageable pageable
+    ) {
         return userLikePostService.loadLikePosts(user.getId(), pageable);
     }
 }

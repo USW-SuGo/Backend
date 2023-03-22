@@ -1,5 +1,6 @@
 package com.usw.sugo.domain.note.notecontent.controller;
 
+import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
 import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -10,8 +11,10 @@ import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentRequestDto
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.exception.CustomException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -39,8 +42,9 @@ public class NoteContentController {
     public List<Object> loadAllNoteContentsByRoomId(
         @PathVariable Long noteId,
         Pageable pageable,
-        @AuthenticationPrincipal User user) {
-        noteService.updateUserUnreadCountByEnteredNote(noteService.loadNoteByNoteId(noteId), user);
+        @AuthenticationPrincipal User user
+    ) {
+        noteService.initUserUnreadCountByEnteredNote(noteService.loadNoteByNoteId(noteId), user);
         return noteContentService.executeLoadAllContentsByNoteId(user, noteId, pageable);
     }
 
@@ -48,7 +52,13 @@ public class NoteContentController {
     @PostMapping("/text")
     public Map<String, Boolean> sendNoteContent(
         @Valid @RequestBody SendNoteContentForm sendNoteContentForm,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
+
+        if (!Objects.equals(user.getId(), sendNoteContentForm.getSenderId())) {
+            throw new CustomException(USER_NOT_EXIST);
+        }
+
         User sender = userServiceUtility.loadUserById(user.getId());
         Note note = noteService.loadNoteByNoteId(sendNoteContentForm.getNoteId());
         noteContentService.executeSendNoteContent(
@@ -66,7 +76,12 @@ public class NoteContentController {
     public Map<String, Boolean> sendNoteFile(
         @Valid SendNoteFileForm sendNoteFileForm,
         @RequestBody MultipartFile[] multipartFileList,
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user
+    ) {
+
+        if (!Objects.equals(user.getId(), sendNoteFileForm.getReceiverId())) {
+            throw new CustomException(USER_NOT_EXIST);
+        }
 
         User sender = userServiceUtility.loadUserById(user.getId());
         Note note = noteService.loadNoteByNoteId(sendNoteFileForm.getNoteId());
