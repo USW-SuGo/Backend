@@ -93,8 +93,7 @@ public class NoteContentController {
     }
 
     private void validateSendForm(User user, Long senderId, Long receiverId) {
-        if (user.getId().equals(senderId) ||
-            !user.getId().equals(receiverId)) {
+        if (!user.getId().equals(senderId) || user.getId().equals(receiverId)) {
             throw new CustomException(DO_NOT_SEND_YOURSELF);
         }
     }
