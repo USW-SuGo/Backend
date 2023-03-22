@@ -1,6 +1,6 @@
 package com.usw.sugo.domain.note.notecontent.controller;
 
-import static com.usw.sugo.global.exception.ExceptionType.USER_NOT_EXIST;
+import static com.usw.sugo.global.exception.ExceptionType.DO_NOT_SEND_YOURSELF;
 import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -56,7 +56,7 @@ public class NoteContentController {
     ) {
 
         if (!Objects.equals(user.getId(), sendNoteContentForm.getSenderId())) {
-            throw new CustomException(USER_NOT_EXIST);
+            throw new CustomException(DO_NOT_SEND_YOURSELF);
         }
 
         User sender = userServiceUtility.loadUserById(user.getId());
@@ -80,7 +80,7 @@ public class NoteContentController {
     ) {
 
         if (!Objects.equals(user.getId(), sendNoteFileForm.getReceiverId())) {
-            throw new CustomException(USER_NOT_EXIST);
+            throw new CustomException(DO_NOT_SEND_YOURSELF);
         }
 
         User sender = userServiceUtility.loadUserById(user.getId());
