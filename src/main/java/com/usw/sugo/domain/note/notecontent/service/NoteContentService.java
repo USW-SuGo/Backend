@@ -64,7 +64,9 @@ public class NoteContentService {
 
         final String fixedPushAlarmTitle = sender.getNickname();
 
-        fcmPushService.sendPushNotification(new FcmMessage(receiver, fixedPushAlarmTitle, message));
+        fcmPushService.sendPushNotification(
+            new FcmMessage(receiver, fixedPushAlarmTitle, message), note.getId()
+        );
         return message;
     }
 
@@ -86,7 +88,7 @@ public class NoteContentService {
         final String fixedPushAlarmTitle = sender.getNickname();
 
         fcmPushService.sendPushNotification(
-            new FcmMessage(receiver, fixedPushAlarmTitle, fixedPushAlarmBodyByImage)
+            new FcmMessage(receiver, fixedPushAlarmTitle, fixedPushAlarmBodyByImage), note.getId()
         );
         return imageLinks.get(0);
     }

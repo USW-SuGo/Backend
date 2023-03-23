@@ -20,15 +20,17 @@ import org.springframework.stereotype.Service;
 public class FcmPushService {
 
     private final FirebaseApp firebaseApp;
+    private static final String FIXED_DATA_NAME = "noteId";
 
     @Async
-    public void sendPushNotification(FcmMessage fcmMessage) {
+    public void sendPushNotification(FcmMessage fcmMessage, Long noteId) {
         try {
             extractUserTokenByPushAlarmAllowed(fcmMessage.getUser());
         } catch (NullPointerException exception) {
             return;
         }
         final MulticastMessage multicastMessage = MulticastMessage.builder()
+            .putData(FIXED_DATA_NAME, noteId.toString())
             .setNotification(new Notification(fcmMessage.getTitle(), fcmMessage.getBody()))
             .addAllTokens(
                 Collections.singletonList(extractUserTokenByPushAlarmAllowed(fcmMessage.getUser())))
