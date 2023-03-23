@@ -30,7 +30,7 @@ public class FcmPushService {
             return;
         }
         final MulticastMessage multicastMessage = MulticastMessage.builder()
-            .putData(FIXED_DATA_NAME, noteId.toString())
+            .putData(FIXED_DATA_NAME, String.valueOf(noteId))
             .setNotification(new Notification(fcmMessage.getTitle(), fcmMessage.getBody()))
             .addAllTokens(
                 Collections.singletonList(extractUserTokenByPushAlarmAllowed(fcmMessage.getUser())))
