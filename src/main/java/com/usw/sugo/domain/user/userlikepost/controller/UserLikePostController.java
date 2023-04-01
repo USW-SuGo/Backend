@@ -6,6 +6,7 @@ import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDt
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.userlikepost.dto.UserLikePostRequestDto.LikePostRequest;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
+import com.usw.sugo.global.annotation.ApiLogger;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/like-post")

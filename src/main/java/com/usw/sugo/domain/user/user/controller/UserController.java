@@ -16,6 +16,7 @@ import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.QuitRequestFo
 import com.usw.sugo.domain.user.user.controller.dto.UserRequestDto.RegisterFcmTokenRequestForm;
 import com.usw.sugo.domain.user.user.controller.dto.UserResponseDto.UserPageResponseForm;
 import com.usw.sugo.domain.user.user.service.UserService;
+import com.usw.sugo.global.annotation.ApiLogger;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")

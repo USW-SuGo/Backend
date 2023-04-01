@@ -6,6 +6,7 @@ import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticePostRequest;
 import com.usw.sugo.domain.notice.dto.NoticeRequestDto.NoticeUpdateRequest;
 import com.usw.sugo.domain.notice.service.NoticeService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.global.annotation.ApiLogger;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@ApiLogger
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/notice")

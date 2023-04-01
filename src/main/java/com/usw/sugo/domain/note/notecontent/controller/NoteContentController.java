@@ -11,10 +11,10 @@ import com.usw.sugo.domain.note.notecontent.controller.dto.NoteContentRequestDto
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
 import com.usw.sugo.domain.user.user.User;
 import com.usw.sugo.domain.user.user.service.UserServiceUtility;
+import com.usw.sugo.global.annotation.ApiLogger;
 import com.usw.sugo.global.exception.CustomException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note-content")
@@ -55,7 +56,8 @@ public class NoteContentController {
         @AuthenticationPrincipal User user
     ) {
 
-        validateSendForm(user, sendNoteContentForm.getSenderId(), sendNoteContentForm.getReceiverId());
+        validateSendForm(user, sendNoteContentForm.getSenderId(),
+            sendNoteContentForm.getReceiverId());
 
         User sender = userServiceUtility.loadUserById(user.getId());
         User receiver = userServiceUtility.loadUserById(sendNoteContentForm.getReceiverId());

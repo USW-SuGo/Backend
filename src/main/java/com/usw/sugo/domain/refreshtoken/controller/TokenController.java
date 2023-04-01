@@ -3,6 +3,7 @@ package com.usw.sugo.domain.refreshtoken.controller;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.usw.sugo.domain.refreshtoken.service.RefreshTokenService;
+import com.usw.sugo.global.annotation.ApiLogger;
 import com.usw.sugo.global.valueobject.apiresult.ApiResultFactory;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@ApiLogger
 @RequiredArgsConstructor
 @RequestMapping("/token")
 @RestController

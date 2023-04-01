@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.OK;
 import com.usw.sugo.domain.note.note.controller.dto.NoteRequestDto.CreateNoteRequestForm;
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.user.user.User;
+import com.usw.sugo.global.annotation.ApiLogger;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note")

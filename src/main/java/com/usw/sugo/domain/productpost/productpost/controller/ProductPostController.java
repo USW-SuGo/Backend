@@ -15,7 +15,7 @@ import com.usw.sugo.domain.productpost.productpost.controller.dto.PostResponseDt
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostService;
 import com.usw.sugo.domain.productpost.productpost.service.ProductPostServiceUtility;
 import com.usw.sugo.domain.user.user.User;
-import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
+import com.usw.sugo.global.annotation.ApiLogger;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
