@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note-content")
@@ -38,6 +37,7 @@ public class NoteContentController {
     private final NoteContentService noteContentService;
     private final NoteService noteService;
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/{noteId}")
     public List<Object> loadAllNoteContentsByRoomId(
@@ -49,6 +49,7 @@ public class NoteContentController {
         return noteContentService.executeLoadAllContentsByNoteId(user, noteId, pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/text")
     public Map<String, Boolean> sendNoteContent(
@@ -72,6 +73,7 @@ public class NoteContentController {
         return getSuccessFlag();
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/file")
     public Map<String, Boolean> sendNoteFile(

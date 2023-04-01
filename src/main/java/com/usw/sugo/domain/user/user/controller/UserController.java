@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -41,6 +40,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/check-loginId")
     public Map<String, Boolean> checkLoginId(
@@ -48,6 +48,7 @@ public class UserController {
         return userService.executeIsLoginIdExist(isLoginIdExistRequestForm.getLoginId());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/check-email")
     public Map<String, Boolean> checkEmail(
@@ -56,6 +57,7 @@ public class UserController {
         return userService.executeIsEmailExist(isEmailExistRequestForm.getEmail());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/find-id")
     public Map<String, Boolean> findId(
@@ -64,6 +66,7 @@ public class UserController {
         return userService.executeFindLoginId(findLoginIdRequestForm.getEmail());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/find-pw")
     public Map<String, Boolean> sendPasswordEmail(
@@ -75,6 +78,7 @@ public class UserController {
             user);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/join")
     public Map<String, Object> detailJoin(
@@ -88,6 +92,7 @@ public class UserController {
         );
     }
 
+    @ApiLogger
     @PostMapping("/auth")
     public Map<String, Boolean> confirmEmail(
         @Valid @RequestBody AuthEmailPayloadForm authEmailPayloadForm
@@ -98,7 +103,7 @@ public class UserController {
         );
     }
 
-    // 비밀번호 수정
+    @ApiLogger
     @ResponseStatus(OK)
     @PutMapping("/password")
     public Map<String, Boolean> editPassword(
@@ -107,6 +112,7 @@ public class UserController {
         return userService.executeEditPassword(user, editPasswordRequestForm.getNewPassword());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @DeleteMapping
     public Map<String, Boolean> deleteUser(
@@ -116,6 +122,7 @@ public class UserController {
         return userService.executeQuit(user, quitRequestForm.getPassword());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/identifier")
     public Map<String, Long> getMyIndex(@AuthenticationPrincipal User user) {
@@ -124,12 +131,14 @@ public class UserController {
         }};
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping
     public UserPageResponseForm loadMyPage(@AuthenticationPrincipal User user) {
         return userService.executeLoadUserPage(user, user.getId());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/{userId}")
     public UserPageResponseForm loadOtherUserPage(
@@ -139,6 +148,7 @@ public class UserController {
         return userService.executeLoadUserPage(user, userId);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/manner")
     public Map<String, Boolean> evaluateManner(
@@ -152,6 +162,7 @@ public class UserController {
         );
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PatchMapping("/alarm-status")
     public Map<String, Boolean> updatePushAlarmStatus(
@@ -163,6 +174,7 @@ public class UserController {
         );
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PatchMapping("/fcm")
     public Map<String, Boolean> updateFcmToken(

@@ -33,7 +33,7 @@ public class ApiLogger {
     private LocalDate callDate;
 
     public void calculateProcessAvg(Long currentProcessTime) {
+        this.processAvg = (currentProcessTime + (processAvg * callTime)) / (this.callTime + 1);
         this.callTime += 1;
-        this.processAvg = (currentProcessTime + (processAvg * callTime)) / this.callTime;
     }
 }

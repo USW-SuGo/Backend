@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@ApiLogger
 @RequiredArgsConstructor
 @RequestMapping("/token")
 @RestController
@@ -23,6 +22,7 @@ public class TokenController {
 
     private final RefreshTokenService refreshTokenService;
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping
     public ResponseEntity<Object> updateToken(

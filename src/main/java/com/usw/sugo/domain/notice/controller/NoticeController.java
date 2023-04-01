@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@ApiLogger
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/notice")
@@ -31,16 +30,19 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
+    @ApiLogger
     @GetMapping
     public List<Notice> loadAllNoticeByPaging(Pageable pageable) {
         return noticeService.loadAllNotice(pageable);
     }
 
+    @ApiLogger
     @GetMapping("/{noticeId}")
     public Notice loadNotice(@PathVariable @Valid Long noticeId) {
         return noticeService.loadNoticeById(noticeId);
     }
 
+    @ApiLogger
     @PostMapping
     public Map<String, Boolean> saveNotice(
         @RequestHeader String authorization,
@@ -50,6 +52,7 @@ public class NoticeController {
             noticePostRequest.getContent());
     }
 
+    @ApiLogger
     @PutMapping
     public Map<String, Boolean> editNotice(
         @RequestHeader String authorization,
@@ -62,6 +65,7 @@ public class NoticeController {
             noticeUpdateRequest.getContent());
     }
 
+    @ApiLogger
     @DeleteMapping
     public Map<String, Boolean> deleteNotice(
         @RequestHeader String authorization,

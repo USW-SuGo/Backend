@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/note")
@@ -29,6 +28,7 @@ public class NoteController {
 
     private final NoteService noteService;
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping
     public Map<String, Long> createRoom(
@@ -41,6 +41,7 @@ public class NoteController {
             createNoteRequestForm.getProductPostId());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/list")
     public List<Object> loadAllNoteListByUserId(
@@ -50,6 +51,7 @@ public class NoteController {
         return noteService.executeLoadAllNotes(user, pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @DeleteMapping("/{noteId}")
     public Map<String, Boolean> deleteNote(

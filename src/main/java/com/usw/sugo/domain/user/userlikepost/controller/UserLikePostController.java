@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/like-post")
@@ -28,6 +27,7 @@ public class UserLikePostController {
 
     private final UserLikePostService userLikePostService;
 
+    @ApiLogger
     @PostMapping
     public Map<String, Boolean> likePost(
         @RequestBody @Valid LikePostRequest likePostRequest,
@@ -37,6 +37,7 @@ public class UserLikePostController {
             likePostRequest.getProductPostId());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping
     public List<LikePosting> loadUserLikePost(

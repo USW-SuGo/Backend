@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@ApiLogger
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
@@ -44,6 +43,7 @@ public class ProductPostController {
     private final ProductPostServiceUtility productPostServiceUtility;
     private final ProductPostService productPostService;
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/search")
     public List<SearchResultResponse> searchPost(
@@ -53,6 +53,7 @@ public class ProductPostController {
         return productPostService.executeSearchPostings(value, category, pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/all")
     public List<MainPageResponse> loadMainPage(
@@ -62,6 +63,7 @@ public class ProductPostController {
         return productPostService.executeLoadMainPage(pageable, category);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/{productPostId}")
     public DetailPostResponse loadDetailPost(
@@ -71,6 +73,7 @@ public class ProductPostController {
         return productPostService.executeLoadDetailProductPost(productPostId, user.getId());
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/my-post")
     public List<MyPosting> loadUserPost(
@@ -80,6 +83,7 @@ public class ProductPostController {
         return productPostService.executeLoadMyPosting(user, user.getId(), pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/my-post/{userId}")
     public List<MyPosting> loadOtherUserPost(
@@ -90,6 +94,7 @@ public class ProductPostController {
         return productPostService.executeLoadMyPosting(user, userId, pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/close-post")
     public List<ClosePosting> loadUserClosePost(
@@ -99,6 +104,7 @@ public class ProductPostController {
         return productPostService.executeLoadClosePosting(user, user.getId(), pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @GetMapping("/close-post/{userId}")
     public List<ClosePosting> loadUserClosePost(
@@ -109,6 +115,7 @@ public class ProductPostController {
         return productPostService.executeLoadClosePosting(user, userId, pageable);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping
     public Map<String, Boolean> savePost(
@@ -119,6 +126,7 @@ public class ProductPostController {
         return productPostService.savePosting(user.getId(), postingRequest, multipartFileList);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/up-post")
     public Map<String, Boolean> upPost(
@@ -129,6 +137,7 @@ public class ProductPostController {
             productPostServiceUtility.loadProductPostById(upPostingRequest.getProductPostId()));
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PostMapping("/close")
     public Map<String, Boolean> changeStatus(
@@ -138,6 +147,7 @@ public class ProductPostController {
             productPostServiceUtility.loadProductPostById(closePostRequest.getProductPostId()));
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @PutMapping
     public Map<String, Boolean> putProductPostAndImage(
@@ -152,6 +162,7 @@ public class ProductPostController {
             multipartFileList);
     }
 
+    @ApiLogger
     @ResponseStatus(OK)
     @DeleteMapping
     public Map<String, Boolean> deleteProductPost(
