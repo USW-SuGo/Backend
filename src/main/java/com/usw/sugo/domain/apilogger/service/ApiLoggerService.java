@@ -20,7 +20,6 @@ public class ApiLoggerService {
         Optional<ApiLogger> apiLogger = apiLoggerRepository.findByCallDate(today);
 
         if (apiLogger.isEmpty()) {
-            System.out.println("비어있음");
             ApiLogger newTodayApiLogger = ApiLogger.builder()
                 .callTime(1L)
                 .callDate(today)
@@ -29,7 +28,6 @@ public class ApiLoggerService {
             apiLoggerRepository.save(newTodayApiLogger);
             return;
         }
-        System.out.println("안비어있음");
         apiLogger.get().calculateProcessAvg(currentProcessTime);
         apiLoggerRepository.save(apiLogger.get());
     }

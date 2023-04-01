@@ -27,9 +27,6 @@ public class ApiLogAspect {
 
         stopWatch.stop();
 
-        System.out.println("LocalDate.now() = " + LocalDate.now());
-        System.out.println("stopWatch = " + stopWatch.getTotalTimeMillis());
-
         apiLoggerService.logApi(LocalDate.now(), stopWatch.getTotalTimeMillis());
         return proceed;
     }
