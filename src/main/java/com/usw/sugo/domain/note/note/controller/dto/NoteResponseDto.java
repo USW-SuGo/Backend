@@ -41,5 +41,10 @@ public class NoteResponseDto {
             this.requestUserUnreadCount = requestUserUnreadCount;
             this.recentChattingDate = recentChattingDate;
         }
+
+        public void setImageLinkWithFiltering(String[] notFilteredImageLink) {
+            this.imageLink = notFilteredImageLink[0].replace(
+                "[", "").replace("]", "");
+        }
     }
 }

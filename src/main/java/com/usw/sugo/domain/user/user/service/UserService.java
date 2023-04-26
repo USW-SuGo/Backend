@@ -1,15 +1,16 @@
 package com.usw.sugo.domain.user.user.service;
 
-import static com.usw.sugo.global.valueobject.apiresult.ApiResult.SUCCESS;
-import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getExistFlag;
-import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getNotExistFlag;
-import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 import static com.usw.sugo.global.exception.ExceptionType.ALREADY_EVALUATION;
 import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_EMAIL;
 import static com.usw.sugo.global.exception.ExceptionType.DUPLICATED_LOGINID;
 import static com.usw.sugo.global.exception.ExceptionType.IS_SAME_PASSWORD;
+import static com.usw.sugo.global.exception.ExceptionType.MANNER_EVALUATE_ALREADY_CREATED;
 import static com.usw.sugo.global.exception.ExceptionType.PASSWORD_NOT_CORRECT;
 import static com.usw.sugo.global.exception.ExceptionType.PAYLOAD_NOT_VALID;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResult.SUCCESS;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getExistFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getNotExistFlag;
+import static com.usw.sugo.global.valueobject.apiresult.ApiResultFactory.getSuccessFlag;
 
 import com.usw.sugo.domain.note.note.service.NoteService;
 import com.usw.sugo.domain.note.notecontent.service.NoteContentService;
@@ -21,8 +22,8 @@ import com.usw.sugo.domain.user.user.repository.UserRepository;
 import com.usw.sugo.domain.user.useremailauth.UserEmailAuth;
 import com.usw.sugo.domain.user.useremailauth.service.UserEmailAuthService;
 import com.usw.sugo.domain.user.userlikepost.service.UserLikePostService;
-import com.usw.sugo.global.infrastructure.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.exception.CustomException;
+import com.usw.sugo.global.infrastructure.aws.ses.SendEmailServiceBySES;
 import com.usw.sugo.global.util.factory.BCryptPasswordFactory;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -163,6 +164,9 @@ public class UserService {
     ) {
         final User requestUser = userServiceUtility.loadUserById(user.getId());
         if (userServiceUtility.isBeforeDay(requestUser.getRecentEvaluationManner())) {
+            if (user.getId().equals(targetUserId)) {
+                throw new CustomException(MANNER_EVALUATE_ALREADY_CREATED);
+            }
             userServiceUtility.loadUserById(targetUserId).updateMannerGrade(grade);
             requestUser.updateRecentEvaluationManner();
             return getSuccessFlag();

@@ -27,14 +27,6 @@ public class CustomRefreshTokenRepositoryImpl implements CustomRefreshTokenRepos
     }
 
     @Override
-    public void deleteByUserId(Long userId) {
-        queryFactory
-            .delete(refreshToken)
-            .where(refreshToken.user.id.eq(userId))
-            .execute();
-    }
-
-    @Override
     public void deleteByUser(User user) {
         queryFactory
             .delete(refreshToken)

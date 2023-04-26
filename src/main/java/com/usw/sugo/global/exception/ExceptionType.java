@@ -36,6 +36,7 @@ public enum ExceptionType {
     USER_NOT_EXIST(BAD_REQUEST, "존재하지 않는 회원 정보입니다."),
     PASSWORD_NOT_CORRECT(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     ALREADY_EVALUATION(BAD_REQUEST, "매너 평가는 하루에 한 번만 수행할 수 있습니다."),
+    MANNER_EVALUATE_ALREADY_CREATED(BAD_REQUEST, "매너 평가는 자신에게 수행할 수 없습니다."),
     ALREADY_UP_POSTING(BAD_REQUEST, "게시글 갱신은 하루에 한 번만 수행할 수 있습니다."),
     JWT_MALFORMED_EXCEPTION(BAD_REQUEST, "JWT_MALFORMED_EXCEPTION"),
     JWT_EXPIRED_EXCEPTION(FORBIDDEN, "토큰이 만료되었습니다."),

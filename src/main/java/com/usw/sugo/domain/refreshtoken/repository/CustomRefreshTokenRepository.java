@@ -8,7 +8,5 @@ public interface CustomRefreshTokenRepository {
 
     void refreshPayload(Long userId, String payload);
 
-    void deleteByUserId(Long userId);
-
     void deleteByUser(User user);
 }
