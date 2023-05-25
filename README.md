@@ -38,6 +38,7 @@
 | :---: | :---: | :---: |
 | ![회원가입 1](https://user-images.githubusercontent.com/49385546/204085314-d171f51e-8f04-4ae5-bfb1-78bd8434bc02.png) | ![회원가입 2](https://user-images.githubusercontent.com/49385546/204085315-3ed912c5-3f76-4af2-8292-e7c62732b6dc.png) | ![회원가입 3](https://user-images.githubusercontent.com/49385546/204085311-a7404bf6-7898-401e-bba1-4e2e338e816b.png) | 
 
+ </div>
  </detail>
  
 ---
